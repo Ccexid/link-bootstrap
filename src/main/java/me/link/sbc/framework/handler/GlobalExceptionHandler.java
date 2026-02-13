@@ -1,4 +1,4 @@
-package me.link.sbc.framework.config.web;
+package me.link.sbc.framework.handler;
 
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
