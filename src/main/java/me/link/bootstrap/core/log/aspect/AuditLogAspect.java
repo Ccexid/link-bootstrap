@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.lang.NonNull;
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.Executor;
 
@@ -133,7 +134,7 @@ public class AuditLogAspect implements ApplicationContextAware {
                         .status(e == null ? "SUCCESS" : "FAIL") // 执行状态
                         .errorMsg(e != null ? e.getMessage() : null) // 错误信息（如有）
                         .changes(diffs) // 字段变更详情
-                        .createTime(new Date()) // 日志创建时间
+                        .createTime(LocalDateTime.now()) // 日志创建时间
                         .build();
 
                 // 步骤 3: 通过 SPI 机制调用所有注册的日志存储实现进行保存

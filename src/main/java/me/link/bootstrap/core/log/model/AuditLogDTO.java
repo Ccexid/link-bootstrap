@@ -3,6 +3,7 @@ package me.link.bootstrap.core.log.model;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -62,7 +63,7 @@ public class AuditLogDTO {
     /**
      * 日志记录时间
      */
-    private Date createTime;
+    private LocalDateTime createTime;
 
     /**
      * 数据变更明细列表
