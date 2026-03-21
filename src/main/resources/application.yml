@@ -12,6 +12,10 @@ spring:
     console:
       enabled: true # 开启 H2 控制台，启动后访问 /h2-console 即可查看表
       path: /h2-console
+  sql:
+    init:
+      mode: always
+      platform: h2
 
   # 2. Jackson 增强配置 (结合之前的安全加固)
   jackson:
