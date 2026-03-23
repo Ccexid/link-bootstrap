@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.link.bootstrap.system.tenant.mapper.SystemTenantPackageMapper">
+
+    <resultMap id="BaseResultMap" type="me.link.bootstrap.system.tenant.entity.SystemTenantPackage" autoMapping="true">
+        <id column="id" property="id" />
+        <result column="menu_ids" property="menuIds" typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler" />
+    </resultMap>
+
+</mapper>
