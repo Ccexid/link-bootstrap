@@ -150,11 +150,11 @@ public class AuditLogAspect {
 
                 // 构建日志数据传输对象 (DTO)
                 AuditLogDTO logDTO = AuditLogDTO.builder()
-                        .tenantId(StringUtils.isEmpty(tenantId) ? "0" : tenantId) // 填充租户上下文
+                        .tenantId(StringUtils.isEmpty(tenantId) ? 0L : Long.parseLong(tenantId)) // 填充租户上下文
                         .module(anno.module())                       // 模块名称
                         .operation(op)                               // 操作描述
                         .businessId(bId)                             // 业务主键
-                        .costTime(String.valueOf(costTimeMs))                 // 执行耗时
+                        .costTime(costTimeMs)                 // 执行耗时
                         .status(e == null ? "SUCCESS" : "FAIL")      // 执行状态
                         .errorMsg(e != null ? e.getMessage() : null) // 异常信息
                         .changes(changes)                            // 字段变更详情

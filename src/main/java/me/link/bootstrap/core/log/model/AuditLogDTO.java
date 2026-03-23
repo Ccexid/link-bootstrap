@@ -20,7 +20,7 @@ public class AuditLogDTO {
      * 租户唯一标识
      */
     @Schema(description = "租户唯一标识", example = "tenant_001")
-    private String tenantId;
+    private Long tenantId;
 
     /**
      * 业务模块名称
@@ -56,7 +56,7 @@ public class AuditLogDTO {
      * 接口耗时（单位：毫秒）
      */
     @Schema(description = "接口耗时（单位：毫秒）", example = "150")
-    private String costTime;
+    private Long costTime;
 
     /**
      * 操作执行状态 (SUCCESS: 成功，FAIL: 失败)
