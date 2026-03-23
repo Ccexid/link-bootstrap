@@ -89,7 +89,7 @@ springdoc:
   default-flat-param-object: true
   group-configs:
     - group: 系统模块
-      packages-to-scan: me.link.bootstrap.system.controller
+      packages-to-scan: me.link.bootstrap.system.interfaces
       paths-to-match: /system/**
     - group: 业务模块
       packages-to-scan: me.link.bootstrap.business.controller
