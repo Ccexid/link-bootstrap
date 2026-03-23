@@ -49,33 +49,39 @@ CREATE TABLE `sys_menu`
     `tenant_type` varchar(10)  DEFAULT 'ALL' COMMENT '适用对象：P,
     S,
     B              或 ALL',
+    `create_time` datetime     DEFAULT NULL COMMENT '创建时间',
+    `update_time` datetime    NOT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='菜单权限表';
 
 -- 4. 角色表
 CREATE TABLE `sys_role`
 (
-    `id`         bigint       NOT NULL COMMENT '角色 ID',
-    `role_name`  varchar(30)  NOT NULL COMMENT '角色名称',
-    `role_key`   varchar(100) NOT NULL COMMENT '角色权限字符串',
-    `data_scope` char(1) DEFAULT '1' COMMENT '数据范围（1:全部，2:本部门，3:本人）',
-    `status`     tinyint      NOT NULL COMMENT '状态',
-    `tenant_id`  bigint       NOT NULL COMMENT '所属租户',
+    `id`          bigint       NOT NULL COMMENT '角色 ID',
+    `role_name`   varchar(30)  NOT NULL COMMENT '角色名称',
+    `role_key`    varchar(100) NOT NULL COMMENT '角色权限字符串',
+    `data_scope`  char(1)  DEFAULT '1' COMMENT '数据范围（1:全部，2:本部门，3:本人）',
+    `status`      tinyint      NOT NULL COMMENT '状态',
+    `tenant_id`   bigint       NOT NULL COMMENT '所属租户',
+    `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+    `update_time` datetime     NOT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`),
-    KEY          `idx_tenant_id` (`tenant_id`)
+    KEY           `idx_tenant_id` (`tenant_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='角色表';
 
 -- 5. 用户表（员工/后台用户）
 CREATE TABLE `sys_user`
 (
-    `id`        bigint       NOT NULL COMMENT '用户 ID',
-    `tenant_id` bigint       NOT NULL COMMENT '所属租户 ID',
-    `username`  varchar(30)  NOT NULL COMMENT '登录账号',
-    `nickname`  varchar(30) DEFAULT '' COMMENT '用户昵称',
-    `password`  varchar(100) NOT NULL COMMENT '密码',
-    `user_type` varchar(10) DEFAULT 'SYS' COMMENT '用户类型',
-    `dept_id`   bigint      DEFAULT NULL COMMENT '部门 ID',
-    `status`    tinyint     DEFAULT '0' COMMENT '状态',
+    `id`          bigint       NOT NULL COMMENT '用户 ID',
+    `tenant_id`   bigint       NOT NULL COMMENT '所属租户 ID',
+    `username`    varchar(30)  NOT NULL COMMENT '登录账号',
+    `nickname`    varchar(30) DEFAULT '' COMMENT '用户昵称',
+    `password`    varchar(100) NOT NULL COMMENT '密码',
+    `user_type`   varchar(10) DEFAULT 'SYS' COMMENT '用户类型',
+    `dept_id`     bigint      DEFAULT NULL COMMENT '部门 ID',
+    `status`      tinyint     DEFAULT '0' COMMENT '状态',
+    `create_time` datetime    DEFAULT NULL COMMENT '创建时间',
+    `update_time` datetime     NOT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uk_username_tenant` (`username`, `tenant_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户信息表';
