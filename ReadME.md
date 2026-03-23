@@ -116,13 +116,16 @@ public class UserExportService {
 public class UserServiceImpl implements UserService {
     @Override
     @Log(
-        module = "用户模块", 
-        operation = "修改用户信息", 
-        serviceName = "userService", // Spring Bean 名称
-        businessId = "#dto.id" // SpEL 表达式，解析业务主键
+            module = "用户管理",
+            // 动态 Operation：结合参数和结果
+            operation = "'修改用户[' + #userDto.nickname + ']状态' + (#result ? '成功' : '失败')",
+            // 动态 BusinessId
+            businessId = "#userDto.id",
+            // 核心：指定 Service 名字，切面会自动在执行前后各查一次数据库做 Diff
+            serviceName = "userServiceImpl"
     )
-    public boolean updateUserInfo(UserDTO dto) {
-        return this.updateById(BeanUtil.toBean(dto, User.class));
+    public boolean updateUserStatus(UserDTO userDto) {
+        return userRepository.updateStatus(userDto);
     }
 }
 ```
