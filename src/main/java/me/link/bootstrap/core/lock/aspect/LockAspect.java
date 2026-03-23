@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.link.bootstrap.core.exception.BusinessException;
 import me.link.bootstrap.core.exception.ErrorCode;
 import me.link.bootstrap.core.lock.annotation.Lock;
+import me.link.bootstrap.core.utils.SpelUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -60,14 +61,7 @@ public class LockAspect {
     private String parseKey(String keySpel, ProceedingJoinPoint joinPoint) {
         if (!keySpel.contains("#")) return keySpel;
 
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        EvaluationContext context = new StandardEvaluationContext();
-        Object[] args = joinPoint.getArgs();
-        String[] paramNames = signature.getParameterNames();
-
-        for (int i = 0; i < paramNames.length; i++) {
-            context.setVariable(paramNames[i], args[i]);
-        }
-        return parser.parseExpression(keySpel).getValue(context, String.class);
+        // 调用工具类解析，无需额外变量
+        return SpelUtils.parse(joinPoint, keySpel, null);
     }
 }

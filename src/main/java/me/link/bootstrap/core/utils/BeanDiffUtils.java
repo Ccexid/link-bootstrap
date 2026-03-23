@@ -1,61 +1,69 @@
 package me.link.bootstrap.core.utils;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import cn.hutool.core.util.ObjectUtil;
+import me.link.bootstrap.core.log.annotation.LogField;
 import me.link.bootstrap.core.log.model.FieldChangeDetail;
+
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Bean 对象差异比较工具类
- * 用于比较两个对象相同字段的值，并返回发生变化的字段详情列表
+ * Bean 差异比较工具类
+ * 用于比较两个对象中带有 @LogField 注解的字段变化，并生成变更详情列表
  */
 public class BeanDiffUtils {
 
     /**
-     * 比较两个对象的所有声明字段，找出值发生变化的字段
+     * 比较新旧两个对象，提取带有日志注解的字段变更详情
      *
-     * @param oldObj 旧对象（变更前的状态）
-     * @param newObj 新对象（变更后的状态）
-     * @return 包含所有变化字段详情的列表；若任一对象为 null 则返回空列表
+     * @param oldObj 旧对象（变更前）
+     * @param newObj 新对象（变更后）
+     * @return 包含字段变更详情的列表，若无变更或输入为空则返回空列表
      */
     public static List<FieldChangeDetail> diff(Object oldObj, Object newObj) {
-        // 初始化结果列表，用于存储字段变化详情
-        List<FieldChangeDetail> changes = new ArrayList<>();
-        
-        // 如果任一对象为 null，无法进行比较，直接返回空列表
+        // 1. 初始化结果列表，用于存储检测到的字段变更详情
+        List<FieldChangeDetail> details = new ArrayList<>();
+
+        // 2. 前置校验：如果任一对象为 null，无法进行比较，直接返回空列表
         if (oldObj == null || newObj == null) {
-            return changes;
+            return details;
         }
 
-        // 获取旧对象类中声明的所有字段（不包括父类字段）
+        // 3. 获取旧对象声明的所有字段（不包括父类字段）
         Field[] fields = oldObj.getClass().getDeclaredFields();
-        
-        // 遍历每个字段进行逐一比较
+
+        // 4. 遍历所有字段，筛选出需要记录日志的字段
         for (Field field : fields) {
-            // 设置字段可访问，以便读取私有字段的值
-            field.setAccessible(true);
-            try {
-                // 获取旧对象中该字段的值
-                Object v1 = field.get(oldObj);
-                // 获取新对象中该字段的值
-                Object v2 = field.get(newObj);
-                
-                // 判断两个字段的值是否不相等
-                if (!Objects.equals(v1, v2)) {
-                    // 尝试获取字段上的 Schema 注解，用于提取字段的描述信息作为显示标签
-                    Schema schema = field.getAnnotation(Schema.class);
-                    // 如果存在 Schema 注解且包含描述，则使用描述作为标签；否则使用字段名
-                    String label = (schema != null) ? schema.description() : field.getName();
-                    
-                    // 将字段变化详情（标签、旧值、新值）添加到结果列表中
-                    changes.add(new FieldChangeDetail(label, v1, v2));
+            // 4.1 检查字段是否添加了 @LogField 注解，只有带此注解的字段才参与比较
+            if (field.isAnnotationPresent(LogField.class)) {
+                // 4.2 设置字段可访问，以绕过 Java 的访问控制检查（如 private 字段）
+                field.setAccessible(true);
+                try {
+                    // 4.3 反射获取旧对象和新对象中该字段的值
+                    Object oldValue = field.get(oldObj);
+                    Object newValue = field.get(newObj);
+
+                    // 4.4 使用 Hutool 工具类判断新旧值是否不相等
+                    if (ObjectUtil.notEqual(oldValue, newValue)) {
+                        // 4.5 获取字段上的 @LogField 注解实例，用于提取字段的中文描述等信息
+                        LogField ann = field.getAnnotation(LogField.class);
+
+                        // 4.6 构建变更详情对象：字段描述、旧值字符串、新值字符串，并加入结果列表
+                        details.add(new FieldChangeDetail(
+                                ann.value(),                 // 字段的业务名称（来自注解）
+                                String.valueOf(oldValue),    // 旧值转为字符串
+                                String.valueOf(newValue)     // 新值转为字符串
+                        ));
+                    }
+                } catch (IllegalAccessException e) {
+                    // 4.7 捕获反射访问异常（理论上不会发生，因为已 setAccessible(true)），忽略处理
+                    // 实际生产中可考虑记录日志以便排查
                 }
-            } catch (Exception ignored) {
-                // 忽略反射操作中可能出现的异常（如非法访问等），继续处理下一个字段
             }
         }
-        
-        // 返回所有检测到的字段变化详情列表
-        return changes;
+
+        // 5. 返回所有检测到的字段变更详情列表
+        return details;
     }
 }
