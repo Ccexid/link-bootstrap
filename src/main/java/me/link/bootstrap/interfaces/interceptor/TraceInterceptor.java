@@ -1,8 +1,8 @@
-package me.link.bootstrap.framework.interceptor;
+package me.link.bootstrap.interfaces.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import me.link.bootstrap.framework.utils.TraceUtils;
+import me.link.bootstrap.infrastructure.utils.TraceUtils;
 import org.slf4j.MDC;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;

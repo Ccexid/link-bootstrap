@@ -1,4 +1,4 @@
-package me.link.bootstrap.framework.utils;
+package me.link.bootstrap.infrastructure.utils;
 
 import cn.hutool.core.util.IdUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +20,7 @@ public class TraceUtils {
      * 常用于：拦截器开始处、定时任务开始处、或异步线程确实拿不到主线程 ID 时
      */
     public static String setupTraceId() {
-        String traceId = IdUtil.fastSimpleUUID(); // 使用更快的简易 UUID (不带横杠)
+        String traceId = IdUtil.objectId(); // 类似 5b9e306a4df4f8c54a39fb0c
         MDC.put(TRACE_ID, traceId);
         return traceId;
     }

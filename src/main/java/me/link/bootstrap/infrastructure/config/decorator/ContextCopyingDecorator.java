@@ -1,6 +1,6 @@
-package me.link.bootstrap.framework.config.decorator;
+package me.link.bootstrap.infrastructure.config.decorator;
 
-import me.link.bootstrap.framework.utils.TraceUtils;
+import me.link.bootstrap.infrastructure.utils.TraceUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.lang.NonNull;

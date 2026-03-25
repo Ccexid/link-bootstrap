@@ -1,4 +1,4 @@
-package me.link.bootstrap.framework.auth;
+package me.link.bootstrap.infrastructure.security;
 
 import cn.dev33.satoken.model.wrapperInfo.SaDisableWrapperInfo;
 import cn.dev33.satoken.stp.StpInterface;

@@ -1,7 +1,7 @@
-package me.link.bootstrap.framework.config;
+package me.link.bootstrap.infrastructure.config;
 
 import com.alibaba.ttl.threadpool.TtlExecutors;
-import me.link.bootstrap.framework.config.decorator.ContextCopyingDecorator;
+import me.link.bootstrap.infrastructure.config.decorator.ContextCopyingDecorator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
