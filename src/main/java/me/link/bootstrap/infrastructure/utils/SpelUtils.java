@@ -1,5 +1,7 @@
 package me.link.bootstrap.infrastructure.utils;
 
+import cn.hutool.core.util.StrUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.context.expression.MethodBasedEvaluationContext;
@@ -19,91 +21,107 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 高性能 SpEL 表达式处理器
- * 优化点：支持模板解析、使用 MethodBasedEvaluationContext、强化缓存逻辑
+ * 高性能 SpEL 表达式处理器 (增强版)
+ * 优化点：
+ * 1. 智能识别模板语法与原始语法
+ * 2. 线程安全的表达式缓存
+ * 3. 健壮的异常降级机制
+ * 4. 支持方法参数名发现与额外变量注入
  */
+@Slf4j
 public class SpelUtils {
 
-    /**
-     * 解析器实例 (线程安全)
-     */
     private static final ExpressionParser PARSER = new SpelExpressionParser();
-
-    /**
-     * 参数名发现器 (用于获取方法参数名称)
-     */
     private static final ParameterNameDiscoverer NAME_DISCOVERER = new DefaultParameterNameDiscoverer();
 
     /**
-     * 模板解析上下文：识别 #{...} 这种格式，方便混合文本解析
+     * 默认模板上下文，匹配 #{...} 格式
      */
     private static final ParserContext TEMPLATE_CONTEXT = new TemplateParserContext();
 
     /**
-     * Expression 缓存
+     * Expression 缓存：避免重复解析字符串为表达式对象
      */
     private static final Map<String, Expression> EXPRESSION_CACHE = new ConcurrentHashMap<>(256);
 
     /**
-     * 解析 SpEL 表达式 (支持混合文本模板)
-     * 示例：parse(jp, "ID为 #{#id} 的用户已更新", null)
+     * 解析 AOP 场景下的 SpEL 表达式
+     * * @param joinPoint 切点信息
+     * @param spel      表达式字符串。支持 "#{ #user.name }" (模板) 或 "#user.name" (纯表达式)
+     * @param variables 额外注入的变量 (如 #result)
+     * @return 解析后的字符串结果
      */
     public static String parse(JoinPoint joinPoint, String spel, @Nullable Map<String, Object> variables) {
-        if (spel == null || spel.isBlank()) {
-            return "";
+        if (StrUtil.isBlank(spel)) {
+            return StrUtil.EMPTY;
         }
 
         try {
-            // 1. 判断是否包含模板语法 #{}，如果不包含则按普通 SpEL 处理
-            boolean isTemplate = spel.contains("#{");
-            Expression expression = EXPRESSION_CACHE.computeIfAbsent(spel,
-                    key -> isTemplate ? PARSER.parseExpression(key, TEMPLATE_CONTEXT) : PARSER.parseExpression(key));
+            // 获取或创建缓存的表达式
+            Expression expression = getExpression(spel);
 
-            // 2. 构建 Context
+            // 构建上下文：自动绑定方法参数名 (如 #dto, #id)
             EvaluationContext context = getContext(joinPoint, variables);
 
-            // 3. 执行
             Object value = expression.getValue(context);
-            return value != null ? value.toString() : "";
+            return value == null ? StrUtil.EMPTY : String.valueOf(value);
         } catch (Exception e) {
-            // 降级处理：解析失败返回原字符串，防止审计日志报错导致业务回滚
+            // 生产环境审计日志不能因为解析报错影响主业务
+            log.warn("SpEL解析异常 [{}], 表达式: {}, 报错信息: {}",
+                    joinPoint.getSignature().getName(), spel, e.getMessage());
             return spel;
         }
     }
 
     /**
+     * 简单场景解析 (非AOP)
+     */
+    public static String parseSimple(String spel, @Nullable Map<String, Object> variables) {
+        if (StrUtil.isBlank(spel)) return StrUtil.EMPTY;
+        try {
+            Expression expression = getExpression(spel);
+            EvaluationContext context = new StandardEvaluationContext();
+            if (variables != null) {
+                variables.forEach(context::setVariable);
+            }
+            Object value = expression.getValue(context);
+            return value == null ? StrUtil.EMPTY : String.valueOf(value);
+        } catch (Exception e) {
+            return spel;
+        }
+    }
+
+    /**
+     * 智能获取 Expression 实例
+     */
+    private static Expression getExpression(String spel) {
+        return EXPRESSION_CACHE.computeIfAbsent(spel, key -> {
+            // 如果包含模板标记，则使用模板解析器
+            if (key.contains("#{")) {
+                return PARSER.parseExpression(key, TEMPLATE_CONTEXT);
+            }
+            return PARSER.parseExpression(key);
+        });
+    }
+
+    /**
      * 构建 EvaluationContext
-     * 使用 MethodBasedEvaluationContext 能更好地处理方法参数绑定
+     * MethodBasedEvaluationContext 是 Spring 专门为 AOP 方法参数解析准备的类
      */
     private static EvaluationContext getContext(JoinPoint joinPoint, Map<String, Object> variables) {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
         Object[] args = joinPoint.getArgs();
 
-        // 针对 AOP 方法参数解析优化的 Context
+        // 这里的 getTarget() 提供了 root object，让 SpEL 可以直接访问目标类的方法
         MethodBasedEvaluationContext context = new MethodBasedEvaluationContext(
                 joinPoint.getTarget(), method, args, NAME_DISCOVERER);
 
-        // 注入额外的变量 (例如 #result, #errorMsg)
+        // 注入额外变量。例如：#result, #oldData, #newData
         if (variables != null && !variables.isEmpty()) {
             variables.forEach(context::setVariable);
         }
 
         return context;
-    }
-
-    /**
-     * 简单的非 AOP 场景解析
-     */
-    public static String parseSimple(String spel, Map<String, Object> variables) {
-        if (spel == null || spel.isBlank()) return "";
-        try {
-            Expression expression = EXPRESSION_CACHE.computeIfAbsent(spel, PARSER::parseExpression);
-            EvaluationContext context = new StandardEvaluationContext();
-            variables.forEach(context::setVariable);
-            return String.valueOf(expression.getValue(context));
-        } catch (Exception e) {
-            return spel;
-        }
     }
 }
