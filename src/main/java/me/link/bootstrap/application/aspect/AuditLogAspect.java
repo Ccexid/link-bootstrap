@@ -113,7 +113,7 @@ public class AuditLogAspect {
 
                 // 组装 DTO
                 AuditLogDTO dto = AuditLogDTO.builder()
-                        .tenantId(StrUtil.isBlank(tenantId) ? 0L : Long.parseLong(tenantId))
+                        .tenantId(StrUtil.isBlank(tenantId) ? "0" : tenantId)
                         .traceId(traceId)
                         .module(anno.module())
                         .operation(op)

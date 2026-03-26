@@ -27,7 +27,7 @@ public class AuditLogDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Schema(description = "租户 ID", example = "1")
-    private Long tenantId;
+    private String tenantId;
 
     @Schema(description = "追踪 ID (MDC TraceId)", example = "a1b2c3d4e5f6")
     private String traceId;
