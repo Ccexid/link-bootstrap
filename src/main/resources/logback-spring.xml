@@ -23,6 +23,9 @@
 
     <springProfile name="dev">
         <logger name="me.link.bootstrap.mapper" level="DEBUG"/>
+        <logger name="p6spy" level="INFO" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+        </logger>
     </springProfile>
 
 </configuration>
