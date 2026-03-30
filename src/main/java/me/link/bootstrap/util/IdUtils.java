@@ -34,7 +34,7 @@ public class IdUtils extends IdUtil {
     /**
      * 日期格式化器，格式为 "yyyyMMdd"。
      */
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
     /**
      * Redis Key 的基础前缀。
