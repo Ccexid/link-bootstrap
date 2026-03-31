@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS "system_sequence"
     BIGINT
     NOT
     NULL,
-    "name"
+    "biz_code"
     VARCHAR
 (
     64
@@ -17,9 +17,9 @@ CREATE TABLE IF NOT EXISTS "system_sequence"
 (
     "id"
 ),
-    CONSTRAINT "uk_name" UNIQUE
+    CONSTRAINT "uk_biz_code" UNIQUE
 (
-    "name"
+    "biz_code"
 )
     );
 
@@ -30,4 +30,4 @@ ON TABLE "system_sequence" IS '分布式序列号维护表';
 COMMENT
 ON COLUMN "system_sequence"."id" IS '主键ID';
 COMMENT
-ON COLUMN "system_sequence"."name" IS '业务标识';
+ON COLUMN "system_sequence"."biz_code" IS '业务标识';

@@ -18,7 +18,7 @@ public interface SequenceMapper extends BaseMapper<SequenceDO> {
      *
      * @return 影响行数
      */
-    @Update("INSERT INTO system_sequence (id, name, current_value, version, create_time, update_time) " +
+    @Update("INSERT INTO system_sequence (id, biz_code, current_value, version, create_time, update_time) " +
             "VALUES (#{id}, #{name}, 1, 0, NOW(), NOW()) " +
             "ON DUPLICATE KEY UPDATE current_value = current_value + 1, update_time = NOW()")
     int upsertAndIncrement(@Param("id") Long id, @Param("name") String name);
@@ -29,6 +29,6 @@ public interface SequenceMapper extends BaseMapper<SequenceDO> {
      *
      * @return 当前最大序列号
      */
-    @Select("SELECT current_value FROM system_sequence WHERE name = #{name}")
+    @Select("SELECT current_value FROM system_sequence WHERE biz_code = #{name}")
     Long selectCurrentValue(@Param("name") String name);
 }

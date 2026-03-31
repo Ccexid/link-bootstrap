@@ -28,7 +28,7 @@ public class SequenceDO {
      * - "PD:20260330" 代表特定日期的产品业务
      * 该字段在查询时需保持唯一性
      */
-    private String name;
+    private String bizCode;
 
     /**
      * 当前最大序列号值
