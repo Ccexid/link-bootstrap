@@ -24,9 +24,6 @@ class IdUtilsTest {
     @Autowired
     private IdUtils idUtils;
 
-    @Autowired
-    private SequenceMapper sequenceMapper;
-
     /**
      * 测试合同号生成（按天重置模式）
      * 注意：由于 DATE_FORMATTER 改为 yyyyMMddHHmmss (14位)，截取位置需相应变动

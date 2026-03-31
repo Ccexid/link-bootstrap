@@ -135,7 +135,7 @@ public class IdUtils extends IdUtil {
      */
     public String nextId(String prefix, int digit, boolean isDaily) {
         // 获取当前日期字符串
-        // dateStrSeq: 用于构建唯一的 Redis Key，精确到秒，减少极端并发下的哈希冲突概率（虽非必须，但有益）
+        // dateStrSeq: 用于构建唯一的 Redis Key，精确到秒，减少极端并发下的哈希冲突概率
         String dateStrSeq = LocalDateTime.now().format(DATE_SEQ_FORMATTER);
         // dateStr: 用于最终 ID 展示，精确到天
         String dateStr = LocalDateTime.now().format(DATE_FORMATTER);
