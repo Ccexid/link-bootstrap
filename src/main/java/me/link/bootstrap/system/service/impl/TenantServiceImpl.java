@@ -1,10 +1,17 @@
 package me.link.bootstrap.system.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import me.link.bootstrap.core.enums.StatusEnum;
 import me.link.bootstrap.core.exception.GlobalException;
+import me.link.bootstrap.core.pojo.SortablePageParam;
+import me.link.bootstrap.core.pojo.SortingField;
 import me.link.bootstrap.system.controller.vo.TenantExpiryRespVO;
 import me.link.bootstrap.system.dal.domain.TenantDO;
 import me.link.bootstrap.system.dal.enums.ExpiredEnum;
@@ -14,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 /**
  * 租户服务实现类
@@ -50,6 +58,30 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, TenantDO> imple
                 .expireTime(expireTime)
                 .contractStatus(isExpired ? ExpiredEnum.EXPIRED : ExpiredEnum.IN_FORCE)
                 .build();
+    }
+
+    /**
+     * 分页搜索租户信息
+     *
+     * @param param 可排序的分页参数，包含分页信息和排序字段配置
+     *              <ul>
+     *                  <li>sort: 排序字段字符串，多个字段使用逗号分隔，字段前加 - 表示降序</li>
+     *                  <li>示例：-createTime,id 表示先按创建时间降序，再按 ID 升序</li>
+     *              </ul>
+     * @return {@link IPage}<{@link TenantDO}> 包含租户数据的分页结果，每页包含租户的详细信息
+     */
+    @Override
+    public IPage<TenantDO> searchByPage(SortablePageParam param) {
+
+        List<SortingField> sorts = param.getSortingFields();
+        QueryWrapper<TenantDO> queryWrapper = new QueryWrapper<>();
+        if (CollUtil.isNotEmpty(sorts)) {
+            sorts.forEach(sort ->
+                    queryWrapper.orderBy(true, sort.isAsc(), sort.getField())
+            );
+        }
+
+        return page(new Page<>(param.getPageNo(), param.getPageSize()), queryWrapper);
     }
 
     /**

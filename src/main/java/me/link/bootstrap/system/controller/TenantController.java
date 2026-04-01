@@ -1,6 +1,7 @@
 package me.link.bootstrap.system.controller;
 
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import me.link.bootstrap.core.constants.GlobalApiConstants;
 import me.link.bootstrap.core.pojo.SortablePageParam;
 import me.link.bootstrap.system.controller.vo.TenantExpiryRespVO;
+import me.link.bootstrap.system.dal.domain.TenantDO;
 import me.link.bootstrap.system.service.TenantService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -29,13 +31,13 @@ public class TenantController {
             @Parameter(name = "pageSize", description = "每页数量", required = true),
             @Parameter(name = "sort", description = "排序字段")
     })
-    public ResponseEntity<String> get(@Valid SortablePageParam param) {
-        return ResponseEntity.ok(JSONUtil.toJsonStr(param.getSortingFields()));
+    public ResponseEntity<IPage<TenantDO>> page(@Valid SortablePageParam param) {
+        return ResponseEntity.ok(tenantService.searchByPage(param));
     }
 
     @GetMapping("/{id}:check-expired")
     @Operation(summary = "检查租户是否过期")
-    public ResponseEntity<TenantExpiryRespVO> checkExpired(@PathVariable Long id){
+    public ResponseEntity<TenantExpiryRespVO> checkExpired(@PathVariable Long id) {
         return ResponseEntity.ok(tenantService.isExpired(id));
     }
 }
