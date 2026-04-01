@@ -72,3 +72,12 @@ sa-token:
   is-read-header: true
   is-read-cookie: true
   is-color-log: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, loggers
+  endpoint:
+    health:
+      show-details: always
