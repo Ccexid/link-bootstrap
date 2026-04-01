@@ -1,16 +1,22 @@
 package me.link.bootstrap.system.dal.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import me.link.bootstrap.core.domain.BaseDO;
 import me.link.bootstrap.core.enums.StatusEnum;
+import me.link.bootstrap.core.mybatis.handler.StringToListTypeHandler;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+
+import static me.link.bootstrap.core.constants.GlobalApiConstants.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
 /**
  * 租户实体对象
@@ -27,7 +33,7 @@ public class TenantDO extends BaseDO {
     /**
      * 租户编号 (主键 ID)
      */
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
 
     /**
@@ -60,7 +66,8 @@ public class TenantDO extends BaseDO {
      * 建议：如果数据库存的是逗号分隔的字符串，可以在此处保持 String，
      * 或者配合 MyBatis Plus 的 TypeHandler 自动转为 List<String>
      */
-    private String website;
+    @TableField(typeHandler = StringToListTypeHandler.class)
+    private List<String> website;
 
     /**
      * 租户套餐编号
@@ -70,7 +77,8 @@ public class TenantDO extends BaseDO {
     /**
      * 过期时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime expireTime;
 
     /**
