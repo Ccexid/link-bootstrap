@@ -20,14 +20,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(GlobalApiConstants.API_PREFIX + "/system/tenant")
+@RequestMapping(GlobalApiConstants.API_PREFIX + "/system/tenants")
 @Validated
 @RequiredArgsConstructor
 @Tag(name = "租户接口")
 public class TenantController {
     private final TenantService tenantService;
 
-    @GetMapping("/page")
+    @GetMapping
     @Operation(summary = "查询列表", parameters = {
             @Parameter(name = "pageNo", description = "页码", required = true),
             @Parameter(name = "pageSize", description = "每页数量", required = true),
