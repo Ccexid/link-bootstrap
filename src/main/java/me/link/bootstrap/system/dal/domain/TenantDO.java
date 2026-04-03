@@ -15,6 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import static me.link.bootstrap.core.constants.GlobalApiConstants.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
@@ -63,11 +64,9 @@ public class TenantDO extends BaseDO {
 
     /**
      * 绑定域名数组
-     * 建议：如果数据库存的是逗号分隔的字符串，可以在此处保持 String，
-     * 或者配合 MyBatis Plus 的 TypeHandler 自动转为 List<String>
      */
-    @TableField(typeHandler = StringToListTypeHandler.class)
-    private List<String> website;
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private Set<String> websites;
 
     /**
      * 租户套餐编号

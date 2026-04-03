@@ -201,7 +201,7 @@ public class IdUtils extends IdUtil {
             CompletableFuture.runAsync(() -> {
                 try {
                     long id = IdUtils.getSnowflakeNextId();
-                    sequenceMapper.syncRedisValue(id, ctx.bizName(), sequence);
+                    sequenceMapper.syncRedisValue(ctx.bizName(), sequence);
                 } catch (Exception e) {
                     log.error("ID 异步同步失败: {}", e.getMessage());
                 }
@@ -235,7 +235,7 @@ public class IdUtils extends IdUtil {
 
             // 先进行原子操作进行数据更新获取最大序列号
             // upsertAndIncrement 应该保证在数据库层面的原子性（如使用 ON DUPLICATE KEY UPDATE 或 锁）
-            sequenceMapper.upsertAndIncrement(sequence, bizName);
+            sequenceMapper.upsertAndIncrement(bizName);
 
             // 返回更新后的当前值
             return sequenceMapper.selectCurrentValue(bizName);

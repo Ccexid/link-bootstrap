@@ -34,6 +34,10 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
          * 使用 Hutool 的 HTML 过滤器对请求头值进行过滤
          * 移除或转义潜在的恶意 HTML 标签和脚本
          */
+        // 2. 核心修复：如果是 null 或者空字符串，直接返回，不走过滤器
+        if (value == null || value.isEmpty()) {
+            return value;
+        }
         return HtmlUtil.filter(value);
     }
 
@@ -46,6 +50,10 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
     @Override
     public String getParameter(String name) {
         String value = super.getParameter(name);
+        // 2. 核心修复：如果是 null 或者空字符串，直接返回，不走过滤器
+        if (value == null || value.isEmpty()) {
+            return value;
+        }
         return HtmlUtil.filter(value);
     }
 
