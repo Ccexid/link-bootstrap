@@ -2,10 +2,9 @@ package me.link.bootstrap.infrastructure.tracing;
 
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.ttl.TransmittableThreadLocal;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.util.StringUtils;
-
-import java.util.UUID;
 
 /**
  * 分布式链路追踪上下文管理器
@@ -24,8 +23,14 @@ import java.util.UUID;
  *   <li>防御式空值处理防止 NPE</li>
  *   <li>禁止业务层直接调用 set()（通过注解标记为内部使用）</li>
  * </ul>
+ *
+ * @author Ccexid
  */
+@Slf4j
 public final class TraceIdContext {
+
+    /** MDC 中 TraceId 的键名 */
+    private static final String MDC_KEY = "TRACE_ID";
 
     /** 核心上下文（支持异步传递） */
     private static final TransmittableThreadLocal<String> CONTEXT = new TransmittableThreadLocal<>();
@@ -42,22 +47,34 @@ public final class TraceIdContext {
      * @return traceId（若未初始化则返回空字符串，避免 NPE）
      */
     public static String get() {
-        return CONTEXT.get() != null ? CONTEXT.get() : "";
+        String traceId = CONTEXT.get();
+        return traceId != null ? traceId : "";
     }
 
     /**
      * 【内部专用】由拦截器调用，业务层禁止使用！
      *
-     * <p>初始化 traceId 并绑定 MDC
+     * <p>初始化 traceId 并绑定 MDC。如果传入的 traceId 为空，则自动生成一个新的 traceId。
      *
-     * @param traceId 从请求头获取或生成的 traceId
+     * @param traceId 从请求头获取或生成的 traceId，允许为空（为空时自动生成）
      */
     public static void init(String traceId) {
+        // 防御式处理：如果 traceId 为空，自动生成一个
         if (!StringUtils.hasText(traceId)) {
-            throw new IllegalArgumentException("TraceId cannot be empty");
+            traceId = generate();
+            if (log.isDebugEnabled()) {
+                log.debug("传入的 TraceId 为空，已自动生成: {}", traceId);
+            }
         }
+
+        // 检测重复初始化
+        String existingTraceId = CONTEXT.get();
+        if (existingTraceId != null && !existingTraceId.equals(traceId)) {
+            log.warn("检测到 TraceId 重复初始化，原有值: {}, 新值: {}", existingTraceId, traceId);
+        }
+
         CONTEXT.set(traceId);
-        MDC.put("TRACE_ID", traceId); // 同步到日志系统
+        MDC.put(MDC_KEY, traceId); // 同步到日志系统
     }
 
     /**
@@ -67,7 +84,7 @@ public final class TraceIdContext {
      */
     public static void clear() {
         CONTEXT.remove();
-        MDC.remove("TRACE_ID");
+        MDC.remove(MDC_KEY);
     }
 
     /**

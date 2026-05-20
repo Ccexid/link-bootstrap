@@ -23,7 +23,7 @@ import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 // 2. 安全防护：只有类路径下切实存在 Undertow 核心类时才激活，防止其他切换成 Tomcat 的项目崩溃
 @ConditionalOnClass({Undertow.class, UndertowServletWebServerFactory.class})
-public class UndertowAutoConfiguration implements WebServerFactoryCustomizer<UndertowServletWebServerFactory> {
+public class LinkUndertowAutoConfiguration implements WebServerFactoryCustomizer<UndertowServletWebServerFactory> {
 
     // 默认使用 CPU 核心数，允许通过 yml 配置文件进行精准调优
     @Value("${server.undertow.io-threads:0}")

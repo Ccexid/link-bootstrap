@@ -4,7 +4,6 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.reflection.MetaObject;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
@@ -18,7 +17,7 @@ import java.time.LocalDateTime;
  * @author Cceixd
  */
 @Slf4j
-public class DefaultDBFieldHandler implements MetaObjectHandler {
+public class LinkDefaultDBFieldHandler implements MetaObjectHandler {
 
     private static final String CREATE_TIME = "createTime";
     private static final String UPDATE_TIME = "updateTime";

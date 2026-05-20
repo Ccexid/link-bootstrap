@@ -1,0 +1,69 @@
+package me.link.bootstrap.infrastructure.config;
+
+import me.link.bootstrap.shared.kernel.constant.GlobalConstants;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+import org.springframework.core.Ordered;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+
+import java.util.Collections;
+
+/**
+ * 跨域资源共享 (CORS) 自动配置中心
+ * <p>
+ * 基于底层最高优先级的 Filter 实现跨域，从根源上规避了“鉴权拦截器导致跨域配置失效”及“容器提早初始化导致AOP失效”的两大痛点。
+ * </p>
+ *
+ * @author 7Link
+ */
+@AutoConfiguration
+// 💡 仅当当前环境是一个 Web 应用（Servlet 容器）时，该自动配置才激活，避免命令行或测试任务报错
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+@ConditionalOnClass(CorsFilter.class)
+public class LinkCorsAutoConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean(name = "linkCorsFilter")
+    public FilterRegistrationBean<CorsFilter> linkCorsFilter() {
+        CorsConfiguration config = new CorsConfiguration();
+
+        // 1. 允许的源模式（生产环境建议在 application.yml 里通过属性注入指定域名）
+        config.setAllowedOriginPatterns(Collections.singletonList("*"));
+
+        // 2. 允许的标准 HTTP 请求方法
+        config.addAllowedMethod("GET");
+        config.addAllowedMethod("POST");
+        config.addAllowedMethod("PUT");
+        config.addAllowedMethod("PATCH");
+        config.addAllowedMethod("DELETE");
+        config.addAllowedMethod("OPTIONS");
+
+        // 3. 允许的请求头
+        config.addAllowedHeader("*");
+
+        // 4. 显式暴露给前端能够拿到的 Response Header（主要是链路追踪 ID）
+        config.addExposedHeader(GlobalConstants.TRACE_ID_HEADER);
+
+        // 5. 是否允许携带 Cookie 等凭证信息
+        config.setAllowCredentials(true);
+
+        // 6. 预检请求（OPTIONS）的缓存时间，单位为秒（1小时内无需重复发送 OPTIONS 探测请求）
+        config.setMaxAge(3600L);
+
+        // 7. 配置拦截路径：仅对你定义的全局 API 前缀生效，精准防控
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration(GlobalConstants.API_PREFIX + "/**", config);
+
+        // 8. ⭐️ 核心改良：包装为 FilterRegistrationBean，并赋予最高执行优先级（HIGHEST_PRECEDENCE）
+        // 确保跨域响应在进入核心的 Spring MVC 拦截器、Sa-Token 鉴权过滤器之前就直接生效返回
+        FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
+        bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+        return bean;
+    }
+}

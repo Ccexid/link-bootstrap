@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import lombok.extern.slf4j.Slf4j;
-import me.link.bootstrap.infrastructure.persistence.handler.DefaultDBFieldHandler;
+import me.link.bootstrap.infrastructure.persistence.handler.LinkDefaultDBFieldHandler;
 import org.apache.ibatis.annotations.Mapper;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
         lazyInitialization = "${mybatis.lazy-initialization:false}"
 )
 @Slf4j
-public class MybatisAutoConfiguration {
+public class LinkMybatisAutoConfiguration {
 
     static {
         // 1. 优化 JsqlParser 语法解析器缓存：
@@ -61,7 +61,7 @@ public class MybatisAutoConfiguration {
     }
 
     @Bean
-    public DefaultDBFieldHandler defaultDBFieldHandler() {
-        return new DefaultDBFieldHandler();
+    public LinkDefaultDBFieldHandler defaultDBFieldHandler() {
+        return new LinkDefaultDBFieldHandler();
     }
 }
