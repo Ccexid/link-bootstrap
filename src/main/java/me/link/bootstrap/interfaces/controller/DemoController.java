@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.link.bootstrap.interfaces.dto.request.SortablePageRequest;
 import me.link.bootstrap.interfaces.dto.response.ResultResponse;
+import me.link.bootstrap.interfaces.dto.response.ResultTableResponse;
+import me.link.bootstrap.interfaces.dto.response.vo.TenantResponseVO;
 import me.link.bootstrap.shared.kernel.constant.GlobalConstants;
 import me.link.bootstrap.shared.kernel.valueobject.SortingField;
 import org.springframework.validation.annotation.Validated;
@@ -33,8 +35,9 @@ public class DemoController {
                     @Parameter(name = "sort", description = "排序字段")
             }
     )
-    public ResultResponse<List<SortingField>> demo(@Validated @Parameter SortablePageRequest pageRequest) {
+    public ResultTableResponse<TenantResponseVO> demo(@Validated @Parameter SortablePageRequest pageRequest) {
         log.info("DemoController.demo()");
-        return ResultResponse.success(pageRequest.getSortingFields());
+        List<TenantResponseVO> list = List.of(new TenantResponseVO());
+        return ResultTableResponse.success(list, 10L);
     }
 }
