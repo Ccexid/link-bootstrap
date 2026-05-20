@@ -1,4 +1,4 @@
-package me.link.bootstrap.infrastructure.persistence.handler; // 💡 建议放至基础设施层的持久化 handler 包
+package me.link.bootstrap.shared.kernel.database.mybatis.handler; // 💡 建议放至基础设施层的持久化 handler 包
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;

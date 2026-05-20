@@ -17,6 +17,7 @@ public class ResultResponse<T> implements Serializable {
 
     @Schema(description = "业务数据", example = "{\"id\": 123, \"name\": \"example\"}")
     private T data;
+
     @Schema(description = "用户可读提示消息", example = "操作成功")
     private String message;
 
@@ -42,7 +43,7 @@ public class ResultResponse<T> implements Serializable {
     }
 
     private static <T> ResultResponse<T> of(final T data, final String message, final Long code) {
-        return new ResultResponse<>(null, message, code, Instant.now().toEpochMilli(), TraceIdContext.get());
+        return new ResultResponse<>(data, message, code, Instant.now().toEpochMilli(), TraceIdContext.get());
     }
 
     /**
