@@ -1,4 +1,4 @@
-package me.link.bootstrap.shared.kernel.repository;
+package me.link.bootstrap.shared.kernel.component;
 
 import org.redisson.api.RBloomFilter;
 

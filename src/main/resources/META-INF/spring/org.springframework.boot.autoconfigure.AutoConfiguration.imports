@@ -1,0 +1,2 @@
+me.link.bootstrap.infrastructure.config.UndertowAutoConfiguration
+me.link.bootstrap.infrastructure.config.MybatisAutoConfiguration

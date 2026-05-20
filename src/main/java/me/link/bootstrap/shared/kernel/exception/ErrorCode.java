@@ -1,4 +1,4 @@
-package me.link.bootstrap.interfaces.exception;
+package me.link.bootstrap.shared.kernel.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

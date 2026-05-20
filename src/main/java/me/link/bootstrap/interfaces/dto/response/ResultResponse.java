@@ -3,8 +3,7 @@ package me.link.bootstrap.interfaces.dto.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import me.link.bootstrap.infrastructure.tracing.TraceIdContext;
-import me.link.bootstrap.interfaces.exception.ErrorCode;
-import org.springframework.format.annotation.DateTimeFormat;
+import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 
 import java.io.Serial;
 import java.io.Serializable;
