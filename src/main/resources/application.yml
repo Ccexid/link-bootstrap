@@ -134,6 +134,17 @@ management:
   endpoint:
     health:
       show-details: always
+      # 启用详细健康信息
+      probes:
+        enabled: true
+  # 健康检查配置
+  health:
+    db:
+      enabled: false  # 禁用默认DB检查,使用自定义的
+    redis:
+      enabled: false  # 禁用默认Redis检查,使用自定义的
+    defaults:
+      enabled: true
 
 # 8. SpringDoc 接口文档配置
 springdoc:

@@ -47,37 +47,68 @@ public class ResultResponse<T> implements Serializable {
     }
 
     /**
-     * 创建成功响应结果
+     * 创建成功响应(无数据)
+     *
+     * @param <T> 数据类型泛型参数
+     * @return 仅包含成功状态码和默认消息的ResultResponse对象
+     */
+    public static <T> ResultResponse<T> success() {
+        return of(null, ErrorCode.SUCCESS.getMessage(), ErrorCode.SUCCESS.getCode());
+    }
+
+    /**
+     * 创建成功响应(携带业务数据)
      *
      * @param data 响应数据，泛型类型，可以是任意对象
      * @param <T>  数据类型泛型参数
-     * @return 包含数据和成功状态码(200)的ResultResponse对象
+     * @return 包含数据和成功状态码的ResultResponse对象
      */
     public static <T> ResultResponse<T> success(T data) {
         return of(data, ErrorCode.SUCCESS.getMessage(), ErrorCode.SUCCESS.getCode());
     }
 
-    public static <T> ResultResponse<T> success() {
-        return of(null, ErrorCode.SUCCESS.getMessage(), ErrorCode.SUCCESS.getCode());
-    }
-
-    public static <T> ResultResponse<T> success(String message) {
+    /**
+     * 创建成功响应(自定义提示消息)
+     *
+     * @param message 用户可读的提示消息
+     * @param <T>     数据类型泛型参数
+     * @return 包含自定义消息和成功状态码的ResultResponse对象
+     */
+    public static <T> ResultResponse<T> successWithMessage(String message) {
         return of(null, message, ErrorCode.SUCCESS.getCode());
     }
 
+    /**
+     * 创建成功响应(携带数据和自定义消息)
+     *
+     * @param data    响应数据，泛型类型
+     * @param message 用户可读的提示消息
+     * @param <T>     数据类型泛型参数
+     * @return 包含数据和自定义消息的ResultResponse对象
+     */
     public static <T> ResultResponse<T> success(T data, String message) {
         return of(data, message, ErrorCode.SUCCESS.getCode());
     }
 
-    public static <T> ResultResponse<T> success(T data, String message, Long code) {
-        return of(data, message, code);
-    }
-
-
+    /**
+     * 创建失败响应(使用错误码默认消息)
+     *
+     * @param errorCode 业务错误码枚举
+     * @param <T>       数据类型泛型参数
+     * @return 包含错误码和默认错误消息的ResultResponse对象
+     */
     public static <T> ResultResponse<T> failure(ErrorCode errorCode) {
         return of(null, errorCode.getMessage(), errorCode.getCode());
     }
 
+    /**
+     * 创建失败响应(自定义错误消息)
+     *
+     * @param errorCode 业务错误码枚举
+     * @param message   自定义错误提示消息，覆盖errorCode中的默认消息
+     * @param <T>       数据类型泛型参数
+     * @return 包含错误码和自定义错误消息的ResultResponse对象
+     */
     public static <T> ResultResponse<T> failure(ErrorCode errorCode, String message) {
         return of(null, message, errorCode.getCode());
     }
