@@ -1,0 +1,59 @@
+# ========================================
+# 开发环境配置
+# ========================================
+
+# 数据库配置 (使用本地H2数据库)
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST:127.0.0.1}:${DB_PORT:3306}/${DB_NAME:link-prod}?useSSL=true&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:admin3306}
+    hikari:
+      maximum-pool-size: 30
+      minimum-idle: 10
+      idle-timeout: 60000
+      connection-timeout: 30000
+      max-lifetime: 1800000
+      validation-timeout: 3000
+      connection-test-query: SELECT 1
+
+  # Redis配置 (本地Redis)
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      database: 0
+      timeout: 5000ms
+      password: 
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 4
+          min-idle: 1
+          max-wait: 2000ms
+
+  # SQL初始化 (开发环境自动建表)
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath*:schema.sql
+
+# Sa-Token配置 (开发环境)
+sa-token:
+  is-log: true
+  is-color-log: true
+  jwt-secret-key: dev-secret-key-change-in-prod
+
+# MyBatis配置 (开启SQL打印)
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# SpringDoc配置 (开发环境开启)
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true

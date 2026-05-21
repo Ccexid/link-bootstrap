@@ -1,0 +1,68 @@
+# ========================================
+# 生产环境配置
+# ========================================
+# 注意: 生产环境敏感信息请使用环境变量或配置中心管理
+# ========================================
+
+# 数据库配置 (生产MySQL集群)
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST:127.0.0.1}:${DB_PORT:3306}/${DB_NAME:link-prod}?useSSL=true&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:admin3306}
+    hikari:
+      maximum-pool-size: 30
+      minimum-idle: 10
+      idle-timeout: 60000
+      connection-timeout: 30000
+      max-lifetime: 1800000
+      validation-timeout: 3000
+      connection-test-query: SELECT 1
+
+  # Redis配置 (生产Redis集群/Sentinel)
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      database: ${REDIS_DATABASE:0}
+      timeout: 3000ms
+      password: ${REDIS_PASSWORD:}
+      lettuce:
+        pool:
+          max-active: 32
+          max-idle: 16
+          min-idle: 4
+          max-wait: 3000ms
+        shutdown-timeout: 100ms
+
+# Sa-Token配置 (生产环境)
+sa-token:
+  is-log: false
+  is-color-log: false
+  jwt-secret-key: ${JWT_SECRET:must-change-this-in-production}
+  timeout: 7200
+  active-timeout: 3600
+
+# MyBatis配置 (生产环境关闭SQL打印)
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+
+# SpringDoc配置 (生产环境关闭)
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+# 监控配置 (生产环境限制暴露)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+  endpoint:
+    health:
+      show-details: when-authorized
