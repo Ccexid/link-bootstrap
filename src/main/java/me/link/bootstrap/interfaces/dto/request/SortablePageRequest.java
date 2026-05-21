@@ -79,6 +79,7 @@ public class SortablePageRequest extends PageRequest {
      *
      * @return 排序字段对象列表，若未指定排序或所有字段均无效则返回空列表
      */
+    @Schema(hidden = true)
     public List<SortingField> getSortingFields() {
         if (StrUtil.isBlank(sort)) {
             return Collections.emptyList();

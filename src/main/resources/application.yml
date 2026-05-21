@@ -4,6 +4,13 @@ server:
     context-path: /
     encoding:
       charset: UTF-8
+  # Undertow 服务器配置
+  undertow:
+    io-threads: 0
+    worker-threads: 0
+    no-request-timeout: 30000
+    buffer-size: 16384
+    multipart-max-entity-size: 16777216
 
 spring:
   application:
@@ -64,7 +71,6 @@ spring:
       enabled: true
       max-file-size: 16MB
       max-request-size: 32MB
-
   # 4. Jackson 全局配置 (符合 Google API 规范)
   jackson:
     serialization:
@@ -128,3 +134,17 @@ management:
   endpoint:
     health:
       show-details: always
+
+# 8. SpringDoc 接口文档配置
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+    try-it-out-enabled: true
+    filter: true
+    disable-swagger-default-url: true

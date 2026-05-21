@@ -1,3 +1,4 @@
 me.link.bootstrap.infrastructure.config.LinkUndertowAutoConfiguration
 me.link.bootstrap.infrastructure.config.LinkMybatisAutoConfiguration
 me.link.bootstrap.infrastructure.config.LinkJacksonAutoConfiguration
+me.link.bootstrap.infrastructure.config.LinkSpringDocAutoConfiguration

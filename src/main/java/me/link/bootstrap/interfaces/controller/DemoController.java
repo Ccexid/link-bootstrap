@@ -22,20 +22,13 @@ import java.util.List;
 @RequestMapping(GlobalConstants.API_PREFIX + "/demo")
 @Validated
 @RequiredArgsConstructor
-@Tag(name = "Demo接口")
+@Tag(name = "Demo接口", description = "演示测试接口")
 @Slf4j
 public class DemoController {
 
     @GetMapping
-    @Operation(
-            summary = "查询列表",
-            parameters = {
-                    @Parameter(name = "pageNo", description = "页码", required = true),
-                    @Parameter(name = "pageSize", description = "每页数量", required = true),
-                    @Parameter(name = "sort", description = "排序字段")
-            }
-    )
-    public ResultTableResponse<TenantResponseVO> demo(@Validated @Parameter SortablePageRequest pageRequest) {
+    @Operation(summary = "查询列表", description = "分页查询演示数据列表")
+    public ResultTableResponse<TenantResponseVO> demo(@Validated SortablePageRequest pageRequest) {
         log.info("DemoController.demo()");
         List<TenantResponseVO> list = List.of(new TenantResponseVO());
         return ResultTableResponse.success(list, 10L);

@@ -38,6 +38,9 @@ public class LinkUndertowAutoConfiguration implements WebServerFactoryCustomizer
     @Value("${server.undertow.buffer-size:16384}")
     private int bufferSize;
 
+    @Value("${server.undertow.multipart-max-entity-size:16777216}")
+    private long multipartMaxEntitySize;
+
     @Override
     public void customize(UndertowServletWebServerFactory factory) {
         // 计算物理核心数
@@ -64,8 +67,8 @@ public class LinkUndertowAutoConfiguration implements WebServerFactoryCustomizer
             // 4. 开启 HTTP/2 支持，提升多路复用性能
             builder.setServerOption(UndertowOptions.ENABLE_HTTP2, true);
 
-            // 5. 调整控制缓冲区的分配，稍微激进一点提升吞吐
-            builder.setServerOption(UndertowOptions.MULTIPART_MAX_ENTITY_SIZE, 10L * 1024 * 1024); // 10MB
+            // 5. 调整控制缓冲区的分配,稍微激进一点提升吞吐
+            builder.setServerOption(UndertowOptions.MULTIPART_MAX_ENTITY_SIZE, multipartMaxEntitySize);
         });
 
         factory.addDeploymentInfoCustomizers(deploymentInfo -> {
