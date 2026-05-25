@@ -92,7 +92,7 @@ public final class TraceIdContext {
      *
      * <p>业务层禁止调用！由拦截器统一生成
      *
-     * @return 标准化 traceId (32位小写无横线)
+     * @return 标准化 traceId (32位小写带横线)
      */
     static String generate() {
         return IdUtil.randomUUID().toLowerCase();

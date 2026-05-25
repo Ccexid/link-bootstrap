@@ -4,19 +4,17 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import me.link.bootstrap.domain.valueobject.StatusEnum;
 import me.link.bootstrap.shared.kernel.database.mybatis.BaseDO;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@TableName(value = "system_tenant",autoResultMap = true)
+@TableName(value = "system_tenant", autoResultMap = true)
 public class TenantPO extends BaseDO {
 
     /**
@@ -58,7 +56,7 @@ public class TenantPO extends BaseDO {
     /**
      * 绑定域名数组
      */
-    @TableField(typeHandler = JacksonTypeHandler.class,value = "websites")
+    @TableField(typeHandler = JacksonTypeHandler.class, value = "websites")
     private Set<String> websites;
 
     /**

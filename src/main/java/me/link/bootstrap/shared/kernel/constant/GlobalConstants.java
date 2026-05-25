@@ -61,5 +61,5 @@ public interface GlobalConstants {
     /**
      * 默认系统操作者标识（用于无用户登录时的系统自动操作）
      */
-    String SYSTEM_USER = "SYSTEM";
+    Long SYSTEM_USER = 0L;
 }

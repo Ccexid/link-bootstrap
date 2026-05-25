@@ -1,6 +1,7 @@
 package me.link.bootstrap.infrastructure.config;
 
 import me.link.bootstrap.shared.kernel.constant.GlobalConstants;
+import org.jspecify.annotations.NonNull;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -31,6 +32,20 @@ public class LinkCorsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "linkCorsFilter")
     public FilterRegistrationBean<CorsFilter> linkCorsFilter() {
+        CorsConfiguration config = getCorsConfiguration();
+
+        // 7. 配置拦截路径：仅对你定义的全局 API 前缀生效，精准防控
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration(GlobalConstants.API_PREFIX + "/**", config);
+
+        // 8. ⭐️ 核心改良：包装为 FilterRegistrationBean，并赋予最高执行优先级（HIGHEST_PRECEDENCE）
+        // 确保跨域响应在进入核心的 Spring MVC 拦截器、Sa-Token 鉴权过滤器之前就直接生效返回
+        FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
+        bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+        return bean;
+    }
+
+    private static @NonNull CorsConfiguration getCorsConfiguration() {
         CorsConfiguration config = new CorsConfiguration();
 
         // 1. 允许的源模式（生产环境建议在 application.yml 里通过属性注入指定域名）
@@ -55,15 +70,6 @@ public class LinkCorsAutoConfiguration {
 
         // 6. 预检请求（OPTIONS）的缓存时间，单位为秒（1小时内无需重复发送 OPTIONS 探测请求）
         config.setMaxAge(3600L);
-
-        // 7. 配置拦截路径：仅对你定义的全局 API 前缀生效，精准防控
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration(GlobalConstants.API_PREFIX + "/**", config);
-
-        // 8. ⭐️ 核心改良：包装为 FilterRegistrationBean，并赋予最高执行优先级（HIGHEST_PRECEDENCE）
-        // 确保跨域响应在进入核心的 Spring MVC 拦截器、Sa-Token 鉴权过滤器之前就直接生效返回
-        FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
-        bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
-        return bean;
+        return config;
     }
 }

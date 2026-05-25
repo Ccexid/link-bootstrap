@@ -51,14 +51,14 @@ public class LinkDefaultDBFieldHandler implements MetaObjectHandler {
     @Override
     public void updateFill(MetaObject metaObject) {
         LocalDateTime now = LocalDateTime.now();
-        String currentUserId = getCurrentUserId();
+        Long currentUserId = getCurrentUserId();
 
         // 3. 严格模式更新时间：MyBatis-Plus 默认策略是如果字段为 null 则填充。
         this.strictUpdateFill(metaObject, UPDATE_TIME, LocalDateTime.class, now);
 
         // 4. 更新操作人：使用 strictUpdateFill 确保语义正确
         if (currentUserId != null) {
-            this.strictUpdateFill(metaObject, UPDATER, String.class, currentUserId);
+            this.strictUpdateFill(metaObject, UPDATER, Long.class, currentUserId);
         }
 
         if (log.isDebugEnabled()) {
@@ -71,11 +71,11 @@ public class LinkDefaultDBFieldHandler implements MetaObjectHandler {
      *
      * @return 当前操作人 ID，未登录或系统异步任务返回 "SYSTEM"
      */
-    private String getCurrentUserId() {
+    private Long getCurrentUserId() {
         try {
             // 💡 结合你项目中引入的 Sa-Token 框架获取：
             if (StpUtil.isLogin()) {
-                String loginId = StpUtil.getLoginIdAsString();
+                Long loginId = StpUtil.getLoginIdAsLong();
                 if (log.isTraceEnabled()) {
                     log.trace("获取到登录用户ID: {}", loginId);
                 }

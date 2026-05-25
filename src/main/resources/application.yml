@@ -15,23 +15,6 @@ spring:
     active: @spring.profiles.active@
   application:
     name: top-link-mall
-
-server:
-  port: 48080
-  servlet:
-    context-path: /
-    encoding:
-      charset: UTF-8
-  # Undertow 服务器配置
-  undertow:
-    io-threads: 0
-    worker-threads: 0
-    no-request-timeout: 30000
-    buffer-size: 16384
-    multipart-max-entity-size: 16777216
-
-
-
   # Jackson 全局配置 (符合 Google API 规范)
   jackson:
     serialization:
@@ -51,6 +34,20 @@ server:
       # 忽略前端传入但后端不存在的属性，增强兼容性
       fail-on-unknown-properties: false
 
+server:
+  port: 48080
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+  # Undertow 服务器配置
+  undertow:
+    io-threads: 0
+    worker-threads: 0
+    no-request-timeout: 30000
+    buffer-size: 16384
+    multipart-max-entity-size: 16777216
+
 # MyBatis Plus 增强配置
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
@@ -66,7 +63,6 @@ mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: true
-
 # Sa-Token 安全配置
 sa-token:
   token-name: Authorization

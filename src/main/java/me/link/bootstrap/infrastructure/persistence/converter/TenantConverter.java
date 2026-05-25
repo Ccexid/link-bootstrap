@@ -23,9 +23,4 @@ public interface TenantConverter extends BaseConverter<TenantEntity, TenantPO> {
     @Mapping(target = "updateTime", ignore = true)
     @Mapping(target = "deleted", ignore = true)
     TenantPO convert(TenantEntity tenantPO);
-
-    @Mapping(target = "updater", ignore = true)
-    @Mapping(target = "updateTime", ignore = true)
-    @Mapping(target = "deleted", ignore = true)
-    TenantEntity reverseConvert(TenantPO target);
 }
