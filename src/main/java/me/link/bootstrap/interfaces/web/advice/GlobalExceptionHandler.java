@@ -70,6 +70,14 @@ public class GlobalExceptionHandler {
         return ResultResponse.failure(ErrorCode.PARAM_VALIDATION_ERROR, message);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResultResponse<Void> handleIllegalArgumentException(IllegalArgumentException e, HttpServletRequest request) {
+        log.warn("非法参数异常, uri: {}, message: {}", request.getRequestURI(), e.getMessage());
+
+        return ResultResponse.failure(ErrorCode.PARAM_VALIDATION_ERROR, e.getMessage());
+    }
+
     @ExceptionHandler(MissingServletRequestParameterException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResultResponse<Void> handleMissingParamException(MissingServletRequestParameterException e, HttpServletRequest request) {

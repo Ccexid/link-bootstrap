@@ -74,7 +74,10 @@ public class PageRequest implements Serializable {
      * @throws IllegalArgumentException 如果 pageSize 值不合法
      */
     public Integer getPageSize() {
-        if (pageSize.equals(PAGE_SIZE_NONE)) {
+        if (pageSize == null) {
+            throw new IllegalArgumentException("每页条数不能为空");
+        }
+        if (PAGE_SIZE_NONE.equals(pageSize)) {
             return pageSize;
         }
         if (pageSize < 1 || pageSize > PAGE_SIZE_MAX) {
