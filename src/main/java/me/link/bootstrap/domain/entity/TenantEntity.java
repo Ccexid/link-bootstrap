@@ -65,6 +65,10 @@ public class TenantEntity {
      */
     private Integer accountCount;
 
+    private final LocalDateTime createdAt;
+
+    private final LocalDateTime updatedAt;
+
     private TenantEntity(Long id,
                          String name,
                          Long contactUserId,
@@ -74,7 +78,9 @@ public class TenantEntity {
                          Set<String> websites,
                          Long packageId,
                          LocalDateTime expireTime,
-                         Integer accountCount) {
+                         Integer accountCount,
+                         LocalDateTime createdAt,
+                         LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.contactUserId = contactUserId;
@@ -85,6 +91,8 @@ public class TenantEntity {
         this.packageId = packageId;
         this.expireTime = expireTime;
         this.accountCount = accountCount;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public static TenantEntity create(String name,
@@ -105,7 +113,9 @@ public class TenantEntity {
                 websites,
                 packageId,
                 expireTime,
-                accountCount
+                accountCount,
+                null,
+                null
         );
     }
 
@@ -118,7 +128,9 @@ public class TenantEntity {
                                        Set<String> websites,
                                        Long packageId,
                                        LocalDateTime expireTime,
-                                       Integer accountCount) {
+                                       Integer accountCount,
+                                       LocalDateTime createdAt,
+                                       LocalDateTime updatedAt) {
         return new TenantEntity(
                 id,
                 name,
@@ -129,7 +141,9 @@ public class TenantEntity {
                 websites,
                 packageId,
                 expireTime,
-                accountCount
+                accountCount,
+                createdAt,
+                updatedAt
         );
     }
 

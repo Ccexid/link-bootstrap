@@ -1,0 +1,121 @@
+package me.link.bootstrap.interfaces.controller;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
+import me.link.bootstrap.application.command.CreateTenantCommand;
+import me.link.bootstrap.application.command.TenantPageQuery;
+import me.link.bootstrap.application.command.UpdateTenantCommand;
+import me.link.bootstrap.application.service.TenantApplicationService;
+import me.link.bootstrap.domain.entity.TenantEntity;
+import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.interfaces.dto.request.tenant.TenantCreateRequest;
+import me.link.bootstrap.interfaces.dto.request.tenant.TenantPageRequest;
+import me.link.bootstrap.interfaces.dto.request.tenant.TenantUpdateRequest;
+import me.link.bootstrap.interfaces.dto.response.ResultResponse;
+import me.link.bootstrap.interfaces.dto.response.ResultTableResponse;
+import me.link.bootstrap.interfaces.dto.response.vo.TenantResponseVO;
+import me.link.bootstrap.interfaces.validation.SortWhitelist;
+import me.link.bootstrap.shared.kernel.constant.GlobalConstants;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(GlobalConstants.API_PREFIX + "/tenant")
+@Validated
+@RequiredArgsConstructor
+@Tag(name = "租户管理接口", description = "租户增删改查接口")
+public class TenantController {
+
+    private final TenantApplicationService tenantApplicationService;
+
+    @PostMapping
+    @Operation(summary = "创建租户", description = "创建租户基础信息")
+    public ResultResponse<TenantResponseVO> create(@Valid @RequestBody TenantCreateRequest request) {
+        TenantEntity tenant = tenantApplicationService.create(new CreateTenantCommand(
+                request.getName(),
+                request.getContactUserId(),
+                request.getContactName(),
+                request.getContactMobile(),
+                request.getWebsites(),
+                request.getPackageId(),
+                request.getExpireTime(),
+                request.getAccountCount()
+        ));
+        return ResultResponse.success(toResponse(tenant));
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "查询租户详情", description = "根据租户ID查询租户详情")
+    public ResultResponse<TenantResponseVO> get(@PathVariable @NotNull(message = "租户ID不能为空") Long id) {
+        return ResultResponse.success(toResponse(tenantApplicationService.get(id)));
+    }
+
+    @GetMapping
+    @Operation(summary = "分页查询租户", description = "分页查询租户列表")
+    public ResultTableResponse<TenantResponseVO> page(@Validated @SortWhitelist(TenantResponseVO.class) TenantPageRequest request) {
+        PageResult<TenantEntity> pageResult = tenantApplicationService.page(new TenantPageQuery(
+                request.getPageNo(),
+                request.getPageSize(),
+                request.getName(),
+                request.getSortingFields()
+        ));
+        List<TenantResponseVO> records = pageResult.records().stream()
+                .map(this::toResponse)
+                .toList();
+        return ResultTableResponse.success(records, pageResult.total());
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "更新租户", description = "更新租户基础信息")
+    public ResultResponse<TenantResponseVO> update(@PathVariable @NotNull(message = "租户ID不能为空") Long id,
+                                                   @Valid @RequestBody TenantUpdateRequest request) {
+        TenantEntity tenant = tenantApplicationService.update(new UpdateTenantCommand(
+                id,
+                request.getContactName(),
+                request.getContactUserId(),
+                request.getContactMobile(),
+                request.getWebsites(),
+                request.getPackageId(),
+                request.getExpireTime(),
+                request.getAccountCount(),
+                request.getEnabled()
+        ));
+        return ResultResponse.success(toResponse(tenant));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "删除租户", description = "根据租户ID删除租户")
+    public ResultResponse<Void> delete(@PathVariable @NotNull(message = "租户ID不能为空") Long id) {
+        tenantApplicationService.delete(id);
+        return ResultResponse.success();
+    }
+
+    private TenantResponseVO toResponse(TenantEntity tenant) {
+        TenantResponseVO response = new TenantResponseVO();
+        response.setId(tenant.getId());
+        response.setName(tenant.getName());
+        response.setContactUserId(tenant.getContactUserId());
+        response.setContactName(tenant.getContactName());
+        response.setContactMobile(tenant.getContactMobile());
+        response.setStatus(tenant.getStatus());
+        response.setWebsites(tenant.getWebsites());
+        response.setPackageId(tenant.getPackageId());
+        response.setExpireTime(tenant.getExpireTime());
+        response.setAccountCount(tenant.getAccountCount());
+        response.setCreatedAt(tenant.getCreatedAt());
+        response.setUpdatedAt(tenant.getUpdatedAt());
+        return response;
+    }
+}

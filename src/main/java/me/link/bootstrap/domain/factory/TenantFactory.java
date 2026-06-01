@@ -72,6 +72,46 @@ public final class TenantFactory {
         );
     }
 
+    public static void changeContact(TenantEntity tenant,
+                                     Long contactUserId,
+                                     String contactName,
+                                     String contactMobile) {
+        if (tenant == null) {
+            throw new IllegalArgumentException("租户不能为空");
+        }
+        if (contactName == null || contactName.trim().isEmpty()) {
+            throw new IllegalArgumentException("联系人姓名不能为空");
+        }
+        tenant.changeContact(contactUserId, contactName.trim(), normalizeContactMobile(contactMobile));
+    }
+
+    public static void changeWebsites(TenantEntity tenant, Set<String> websites) {
+        if (tenant == null) {
+            throw new IllegalArgumentException("租户不能为空");
+        }
+        tenant.changeWebsites(normalizeWebsites(websites));
+    }
+
+    public static void changePackage(TenantEntity tenant,
+                                     Long packageId,
+                                     LocalDateTime expireTime,
+                                     Integer accountCount) {
+        if (tenant == null) {
+            throw new IllegalArgumentException("租户不能为空");
+        }
+        if (packageId == null) {
+            throw new IllegalArgumentException("租户套餐编号不能为空");
+        }
+        if (expireTime == null) {
+            throw new IllegalArgumentException("过期时间不能为空");
+        }
+        if (accountCount == null) {
+            throw new IllegalArgumentException("账号数量不能为空");
+        }
+        validateBusinessRules(expireTime, accountCount);
+        tenant.changePackage(packageId, expireTime, accountCount);
+    }
+
     /**
      * 创建租户实体(简化参数,仅必填项)
      *

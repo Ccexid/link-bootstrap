@@ -42,7 +42,9 @@ public interface TenantConverter extends BaseConverter {
                 tenantPO.getWebsites(),
                 tenantPO.getPackageId(),
                 tenantPO.getExpireTime(),
-                tenantPO.getAccountCount()
+                tenantPO.getAccountCount(),
+                tenantPO.getCreateTime(),
+                tenantPO.getUpdateTime()
         );
     }
 
