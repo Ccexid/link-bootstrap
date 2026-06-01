@@ -2,7 +2,6 @@ package me.link.bootstrap.infrastructure.config;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import me.link.bootstrap.shared.kernel.jackson.deserializer.XssStringDeserializer;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -41,9 +40,6 @@ public class LinkJacksonAutoConfiguration {
             builder.serializerByType(Long.class, ToStringSerializer.instance);
             builder.serializerByType(Long.TYPE, ToStringSerializer.instance);
             builder.serializerByType(BigInteger.class, ToStringSerializer.instance);
-
-            // 3. 全局 XSS 过滤注入
-            builder.deserializerByType(String.class, new XssStringDeserializer());
         };
     }
 }
