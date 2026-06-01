@@ -2,7 +2,6 @@ package me.link.bootstrap.interfaces.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import me.link.bootstrap.infrastructure.tracing.TraceIdContext;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 
 import java.io.Serial;
@@ -43,7 +42,7 @@ public class ResultResponse<T> implements Serializable {
     }
 
     private static <T> ResultResponse<T> of(final T data, final String message, final Long code) {
-        return new ResultResponse<>(data, message, code, Instant.now().toEpochMilli(), TraceIdContext.get());
+        return new ResultResponse<>(data, message, code, Instant.now().toEpochMilli(), null);
     }
 
     /**

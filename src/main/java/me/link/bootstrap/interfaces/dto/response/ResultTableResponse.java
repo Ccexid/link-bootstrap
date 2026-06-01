@@ -2,7 +2,6 @@ package me.link.bootstrap.interfaces.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import me.link.bootstrap.infrastructure.tracing.TraceIdContext;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 
 import java.io.Serial;
@@ -12,7 +11,7 @@ import java.util.List;
 
 @Schema(description = "统一响应结果")
 @Data
-public class ResultTableResponse<E> implements Serializable {
+    public class ResultTableResponse<E> implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -49,10 +48,10 @@ public class ResultTableResponse<E> implements Serializable {
 
 
     public static <E> ResultTableResponse<E> success(final List<E> records, final Long total) {
-        return new ResultTableResponse<>(records, total, ErrorCode.SUCCESS.getCode(), Instant.now().toEpochMilli(), TraceIdContext.get());
+        return new ResultTableResponse<>(records, total, ErrorCode.SUCCESS.getCode(), Instant.now().toEpochMilli(), null);
     }
 
     public static <E> ResultTableResponse<E> failure(ErrorCode errorCode) {
-        return new ResultTableResponse<>(null, 0L, errorCode.getCode(), Instant.now().toEpochMilli(), TraceIdContext.get());
+        return new ResultTableResponse<>(null, 0L, errorCode.getCode(), Instant.now().toEpochMilli(), null);
     }
 }

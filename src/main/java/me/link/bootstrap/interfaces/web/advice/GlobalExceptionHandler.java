@@ -1,11 +1,13 @@
-package me.link.bootstrap.infrastructure.web.advice;
+package me.link.bootstrap.interfaces.web.advice;
 
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-import me.link.bootstrap.infrastructure.tracing.TraceIdContext;
 import me.link.bootstrap.interfaces.dto.response.ResultResponse;
-import me.link.bootstrap.interfaces.exception.BusinessException;
+import me.link.bootstrap.shared.kernel.exception.BusinessException;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
@@ -17,10 +19,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
 
 import java.util.stream.Collectors;
 
@@ -43,7 +41,7 @@ public class GlobalExceptionHandler {
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.joining("; "));
 
-        log.warn("参数校验异常,  uri: {}, message: {}", request.getRequestURI(), message);
+        log.warn("参数校验异常, uri: {}, message: {}", request.getRequestURI(), message);
 
         return ResultResponse.failure(ErrorCode.PARAM_VALIDATION_ERROR, message);
     }
@@ -67,8 +65,7 @@ public class GlobalExceptionHandler {
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining("; "));
 
-        log.warn("约束校验异常, traceId: {}, uri: {}, message: {}",
-                TraceIdContext.get(), request.getRequestURI(), message);
+        log.warn("约束校验异常, uri: {}, message: {}", request.getRequestURI(), message);
 
         return ResultResponse.failure(ErrorCode.PARAM_VALIDATION_ERROR, message);
     }
@@ -76,7 +73,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResultResponse<Void> handleMissingParamException(MissingServletRequestParameterException e, HttpServletRequest request) {
-        log.warn("缺少请求参数,  uri: {}, param: {}",
+        log.warn("缺少请求参数, uri: {}, param: {}",
                 request.getRequestURI(), e.getParameterName());
 
         return ResultResponse.failure(ErrorCode.PARAM_VALIDATION_ERROR,
@@ -104,7 +101,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotPermissionException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResultResponse<Void> handleNotPermissionException(NotPermissionException e, HttpServletRequest request) {
-        log.warn("权限不足异常,  uri: {}, permission: {}",
+        log.warn("权限不足异常, uri: {}, permission: {}",
                 request.getRequestURI(), e.getPermission());
 
         return ResultResponse.failure(ErrorCode.FORBIDDEN, "无权访问该资源");
@@ -123,7 +120,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoResourceFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResultResponse<Void> handleNoResourceFoundException(NoResourceFoundException e, HttpServletRequest request) {
-        log.warn("资源不存在,uri: {}", request.getRequestURI());
+        log.warn("资源不存在, uri: {}", request.getRequestURI());
 
         return ResultResponse.failure(ErrorCode.NOT_FOUND, "请求的资源不存在");
     }
@@ -131,8 +128,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResultResponse<Void> handleException(Exception e, HttpServletRequest request) {
-        log.error("系统异常,  uri: {}",
-                request.getRequestURI(), e);
+        log.error("系统异常, uri: {}", request.getRequestURI(), e);
 
         return ResultResponse.failure(ErrorCode.SYSTEM_ERROR);
     }

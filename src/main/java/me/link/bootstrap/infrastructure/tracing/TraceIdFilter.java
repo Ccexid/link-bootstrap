@@ -47,8 +47,7 @@ public class TraceIdFilter extends OncePerRequestFilter {
         String traceId = extractTraceId(request);
         try {
             TraceIdContext.init(traceId);
-
-            // 将 TraceId 注入响应头，方便客户端记录和关联
+            request.setAttribute(TRACE_ID_HEADER, traceId);
             response.setHeader(TRACE_ID_HEADER, traceId);
 
             filterChain.doFilter(request, response);

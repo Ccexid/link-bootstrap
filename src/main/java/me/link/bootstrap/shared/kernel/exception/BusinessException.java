@@ -1,7 +1,6 @@
-package me.link.bootstrap.interfaces.exception;
+package me.link.bootstrap.shared.kernel.exception;
 
 import lombok.Getter;
-import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 
 @Getter
 public class BusinessException extends RuntimeException {
