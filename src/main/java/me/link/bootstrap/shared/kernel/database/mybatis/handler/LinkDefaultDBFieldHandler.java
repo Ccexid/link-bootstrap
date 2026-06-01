@@ -27,7 +27,7 @@ public class LinkDefaultDBFieldHandler implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
         LocalDateTime now = LocalDateTime.now();
-        String currentUserId = getCurrentUserId();
+        Long currentUserId = getCurrentUserId();
 
         // 1. 严格模式插入时间：只有当实体类中该字段为 null 时才会填充，避免覆盖开发者手动传入的特定时间
         this.strictInsertFill(metaObject, CREATE_TIME, LocalDateTime.class, now);
@@ -35,8 +35,8 @@ public class LinkDefaultDBFieldHandler implements MetaObjectHandler {
 
         // 2. 严格模式插入操作人
         if (currentUserId != null) {
-            this.strictInsertFill(metaObject, CREATOR, String.class, currentUserId);
-            this.strictInsertFill(metaObject, UPDATER, String.class, currentUserId);
+            this.strictInsertFill(metaObject, CREATOR, Long.class, currentUserId);
+            this.strictInsertFill(metaObject, UPDATER, Long.class, currentUserId);
         }
 
         if (log.isDebugEnabled()) {
