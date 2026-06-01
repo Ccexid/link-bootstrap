@@ -3,9 +3,9 @@ package me.link.bootstrap.interfaces.validation;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import me.link.bootstrap.interfaces.dto.request.SortablePageRequest;
-import me.link.bootstrap.shared.kernel.util.SortableFieldUtils;
 import me.link.bootstrap.shared.kernel.valueobject.SortingField;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -17,7 +17,7 @@ public class SortWhitelistValidator implements ConstraintValidator<SortWhitelist
 
     @Override
     public void initialize(SortWhitelist constraintAnnotation) {
-        this.allowedFields = (Set<String>) parseSortableFields(constraintAnnotation.value());
+        this.allowedFields =  new LinkedHashSet<>(parseSortableFields(constraintAnnotation.value()));
     }
 
     @Override
