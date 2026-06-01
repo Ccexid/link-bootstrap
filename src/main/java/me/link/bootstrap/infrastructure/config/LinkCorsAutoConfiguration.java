@@ -38,7 +38,7 @@ public class LinkCorsAutoConfiguration {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration(GlobalConstants.API_PREFIX + "/**", config);
 
-        // 8. ⭐️ 核心改良：包装为 FilterRegistrationBean，并赋予最高执行优先级（HIGHEST_PRECEDENCE）
+        // 8. 包装为 FilterRegistrationBean，并显式设置为过滤链第一优先级
         // 确保跨域响应在进入核心的 Spring MVC 拦截器、Sa-Token 鉴权过滤器之前就直接生效返回
         FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
         bean.setOrder(Ordered.HIGHEST_PRECEDENCE);

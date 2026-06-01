@@ -3,7 +3,6 @@ package me.link.bootstrap.infrastructure.persistence.converter;
 import me.link.bootstrap.domain.entity.TenantEntity;
 import me.link.bootstrap.infrastructure.persistence.po.TenantPO;
 import me.link.bootstrap.shared.kernel.converter.BaseConverter;
-import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -27,10 +26,25 @@ public interface TenantConverter extends BaseConverter {
     @Mapping(target = "creator", ignore = true)
     @Mapping(target = "createTime", ignore = true)
     @Mapping(target = "deleted", ignore = true)
-    TenantPO convert(TenantEntity tenantPO);
+    TenantPO convert(TenantEntity tenantEntity);
 
-    @InheritInverseConfiguration(name = "convert")
-    TenantEntity  reverseConvert(TenantPO tenantPO);
+    default TenantEntity reverseConvert(TenantPO tenantPO) {
+        if (tenantPO == null) {
+            return null;
+        }
+        return TenantEntity.restore(
+                tenantPO.getId(),
+                tenantPO.getName(),
+                tenantPO.getContactUserId(),
+                tenantPO.getContactName(),
+                tenantPO.getContactMobile(),
+                tenantPO.getStatus(),
+                tenantPO.getWebsites(),
+                tenantPO.getPackageId(),
+                tenantPO.getExpireTime(),
+                tenantPO.getAccountCount()
+        );
+    }
 
 
     /**
@@ -56,6 +70,5 @@ public interface TenantConverter extends BaseConverter {
      * @param targetList 目标对象列表
      * @return 源对象列表，目标列表为 null 时返回空列表
      */
-    @InheritInverseConfiguration(name = "convertList")
     List<TenantEntity> reverseConvertList(List<TenantPO> targetList);
 }

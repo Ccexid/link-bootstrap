@@ -1,8 +1,8 @@
 package me.link.bootstrap.domain.entity;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 import me.link.bootstrap.domain.valueobject.StatusEnum;
 
 import java.time.LocalDateTime;
@@ -10,18 +10,20 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Getter
+@ToString
+@EqualsAndHashCode
 public class TenantEntity {
 
     /**
      * 租户编号 (主键 ID)
      */
-    private Long id;
+    private final Long id;
 
     /**
      * 租户名
      */
-    private String name;
+    private final String name;
 
     /**
      * 联系人的用户编号
@@ -63,6 +65,74 @@ public class TenantEntity {
      */
     private Integer accountCount;
 
+    private TenantEntity(Long id,
+                         String name,
+                         Long contactUserId,
+                         String contactName,
+                         String contactMobile,
+                         StatusEnum status,
+                         Set<String> websites,
+                         Long packageId,
+                         LocalDateTime expireTime,
+                         Integer accountCount) {
+        this.id = id;
+        this.name = name;
+        this.contactUserId = contactUserId;
+        this.contactName = contactName;
+        this.contactMobile = contactMobile;
+        this.status = status;
+        this.websites = copyWebsites(websites);
+        this.packageId = packageId;
+        this.expireTime = expireTime;
+        this.accountCount = accountCount;
+    }
+
+    public static TenantEntity create(String name,
+                                      Long contactUserId,
+                                      String contactName,
+                                      String contactMobile,
+                                      Set<String> websites,
+                                      Long packageId,
+                                      LocalDateTime expireTime,
+                                      Integer accountCount) {
+        return new TenantEntity(
+                null,
+                name,
+                contactUserId,
+                contactName,
+                contactMobile,
+                StatusEnum.NORMAL,
+                websites,
+                packageId,
+                expireTime,
+                accountCount
+        );
+    }
+
+    public static TenantEntity restore(Long id,
+                                       String name,
+                                       Long contactUserId,
+                                       String contactName,
+                                       String contactMobile,
+                                       StatusEnum status,
+                                       Set<String> websites,
+                                       Long packageId,
+                                       LocalDateTime expireTime,
+                                       Integer accountCount) {
+        return new TenantEntity(
+                id,
+                name,
+                contactUserId,
+                contactName,
+                contactMobile,
+                status,
+                websites,
+                packageId,
+                expireTime,
+                accountCount
+        );
+    }
+
     /**
      * 获取不可变的绑定域名集合
      *
@@ -75,17 +145,20 @@ public class TenantEntity {
         return Collections.unmodifiableSet(websites);
     }
 
-    /**
-     * 设置绑定域名集合(内部会创建副本)
-     *
-     * @param websites 域名集合
-     */
-    public void setWebsites(Set<String> websites) {
-        if (websites == null) {
-            this.websites = null;
-        } else {
-            this.websites = new HashSet<>(websites);
-        }
+    public void changeContact(Long contactUserId, String contactName, String contactMobile) {
+        this.contactUserId = contactUserId;
+        this.contactName = contactName;
+        this.contactMobile = contactMobile;
+    }
+
+    public void changeWebsites(Set<String> websites) {
+        this.websites = copyWebsites(websites);
+    }
+
+    public void changePackage(Long packageId, LocalDateTime expireTime, Integer accountCount) {
+        this.packageId = packageId;
+        this.expireTime = expireTime;
+        this.accountCount = accountCount;
     }
 
     /**
@@ -121,5 +194,12 @@ public class TenantEntity {
      */
     public void enable() {
         this.status = StatusEnum.NORMAL;
+    }
+
+    private static Set<String> copyWebsites(Set<String> websites) {
+        if (websites == null) {
+            return null;
+        }
+        return new HashSet<>(websites);
     }
 }

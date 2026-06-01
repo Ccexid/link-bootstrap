@@ -1,10 +1,8 @@
 package me.link.bootstrap.domain.factory;
 
 import me.link.bootstrap.domain.entity.TenantEntity;
-import me.link.bootstrap.domain.valueobject.StatusEnum;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -54,21 +52,17 @@ public final class TenantFactory {
         // 2. 校验业务规则
         validateBusinessRules(expireTime, accountCount);
 
-        // 3. 创建实体并设置属性
-        TenantEntity tenant = new TenantEntity();
-        tenant.setName(name.trim());
-        tenant.setContactUserId(contactUserId);
-        tenant.setContactName(contactName.trim());
-        tenant.setContactMobile(contactMobile);
-        tenant.setWebsites(websites);
-        tenant.setPackageId(packageId);
-        tenant.setExpireTime(expireTime);
-        tenant.setAccountCount(accountCount);
-
-        // 4. 设置默认值
-        tenant.setStatus(StatusEnum.NORMAL);
-
-        return tenant;
+        // 3. 创建实体
+        return TenantEntity.create(
+                name.trim(),
+                contactUserId,
+                contactName.trim(),
+                contactMobile,
+                websites,
+                packageId,
+                expireTime,
+                accountCount
+        );
     }
 
     /**

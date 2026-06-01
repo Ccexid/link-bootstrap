@@ -24,8 +24,10 @@ import static me.link.bootstrap.shared.kernel.constant.GlobalConstants.TRACE_ID_
  * @author Ccexid
  */
 @Component
-@Order(Ordered.HIGHEST_PRECEDENCE)
+@Order(TraceIdFilter.ORDER)
 public class TraceIdFilter extends OncePerRequestFilter {
+
+    static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
 
     private static final int MAX_TRACE_ID_LENGTH = 64;
 
