@@ -3,7 +3,9 @@ package me.link.bootstrap.domain.factory;
 import me.link.bootstrap.domain.entity.TenantEntity;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * 租户实体工厂
@@ -19,6 +21,12 @@ import java.util.Set;
  * @author Ccexid
  */
 public final class TenantFactory {
+
+    private static final int CONTACT_MOBILE_MAX_LENGTH = 20;
+    private static final int WEBSITE_MAX_COUNT = 20;
+    private static final int WEBSITE_MAX_LENGTH = 253;
+    private static final Pattern CONTACT_MOBILE_PATTERN = Pattern.compile("^1[3-9]\\d{9}$");
+    private static final Pattern WEBSITE_PATTERN = Pattern.compile("^(?=.{1,253}$)(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,63}$");
 
     private TenantFactory() {
         throw new UnsupportedOperationException("工厂类不允许实例化");
@@ -46,19 +54,18 @@ public final class TenantFactory {
                                       Long packageId,
                                       LocalDateTime expireTime,
                                       Integer accountCount) {
-        // 1. 校验必填字段
         validateRequiredFields(name, contactName, packageId, expireTime, accountCount);
-
-        // 2. 校验业务规则
         validateBusinessRules(expireTime, accountCount);
 
-        // 3. 创建实体
+        String normalizedContactMobile = normalizeContactMobile(contactMobile);
+        Set<String> normalizedWebsites = normalizeWebsites(websites);
+
         return TenantEntity.create(
                 name.trim(),
                 contactUserId,
                 contactName.trim(),
-                contactMobile,
-                websites,
+                normalizedContactMobile,
+                normalizedWebsites,
                 packageId,
                 expireTime,
                 accountCount
@@ -137,6 +144,44 @@ public final class TenantFactory {
         if (accountCount <= 0) {
             throw new IllegalArgumentException("账号数量必须大于0");
         }
+    }
+
+    private static String normalizeContactMobile(String contactMobile) {
+        if (contactMobile == null || contactMobile.trim().isEmpty()) {
+            return null;
+        }
+        String normalizedContactMobile = contactMobile.trim();
+        if (normalizedContactMobile.length() > CONTACT_MOBILE_MAX_LENGTH) {
+            throw new IllegalArgumentException(String.format("联系手机长度不能超过%d个字符", CONTACT_MOBILE_MAX_LENGTH));
+        }
+        if (!CONTACT_MOBILE_PATTERN.matcher(normalizedContactMobile).matches()) {
+            throw new IllegalArgumentException("联系手机格式不正确");
+        }
+        return normalizedContactMobile;
+    }
+
+    private static Set<String> normalizeWebsites(Set<String> websites) {
+        if (websites == null || websites.isEmpty()) {
+            return null;
+        }
+        if (websites.size() > WEBSITE_MAX_COUNT) {
+            throw new IllegalArgumentException(String.format("绑定域名数量不能超过%d个", WEBSITE_MAX_COUNT));
+        }
+        Set<String> normalizedWebsites = new LinkedHashSet<>();
+        for (String website : websites) {
+            if (website == null || website.trim().isEmpty()) {
+                throw new IllegalArgumentException("绑定域名不能为空");
+            }
+            String normalizedWebsite = website.trim().toLowerCase();
+            if (normalizedWebsite.length() > WEBSITE_MAX_LENGTH) {
+                throw new IllegalArgumentException(String.format("绑定域名长度不能超过%d个字符", WEBSITE_MAX_LENGTH));
+            }
+            if (!WEBSITE_PATTERN.matcher(normalizedWebsite).matches()) {
+                throw new IllegalArgumentException(String.format("绑定域名格式不正确: %s", normalizedWebsite));
+            }
+            normalizedWebsites.add(normalizedWebsite);
+        }
+        return normalizedWebsites;
     }
 
     /**
