@@ -1,8 +1,7 @@
 package me.link.bootstrap.infrastructure.web.advice;
 
-import cn.hutool.core.util.StrUtil;
 import me.link.bootstrap.interfaces.dto.response.ResultTableResponse;
-import me.link.bootstrap.shared.kernel.annotation.Sortable;
+import me.link.bootstrap.shared.kernel.util.SortableFieldUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -59,7 +58,7 @@ public class SortableFieldsResponseBodyAdvice implements ResponseBodyAdvice<Obje
 
         if (targetClass != null) {
             // computeIfAbsent 内部是原子操作。由于没有了 hasSortableAnnotation 的高阻断，性能极大提升
-            List<String> sortableFields = sortableCache.computeIfAbsent(targetClass, this::parseSortableFields);
+            List<String> sortableFields = sortableCache.computeIfAbsent(targetClass, SortableFieldUtils::parseSortableFields);
             if (!sortableFields.isEmpty()) {
                 resultResponse.setSortableFields(sortableFields);
             }
@@ -111,36 +110,4 @@ public class SortableFieldsResponseBodyAdvice implements ResponseBodyAdvice<Obje
         return null;
     }
 
-    /**
-     * 核心改良：单次深度扫描机制
-     * 抛弃了之前的 hasSortableAnnotation() 双重遍历损耗，一次扫描搞定去重与提取
-     */
-    private List<String> parseSortableFields(Class<?> clazz) {
-        Set<String> fieldsSet = new LinkedHashSet<>();
-        Class<?> currentClass = clazz;
-
-        // 一趟主循环，完成父类和子类所有字段的纵向收割
-        while (currentClass != null && currentClass != Object.class) {
-            for (Field field : currentClass.getDeclaredFields()) {
-                if (field.isAnnotationPresent(Sortable.class)) {
-                    Sortable annotation = field.getAnnotation(Sortable.class);
-                    String fieldName = StrUtil.isNotBlank(annotation.value())
-                            ? annotation.value()
-                            : StrUtil.toUnderlineCase(field.getName());
-
-                    // 基于 LinkedHashSet 的特性：子类同名字段先入为主，父类同名同含义字段被安全屏蔽
-                    fieldsSet.add(fieldName);
-                }
-            }
-            currentClass = currentClass.getSuperclass();
-        }
-
-        // 如果该类确实一个 @Sortable 都没有，返回并缓存一个空集合占位，
-        // 下次相同的类再进来，直接在 Map 的 computeIfAbsent 阶段拿到空集合并跳过，彻底免疫反射开销。
-        if (fieldsSet.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return Collections.unmodifiableList(new ArrayList<>(fieldsSet));
-    }
 }

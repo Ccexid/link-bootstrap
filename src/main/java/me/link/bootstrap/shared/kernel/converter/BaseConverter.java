@@ -42,57 +42,5 @@ import java.util.List;
         // 7. 当源属性为 null 时，目标属性保持默认值（不设置 null）
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
-public interface BaseConverter<S, T> {
-
-    /**
-     * 单个对象映射：从源对象转换为目标对象
-     * <p>
-     * 如果源对象为 null，则返回 null。
-     * </p>
-     *
-     * @param source 源对象
-     * @return 目标对象，源对象为 null 时返回 null
-     */
-    T convert(S source);
-
-
-    /**
-     * 逆向单个对象映射：从目标对象转换回源对象
-     * <p>
-     * 自动继承 {@link #convert(Object)} 的反向映射配置。
-     * 如果目标对象为 null，则返回 null。
-     * </p>
-     *
-     * @param target 目标对象
-     * @return 源对象，目标对象为 null 时返回 null
-     */
-    @InheritInverseConfiguration(name = "convert")
-    S reverseConvert(T target);
-
-
-    /**
-     * 列表映射：批量从源对象列表转换为目标对象列表
-     * <p>
-     * 如果源列表为 null，则返回空列表（Collections.emptyList()）。
-     * 列表中的 null 元素会被跳过，不会出现在结果中。
-     * </p>
-     *
-     * @param sourceList 源对象列表
-     * @return 目标对象列表，源列表为 null 时返回空列表
-     */
-    List<T> convertList(List<S> sourceList);
-
-    /**
-     * 逆向列表映射：批量从目标对象列表转换回源对象列表
-     * <p>
-     * 自动继承 {@link #convertList(List)} 的反向映射配置。
-     * 如果目标列表为 null，则返回空列表（Collections.emptyList()）。
-     * 列表中的 null 元素会被跳过，不会出现在结果中。
-     * </p>
-     *
-     * @param targetList 目标对象列表
-     * @return 源对象列表，目标列表为 null 时返回空列表
-     */
-    @InheritInverseConfiguration(name = "convertList")
-    List<S> reverseConvertList(List<T> targetList);
+public interface BaseConverter {
 }
