@@ -47,3 +47,5 @@ src/main/resources/application-local.yml
 maven-status/
 
 # 冗余规则已删除（src/main/src/test 下无 target/build，无需否定）
+graphify-out/*
+.history/*
