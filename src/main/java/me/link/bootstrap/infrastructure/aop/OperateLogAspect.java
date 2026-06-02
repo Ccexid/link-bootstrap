@@ -136,8 +136,7 @@ public class OperateLogAspect {
                     success,
                     requestMethod,
                     truncate(request.getRequestURI(), 512),
-                    duration,
-                    tenantId(joinPoint.getArgs())
+                    duration
             ));
         } catch (Exception ex) {
             log.warn("自动记录操作日志失败: {}", ex.getMessage(), ex);

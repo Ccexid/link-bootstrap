@@ -49,6 +49,8 @@ public enum ErrorCode {
     TENANT_PACKAGE_NOT_FOUND(500_002_003, "租户套餐不存在"),
     ORGANIZATION_NOT_FOUND(500_003_001, "组织不存在"),
     ROLE_NOT_FOUND(500_003_002, "角色不存在"),
+    /** 业务错误: 角色权限编码在同一租户下已存在,不允许重复创建 */
+    ROLE_CODE_DUPLICATE(500_003_007, "角色权限编码已存在"),
     MENU_NOT_FOUND(500_003_003, "菜单不存在"),
     ROLE_MENU_NOT_FOUND(500_003_004, "角色菜单关联不存在"),
     USER_ROLE_NOT_FOUND(500_003_005, "用户角色关联不存在"),

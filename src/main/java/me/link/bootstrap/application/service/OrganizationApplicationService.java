@@ -55,7 +55,7 @@ public class OrganizationApplicationService {
      */
     public PageResult<OrganizationEntity> page(OrganizationPageQuery query) {
         Long tenantId = SecurityHelper.getTenantId();
-        return organizationRepository.page(query.pageNo(), query.pageSize(), query.name(), command.orgType(), command.parentId(), command.status(), tenantId, query.sortingFields());
+        return organizationRepository.page(query.pageNo(), query.pageSize(), query.name(), query.orgType(), query.parentId(), query.status(), tenantId, query.sortingFields());
     }
 
     /**

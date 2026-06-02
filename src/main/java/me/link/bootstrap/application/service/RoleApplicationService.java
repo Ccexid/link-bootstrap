@@ -30,11 +30,13 @@ public class RoleApplicationService {
      * 创建角色。
      * <p>
      * 租户ID从当前登录用户的上下文中自动获取。
+     * 包含权限编码（code）的唯一性校验，确保同一租户下编码不重复。
      * </p>
      */
     @Transactional
     public RoleEntity create(CreateRoleCommand command) {
         Long tenantId = SecurityHelper.getTenantId();
+        validateCodeUnique(tenantId, command.code(), null);
         RoleEntity role = RoleFactory.create(command.name(), command.code(), command.sort(), command.dataScope(), command.dataScopeDeptIds(), command.status(), command.type(), command.remark(), tenantId);
         return roleRepository.save(role);
     }
@@ -62,12 +64,14 @@ public class RoleApplicationService {
      * 更新角色信息。
      * <p>
      * 租户ID从当前登录用户的上下文中自动获取。
+     * 包含权限编码（code）的唯一性校验，确保同一租户下编码不重复（排除自身）。
      * </p>
      */
     @Transactional
     public RoleEntity update(UpdateRoleCommand command) {
         RoleEntity role = get(command.id());
         Long tenantId = SecurityHelper.getTenantId();
+        validateCodeUnique(tenantId, command.code(), command.id());
         RoleFactory.changeBasicInfo(role, command.name(), command.code(), command.sort(), command.dataScope(), command.dataScopeDeptIds(), command.status(), command.type(), command.remark(), tenantId);
         boolean updated = roleRepository.update(role);
         if (!updated) {
@@ -84,5 +88,25 @@ public class RoleApplicationService {
         if (!roleRepository.deleteById(id)) {
             throw new BusinessException(ErrorCode.ROLE_NOT_FOUND);
         }
+    }
+
+    /**
+     * 校验角色权限编码在当前租户下的唯一性。
+     * <p>
+     * 结合Sa-Token上下文获取租户ID，确保同一租户下角色编码不重复。
+     * 更新操作时排除自身记录（excludeId参数），允许保持原有编码不变。
+     * </p>
+     *
+     * @param tenantId   当前登录用户的租户ID
+     * @param code       待校验的角色权限编码
+     * @param excludeId  排除的角色ID（更新时传入自身ID，创建时传null）
+     * @throws BusinessException 如果编码已存在则抛出异常
+     */
+    private void validateCodeUnique(Long tenantId, String code, Long excludeId) {
+        roleRepository.findByTenantIdAndCode(tenantId, code).ifPresent(existingRole -> {
+            if (excludeId == null || !existingRole.getId().equals(excludeId)) {
+                throw new BusinessException(ErrorCode.ROLE_CODE_DUPLICATE);
+            }
+        });
     }
 }

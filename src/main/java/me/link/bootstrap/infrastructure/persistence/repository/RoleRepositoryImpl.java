@@ -76,6 +76,22 @@ public class RoleRepositoryImpl implements RoleRepository {
         return roleInternalService.removeById(id);
     }
 
+    /**
+     * 根据租户ID和权限编码查询角色。
+     * <p>
+     * 实现角色编码在租户范围内的唯一性查询，支持Sa-Token上下文的数据隔离。
+     * </p>
+     */
+    @Override
+    public Optional<RoleEntity> findByTenantIdAndCode(Long tenantId, String code) {
+        LambdaQueryWrapper<RolePO> wrapper = new LambdaQueryWrapper<RolePO>()
+                .eq(RolePO::getTenantId, tenantId)
+                .eq(RolePO::getCode, code)
+                .last("LIMIT 1");
+        return Optional.ofNullable(roleInternalService.getOne(wrapper))
+                .map(roleConverter::reverseConvert);
+    }
+
     private void applyOrders(Page<RolePO> page, List<SortingField> sortingFields) {
         if (sortingFields == null || sortingFields.isEmpty()) {
             return;

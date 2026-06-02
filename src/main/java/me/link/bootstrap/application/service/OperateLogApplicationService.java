@@ -10,6 +10,7 @@ import me.link.bootstrap.domain.repository.OperateLogRepository;
 import me.link.bootstrap.domain.valueobject.PageResult;
 import me.link.bootstrap.shared.kernel.exception.BusinessException;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
+import me.link.bootstrap.shared.kernel.util.SecurityHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +22,8 @@ public class OperateLogApplicationService {
 
     @Transactional
     public OperateLogEntity create(CreateOperateLogCommand command) {
-        OperateLogEntity operateLog = OperateLogFactory.create(command.traceId(), command.userId(), command.userType(), command.userIp(), command.userAgent(), command.module(), command.operation(), command.bizId(), command.action(), command.extra(), command.success(), command.requestMethod(), command.requestUrl(), command.duration(), command.tenantId());
+        Long tenantId = SecurityHelper.getTenantId();
+        OperateLogEntity operateLog = OperateLogFactory.create(command.traceId(), command.userId(), command.userType(), command.userIp(), command.userAgent(), command.module(), command.operation(), command.bizId(), command.action(), command.extra(), command.success(), command.requestMethod(), command.requestUrl(), command.duration(), tenantId);
         return operateLogRepository.save(operateLog);
     }
 
@@ -31,13 +33,15 @@ public class OperateLogApplicationService {
     }
 
     public PageResult<OperateLogEntity> page(OperateLogPageQuery query) {
-        return operateLogRepository.page(query.pageNo(), query.pageSize(), query.traceId(), query.userId(), query.module(), query.operation(), query.bizId(), query.success(), query.tenantId(), query.sortingFields());
+        Long tenantId = SecurityHelper.getTenantId();
+        return operateLogRepository.page(query.pageNo(), query.pageSize(), query.traceId(), query.userId(), query.module(), query.operation(), query.bizId(), query.success(), tenantId, query.sortingFields());
     }
 
     @Transactional
     public OperateLogEntity update(UpdateOperateLogCommand command) {
         OperateLogEntity operateLog = get(command.id());
-        OperateLogFactory.changeBasicInfo(operateLog, command.traceId(), command.userId(), command.userType(), command.userIp(), command.userAgent(), command.module(), command.operation(), command.bizId(), command.action(), command.extra(), command.success(), command.requestMethod(), command.requestUrl(), command.duration(), command.tenantId());
+        Long tenantId = SecurityHelper.getTenantId();
+        OperateLogFactory.changeBasicInfo(operateLog, command.traceId(), command.userId(), command.userType(), command.userIp(), command.userAgent(), command.module(), command.operation(), command.bizId(), command.action(), command.extra(), command.success(), command.requestMethod(), command.requestUrl(), command.duration(), tenantId);
         boolean updated = operateLogRepository.update(operateLog);
         if (!updated) {
             throw new BusinessException(ErrorCode.OPERATE_LOG_NOT_FOUND);

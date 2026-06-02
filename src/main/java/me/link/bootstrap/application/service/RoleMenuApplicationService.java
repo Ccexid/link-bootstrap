@@ -105,7 +105,7 @@ public class RoleMenuApplicationService {
     @Transactional
     public void delete(Long id) {
         if (!roleMenuRepository.deleteById(id)) {
-            throw new BusinessException(ErrorCode.ROLE_MENU_NOT_FOUND));
+            throw new BusinessException(ErrorCode.ROLE_MENU_NOT_FOUND);
         }
     }
 }
