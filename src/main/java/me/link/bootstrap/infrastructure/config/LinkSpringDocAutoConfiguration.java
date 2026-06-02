@@ -8,13 +8,12 @@ import me.link.bootstrap.shared.kernel.constant.GlobalConstants;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * SpringDoc 接口文档分组配置
  * <p>
  * 按业务模块对API接口进行分组,便于前端查阅和接口管理。
- * 访问地址: http://localhost:48080/swagger-ui/index.html
+ * 访问地址: <a href="http://localhost:48080/swagger-ui/index.html">...</a>
  * </p>
  *
  * @author Ccexid
@@ -64,21 +63,6 @@ public class LinkSpringDocAutoConfiguration {
                 .group("3-租户管理")
                 .pathsToMatch(GlobalConstants.API_PREFIX + "/tenant/**")
                 .displayName("租户管理接口")
-                .build();
-    }
-
-    /**
-     * 演示模块接口分组
-     * <p>
-     * 包含: Demo测试接口、示例接口等
-     * </p>
-     */
-    @Bean
-    public GroupedOpenApi demoApi() {
-        return GroupedOpenApi.builder()
-                .group("4-演示接口")
-                .pathsToMatch(GlobalConstants.API_PREFIX + "/demo/**")
-                .displayName("演示测试接口")
                 .build();
     }
 
