@@ -4,7 +4,7 @@ import java.util.Set;
 
 /**
  * Command object carrying the data required to update an existing tenant package.
- *
+ * <p>
  * Encapsulates the tenant package identifier, name, descriptive remark,
  * associated menu identifiers, and enabled state for use by the tenant package
  * application service during tenant package updates.
