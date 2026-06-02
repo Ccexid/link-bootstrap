@@ -1,5 +1,6 @@
 package me.link.bootstrap.interfaces.dto.response.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import me.link.bootstrap.domain.valueobject.StatusEnum;
@@ -42,8 +43,10 @@ public class RoleResponseVO implements Serializable {
     private Long tenantId;
     @Schema(description = "createdAt")
     @Sortable(description = "createdAt")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
     @Schema(description = "updatedAt")
     @Sortable(description = "updatedAt")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 }

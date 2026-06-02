@@ -1,5 +1,6 @@
 package me.link.bootstrap.interfaces.dto.response.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import me.link.bootstrap.domain.valueobject.StatusEnum;
@@ -38,9 +39,11 @@ public class TenantPackageResponseVO implements Serializable {
 
     @Schema(description = "创建时间")
     @Sortable(description = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
     @Schema(description = "更新时间")
     @Sortable(description = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 }
