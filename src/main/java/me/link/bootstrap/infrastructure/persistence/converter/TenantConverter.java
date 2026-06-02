@@ -12,8 +12,8 @@ import java.util.List;
  * 租户对象转换器（Entity <-> PO）
  * <p>
  * 绑定全局统一的 BaseConverter 配置。
- * S (Source) = LinkEntity (领域实体)
- * T (Target) = LinkPO (数据库持久化对象)
+ * S (Source) = TenantEntity (领域实体)
+ * T (Target) = TenantPO (数据库持久化对象)
  * </p>
  *
  * @author ccexid

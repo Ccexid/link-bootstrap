@@ -34,7 +34,4 @@ public class OperateLogPageRequest extends SortablePageRequest {
 
     @Schema(description = "success")
     private Boolean success;
-
-    @Schema(description = "tenantId")
-    private Long tenantId;
 }

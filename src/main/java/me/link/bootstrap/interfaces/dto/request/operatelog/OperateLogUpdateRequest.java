@@ -39,6 +39,4 @@ public class OperateLogUpdateRequest implements Serializable {
     private String requestUrl;
     @Schema(description = "duration")
     private Integer duration;
-    @Schema(description = "tenantId")
-    private Long tenantId;
 }

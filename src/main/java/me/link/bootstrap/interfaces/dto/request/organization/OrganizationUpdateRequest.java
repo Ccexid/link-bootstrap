@@ -30,6 +30,4 @@ public class OrganizationUpdateRequest implements Serializable {
     private String contactMobile;
     @Schema(description = "status")
     private StatusEnum status;
-    @Schema(description = "tenantId")
-    private Long tenantId;
 }

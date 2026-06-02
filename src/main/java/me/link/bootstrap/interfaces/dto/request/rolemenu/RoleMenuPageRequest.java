@@ -22,7 +22,4 @@ public class RoleMenuPageRequest extends SortablePageRequest {
 
     @Schema(description = "menuId")
     private Long menuId;
-
-    @Schema(description = "tenantId")
-    private Long tenantId;
 }

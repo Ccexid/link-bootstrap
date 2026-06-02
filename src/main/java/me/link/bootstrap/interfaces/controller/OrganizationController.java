@@ -51,8 +51,7 @@ public class OrganizationController {
                 request.getLevel(),
                 request.getContactName(),
                 request.getContactMobile(),
-                request.getStatus(),
-                request.getTenantId()
+                request.getStatus()
         ));
         return ResultResponse.success(toResponse(organization));
     }
@@ -73,7 +72,6 @@ public class OrganizationController {
                 request.getOrgType(),
                 request.getParentId(),
                 request.getStatus(),
-                request.getTenantId(),
                 request.getSortingFields()
         ));
         List<OrganizationResponseVO> records = pageResult.records().stream()
@@ -95,8 +93,7 @@ public class OrganizationController {
                 request.getLevel(),
                 request.getContactName(),
                 request.getContactMobile(),
-                request.getStatus(),
-                request.getTenantId()
+                request.getStatus()
         ));
         return ResultResponse.success(toResponse(organization));
     }

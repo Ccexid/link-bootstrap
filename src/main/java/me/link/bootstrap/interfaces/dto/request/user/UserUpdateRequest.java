@@ -36,6 +36,4 @@ public class UserUpdateRequest implements Serializable {
     private String loginIp;
     @Schema(description = "loginDate")
     private LocalDateTime loginDate;
-    @Schema(description = "tenantId")
-    private Long tenantId;
 }

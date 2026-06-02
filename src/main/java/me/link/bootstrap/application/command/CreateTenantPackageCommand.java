@@ -3,11 +3,10 @@ package me.link.bootstrap.application.command;
 import java.util.Set;
 
 /**
- * Command object carrying the data required to create a tenant package.
+ * 创建租户套餐命令对象，封装创建新租户套餐所需的数据。
  *
- * Encapsulates the tenant package name, descriptive remark, and associated menu
- * identifiers for use by the tenant package application service during tenant
- * package creation.
+ * 包含套餐名称、备注和关联菜单编号，
+ * 供租户套餐应用服务在创建操作时使用。
  */
 public record CreateTenantPackageCommand(
         String name,

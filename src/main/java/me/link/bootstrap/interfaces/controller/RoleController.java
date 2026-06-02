@@ -51,8 +51,7 @@ public class RoleController {
                 request.getDataScopeDeptIds(),
                 request.getStatus(),
                 request.getType(),
-                request.getRemark(),
-                request.getTenantId()
+                request.getRemark()
         ));
         return ResultResponse.success(toResponse(role));
     }
@@ -73,7 +72,6 @@ public class RoleController {
                 request.getCode(),
                 request.getStatus(),
                 request.getType(),
-                request.getTenantId(),
                 request.getSortingFields()
         ));
         List<RoleResponseVO> records = pageResult.records().stream()
@@ -95,8 +93,7 @@ public class RoleController {
                 request.getDataScopeDeptIds(),
                 request.getStatus(),
                 request.getType(),
-                request.getRemark(),
-                request.getTenantId()
+                request.getRemark()
         ));
         return ResultResponse.success(toResponse(role));
     }

@@ -31,7 +31,4 @@ public class UserPageRequest extends SortablePageRequest {
 
     @Schema(description = "status")
     private StatusEnum status;
-
-    @Schema(description = "tenantId")
-    private Long tenantId;
 }

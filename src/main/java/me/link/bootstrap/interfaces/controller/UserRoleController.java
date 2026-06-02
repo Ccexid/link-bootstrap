@@ -47,8 +47,7 @@ public class UserRoleController {
     public ResultResponse<UserRoleResponseVO> create(@Valid @RequestBody UserRoleCreateRequest request) {
         UserRoleEntity userRole = userRoleApplicationService.create(new CreateUserRoleCommand(
                 request.getUserId(),
-                request.getRoleId(),
-                request.getTenantId()
+                request.getRoleId()
         ));
         return ResultResponse.success(toResponse(userRole));
     }
@@ -58,8 +57,7 @@ public class UserRoleController {
     public ResultResponse<Void> assign(@Valid @RequestBody UserRoleAssignRequest request) {
         userRoleApplicationService.assign(new AssignUserRoleCommand(
                 request.getUserId(),
-                request.getRoleIds(),
-                request.getTenantId()
+                request.getRoleIds()
         ));
         return ResultResponse.success();
     }
@@ -78,7 +76,6 @@ public class UserRoleController {
                 request.getPageSize(),
                 request.getUserId(),
                 request.getRoleId(),
-                request.getTenantId(),
                 request.getSortingFields()
         ));
         List<UserRoleResponseVO> records = pageResult.records().stream()
@@ -94,8 +91,7 @@ public class UserRoleController {
         UserRoleEntity userRole = userRoleApplicationService.update(new UpdateUserRoleCommand(
                 id,
                 request.getUserId(),
-                request.getRoleId(),
-                request.getTenantId()
+                request.getRoleId()
         ));
         return ResultResponse.success(toResponse(userRole));
     }

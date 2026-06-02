@@ -15,6 +15,4 @@ public class RoleMenuUpdateRequest implements Serializable {
     private Long roleId;
     @Schema(description = "menuId")
     private Long menuId;
-    @Schema(description = "tenantId")
-    private Long tenantId;
 }

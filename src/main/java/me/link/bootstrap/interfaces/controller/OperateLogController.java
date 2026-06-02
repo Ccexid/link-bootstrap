@@ -57,8 +57,7 @@ public class OperateLogController {
                 request.getSuccess(),
                 request.getRequestMethod(),
                 request.getRequestUrl(),
-                request.getDuration(),
-                request.getTenantId()
+                request.getDuration()
         ));
         return ResultResponse.success(toResponse(operateLog));
     }
@@ -81,7 +80,6 @@ public class OperateLogController {
                 request.getOperation(),
                 request.getBizId(),
                 request.getSuccess(),
-                request.getTenantId(),
                 request.getSortingFields()
         ));
         List<OperateLogResponseVO> records = pageResult.records().stream()
@@ -109,8 +107,7 @@ public class OperateLogController {
                 request.getSuccess(),
                 request.getRequestMethod(),
                 request.getRequestUrl(),
-                request.getDuration(),
-                request.getTenantId()
+                request.getDuration()
         ));
         return ResultResponse.success(toResponse(operateLog));
     }

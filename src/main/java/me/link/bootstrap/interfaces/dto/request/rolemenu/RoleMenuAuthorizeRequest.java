@@ -18,7 +18,4 @@ public class RoleMenuAuthorizeRequest implements Serializable {
 
     @Schema(description = "menuIds")
     private List<Long> menuIds;
-
-    @Schema(description = "tenantId")
-    private Long tenantId;
 }

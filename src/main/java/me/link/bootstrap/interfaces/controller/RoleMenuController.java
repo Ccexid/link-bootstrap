@@ -47,8 +47,7 @@ public class RoleMenuController {
     public ResultResponse<RoleMenuResponseVO> create(@Valid @RequestBody RoleMenuCreateRequest request) {
         RoleMenuEntity roleMenu = roleMenuApplicationService.create(new CreateRoleMenuCommand(
                 request.getRoleId(),
-                request.getMenuId(),
-                request.getTenantId()
+                request.getMenuId()
         ));
         return ResultResponse.success(toResponse(roleMenu));
     }
@@ -58,8 +57,7 @@ public class RoleMenuController {
     public ResultResponse<Void> authorize(@Valid @RequestBody RoleMenuAuthorizeRequest request) {
         roleMenuApplicationService.authorize(new AuthorizeRoleMenuCommand(
                 request.getRoleId(),
-                request.getMenuIds(),
-                request.getTenantId()
+                request.getMenuIds()
         ));
         return ResultResponse.success();
     }
@@ -78,7 +76,6 @@ public class RoleMenuController {
                 request.getPageSize(),
                 request.getRoleId(),
                 request.getMenuId(),
-                request.getTenantId(),
                 request.getSortingFields()
         ));
         List<RoleMenuResponseVO> records = pageResult.records().stream()
@@ -94,8 +91,7 @@ public class RoleMenuController {
         RoleMenuEntity roleMenu = roleMenuApplicationService.update(new UpdateRoleMenuCommand(
                 id,
                 request.getRoleId(),
-                request.getMenuId(),
-                request.getTenantId()
+                request.getMenuId()
         ));
         return ResultResponse.success(toResponse(roleMenu));
     }

@@ -54,8 +54,7 @@ public class UserController {
                 request.getOrgId(),
                 request.getDeptId(),
                 request.getLoginIp(),
-                request.getLoginDate(),
-                request.getTenantId()
+                request.getLoginDate()
         ));
         return ResultResponse.success(toResponse(user));
     }
@@ -77,7 +76,6 @@ public class UserController {
                 request.getMobile(),
                 request.getUserType(),
                 request.getStatus(),
-                request.getTenantId(),
                 request.getSortingFields()
         ));
         List<UserResponseVO> records = pageResult.records().stream()
@@ -102,8 +100,7 @@ public class UserController {
                 request.getOrgId(),
                 request.getDeptId(),
                 request.getLoginIp(),
-                request.getLoginDate(),
-                request.getTenantId()
+                request.getLoginDate()
         ));
         return ResultResponse.success(toResponse(user));
     }

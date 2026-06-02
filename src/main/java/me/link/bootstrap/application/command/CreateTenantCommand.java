@@ -4,11 +4,10 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 /**
- * Command object carrying the data required to create a tenant.
+ * 创建租户命令对象，封装创建新租户所需的数据。
  *
- * Encapsulates tenant identity, contact information, associated websites,
- * package assignment, expiration time, and account allocation for use by the
- * tenant application service during tenant creation.
+ * 包含租户名称、联系人信息、关联域名、套餐分配、过期时间和账号数量，
+ * 供租户应用服务在创建操作时使用。
  */
 public record CreateTenantCommand(
         String name,

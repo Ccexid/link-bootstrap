@@ -15,6 +15,4 @@ public class UserRoleCreateRequest implements Serializable {
     private Long userId;
     @Schema(description = "roleId")
     private Long roleId;
-    @Schema(description = "tenantId")
-    private Long tenantId;
 }

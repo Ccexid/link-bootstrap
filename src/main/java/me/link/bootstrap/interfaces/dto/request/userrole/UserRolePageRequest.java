@@ -22,7 +22,4 @@ public class UserRolePageRequest extends SortablePageRequest {
 
     @Schema(description = "roleId")
     private Long roleId;
-
-    @Schema(description = "tenantId")
-    private Long tenantId;
 }

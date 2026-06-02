@@ -5,10 +5,10 @@ import me.link.bootstrap.shared.kernel.valueobject.SortingField;
 import java.util.List;
 
 /**
- * Query object carrying the criteria required to retrieve a paginated list of tenant packages.
+ * 租户套餐分页查询对象，封装获取分页租户套餐列表所需的查询条件。
  *
- * Encapsulates pagination settings, an optional tenant package name filter, and optional sorting
- * instructions for use by the tenant package application service when searching tenant packages.
+ * 包含分页设置、可选的套餐名称过滤条件和排序指令，
+ * 供租户套餐应用服务在搜索套餐时使用。
  */
 public record TenantPackagePageQuery(
         Integer pageNo,

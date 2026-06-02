@@ -30,6 +30,4 @@ public class RoleCreateRequest implements Serializable {
     private Integer type;
     @Schema(description = "remark")
     private String remark;
-    @Schema(description = "tenantId")
-    private Long tenantId;
 }

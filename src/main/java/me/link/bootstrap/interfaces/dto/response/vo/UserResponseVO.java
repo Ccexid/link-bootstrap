@@ -39,6 +39,7 @@ public class UserResponseVO implements Serializable {
     @Schema(description = "loginIp")
     private String loginIp;
     @Schema(description = "loginDate")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime loginDate;
     @Schema(description = "tenantId")
     @Sortable(description = "tenantId")

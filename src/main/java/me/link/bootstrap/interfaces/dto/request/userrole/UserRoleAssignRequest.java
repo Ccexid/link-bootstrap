@@ -18,7 +18,4 @@ public class UserRoleAssignRequest implements Serializable {
 
     @Schema(description = "roleIds")
     private List<Long> roleIds;
-
-    @Schema(description = "tenantId")
-    private Long tenantId;
 }
