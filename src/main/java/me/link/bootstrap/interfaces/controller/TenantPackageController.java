@@ -31,6 +31,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * 租户套餐接口控制器，对外提供套餐增删改查 REST 接口。
+ */
 @RestController
 @RequestMapping(GlobalConstants.API_PREFIX + "/tenant/package")
 @Validated
@@ -40,6 +43,9 @@ public class TenantPackageController {
 
     private final TenantPackageApplicationService tenantPackageApplicationService;
 
+    /**
+     * 创建业务对象。
+     */
     @PostMapping
     @Operation(summary = "创建租户套餐", description = "创建租户套餐基础信息")
     public ResultResponse<TenantPackageResponseVO> create(@Valid @RequestBody TenantPackageCreateRequest request) {
@@ -51,12 +57,18 @@ public class TenantPackageController {
         return ResultResponse.success(toResponse(tenantPackage));
     }
 
+    /**
+     * 根据主键查询业务对象详情。
+     */
     @GetMapping("/{id}")
     @Operation(summary = "查询租户套餐详情", description = "根据租户套餐ID查询租户套餐详情")
     public ResultResponse<TenantPackageResponseVO> get(@PathVariable @NotNull(message = "租户套餐ID不能为空") Long id) {
         return ResultResponse.success(toResponse(tenantPackageApplicationService.get(id)));
     }
 
+    /**
+     * 分页查询业务对象列表。
+     */
     @GetMapping
     @Operation(summary = "分页查询租户套餐", description = "分页查询租户套餐列表")
     public ResultTableResponse<TenantPackageResponseVO> page(@Validated @SortWhitelist(TenantPackageResponseVO.class) TenantPackagePageRequest request) {
@@ -72,6 +84,9 @@ public class TenantPackageController {
         return ResultTableResponse.success(records, pageResult.total());
     }
 
+    /**
+     * 更新业务对象。
+     */
     @PutMapping("/{id}")
     @Operation(summary = "更新租户套餐", description = "更新租户套餐基础信息")
     public ResultResponse<TenantPackageResponseVO> update(@PathVariable @NotNull(message = "租户套餐ID不能为空") Long id,
@@ -86,6 +101,9 @@ public class TenantPackageController {
         return ResultResponse.success(toResponse(tenantPackage));
     }
 
+    /**
+     * 根据主键删除业务对象。
+     */
     @DeleteMapping("/{id}")
     @Operation(summary = "删除租户套餐", description = "根据租户套餐ID删除租户套餐")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "租户套餐ID不能为空") Long id) {

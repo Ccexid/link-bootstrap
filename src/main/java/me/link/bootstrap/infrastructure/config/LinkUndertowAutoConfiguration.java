@@ -22,6 +22,9 @@ import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 // 1. 安全防护：只有当前应用是 Servlet 类型 Web 应用时才激活
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 // 2. 安全防护：只有类路径下切实存在 Undertow 核心类时才激活，防止其他切换成 Tomcat 的项目崩溃
+/**
+ * Undertow 自动配置，集中定义 Web 容器相关参数。
+ */
 @ConditionalOnClass({Undertow.class, UndertowServletWebServerFactory.class})
 public class LinkUndertowAutoConfiguration implements WebServerFactoryCustomizer<UndertowServletWebServerFactory> {
 

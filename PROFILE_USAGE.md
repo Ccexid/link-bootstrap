@@ -120,7 +120,7 @@ docker run -d \
 
 1. **开发环境**: 使用H2数据库，无需安装MySQL，快速启动
 2. **测试环境**: 使用真实MySQL，模拟生产环境
-3. **生产环境**: 
+3. **生产环境**:
    - ✅ 所有敏感信息使用环境变量
    - ✅ 关闭Swagger文档
    - ✅ 关闭SQL打印
@@ -131,6 +131,7 @@ docker run -d \
 ## 配置优先级
 
 Spring Boot配置优先级(高→低):
+
 1. 命令行参数 `--spring.profiles.active=prod`
 2. Java系统属性 `-Dspring.profiles.active=prod`
 3. 环境变量 `SPRING_PROFILES_ACTIVE=prod`
@@ -141,11 +142,12 @@ Spring Boot配置优先级(高→低):
 
 启动后检查日志输出，确认激活的Profile:
 
-```
+```text
 The following 1 profile is active: "dev"
 ```
 
 访问健康检查端点验证:
+
 ```bash
 curl http://localhost:48080/actuator/health
 ```

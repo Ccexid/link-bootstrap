@@ -9,6 +9,9 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * 统一表格响应对象，用于包装分页列表数据和总记录数。
+ */
 @Schema(description = "统一响应结果")
 @Data
     public class ResultTableResponse<E> implements Serializable {

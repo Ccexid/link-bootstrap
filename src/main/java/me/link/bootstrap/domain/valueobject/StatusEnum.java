@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * 通用状态枚举，描述业务对象的正常和停用状态。
+ */
 @Getter
 @AllArgsConstructor
 public enum StatusEnum {

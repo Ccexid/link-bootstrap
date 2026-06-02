@@ -22,6 +22,9 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.stream.Collectors;
 
+/**
+ * 全局异常处理器，将参数异常、业务异常和系统异常转换为统一响应。
+ */
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {

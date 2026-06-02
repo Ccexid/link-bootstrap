@@ -9,6 +9,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Set;
 
+/**
+ * 创建租户套餐请求 DTO，承载 HTTP 入参并声明基础参数校验规则。
+ */
 @Data
 @Schema(description = "创建租户套餐请求")
 public class TenantPackageCreateRequest implements Serializable {

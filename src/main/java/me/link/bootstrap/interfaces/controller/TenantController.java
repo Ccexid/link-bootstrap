@@ -31,6 +31,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * 租户接口控制器，对外提供租户增删改查 REST 接口。
+ */
 @RestController
 @RequestMapping(GlobalConstants.API_PREFIX + "/tenant")
 @Validated
@@ -40,6 +43,9 @@ public class TenantController {
 
     private final TenantApplicationService tenantApplicationService;
 
+    /**
+     * 创建业务对象。
+     */
     @PostMapping
     @Operation(summary = "创建租户", description = "创建租户基础信息")
     public ResultResponse<TenantResponseVO> create(@Valid @RequestBody TenantCreateRequest request) {
@@ -56,12 +62,18 @@ public class TenantController {
         return ResultResponse.success(toResponse(tenant));
     }
 
+    /**
+     * 根据主键查询业务对象详情。
+     */
     @GetMapping("/{id}")
     @Operation(summary = "查询租户详情", description = "根据租户ID查询租户详情")
     public ResultResponse<TenantResponseVO> get(@PathVariable @NotNull(message = "租户ID不能为空") Long id) {
         return ResultResponse.success(toResponse(tenantApplicationService.get(id)));
     }
 
+    /**
+     * 分页查询业务对象列表。
+     */
     @GetMapping
     @Operation(summary = "分页查询租户", description = "分页查询租户列表")
     public ResultTableResponse<TenantResponseVO> page(@Validated @SortWhitelist(TenantResponseVO.class) TenantPageRequest request) {
@@ -77,6 +89,9 @@ public class TenantController {
         return ResultTableResponse.success(records, pageResult.total());
     }
 
+    /**
+     * 更新业务对象。
+     */
     @PutMapping("/{id}")
     @Operation(summary = "更新租户", description = "更新租户基础信息")
     public ResultResponse<TenantResponseVO> update(@PathVariable @NotNull(message = "租户ID不能为空") Long id,
@@ -95,6 +110,9 @@ public class TenantController {
         return ResultResponse.success(toResponse(tenant));
     }
 
+    /**
+     * 根据主键删除业务对象。
+     */
     @DeleteMapping("/{id}")
     @Operation(summary = "删除租户", description = "根据租户ID删除租户")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "租户ID不能为空") Long id) {

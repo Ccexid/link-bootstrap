@@ -10,6 +10,9 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+/**
+ * 租户套餐响应视图对象，定义接口返回给前端的套餐字段。
+ */
 @Data
 @Schema(description = "租户套餐信息")
 public class TenantPackageResponseVO implements Serializable {

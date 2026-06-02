@@ -17,16 +17,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * 排序字段响应增强器，自动向表格响应中追加当前 VO 支持的排序字段。
+ */
 @RestControllerAdvice(basePackages = "me.link.bootstrap.interfaces.controller")
 public class SortableFieldsResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 
     private final Map<Class<?>, List<String>> sortableCache = new ConcurrentHashMap<>();
 
+    /**
+     * 判断当前响应增强器是否支持该返回类型。
+     */
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
         return ResultTableResponse.class.isAssignableFrom(returnType.getParameterType());
     }
 
+    /**
+     * 在响应体写出前补充统一字段。
+     */
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
                                   Class<? extends HttpMessageConverter<?>> selectedConverterType,

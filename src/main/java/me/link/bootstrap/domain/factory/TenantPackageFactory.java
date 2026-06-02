@@ -5,6 +5,9 @@ import me.link.bootstrap.domain.entity.TenantPackageEntity;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+/**
+ * 租户套餐领域工厂，集中封装套餐创建和变更时的业务规则校验。
+ */
 public final class TenantPackageFactory {
 
     private static final int NAME_MAX_LENGTH = 30;
@@ -14,6 +17,9 @@ public final class TenantPackageFactory {
         throw new UnsupportedOperationException("工厂类不允许实例化");
     }
 
+    /**
+     * 创建业务对象。
+     */
     public static TenantPackageEntity create(String name, String remark, Set<Long> menuIds) {
         return TenantPackageEntity.create(normalizeName(name), normalizeRemark(remark), normalizeMenuIds(menuIds));
     }

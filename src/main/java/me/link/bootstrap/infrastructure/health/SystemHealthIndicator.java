@@ -39,6 +39,9 @@ public class SystemHealthIndicator implements HealthIndicator {
      */
     private static final LocalDateTime START_TIME = LocalDateTime.now();
 
+    /**
+     * 返回当前组件健康状态。
+     */
     @Override
     public Health health() {
         Map<String, Object> details = new LinkedHashMap<>();

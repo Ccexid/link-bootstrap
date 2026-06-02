@@ -29,6 +29,9 @@ public class DatabaseHealthIndicator implements HealthIndicator {
 
     private final DataSource dataSource;
 
+    /**
+     * 返回当前组件健康状态。
+     */
     @Override
     public Health health() {
         try (Connection connection = dataSource.getConnection()) {

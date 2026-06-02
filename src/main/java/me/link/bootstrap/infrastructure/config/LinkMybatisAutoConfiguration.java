@@ -27,6 +27,9 @@ import java.util.concurrent.TimeUnit;
         annotationClass = Mapper.class,
         lazyInitialization = "${mybatis.lazy-initialization:false}"
 )
+/**
+ * MyBatis-Plus 自动配置，集中注册分页、逻辑删除和字段填充等数据库能力。
+ */
 @Slf4j
 public class LinkMybatisAutoConfiguration {
 

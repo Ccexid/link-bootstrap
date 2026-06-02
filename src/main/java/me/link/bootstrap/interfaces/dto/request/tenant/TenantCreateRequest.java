@@ -13,6 +13,9 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+/**
+ * 创建租户请求 DTO，承载 HTTP 入参并声明基础参数校验规则。
+ */
 @Data
 @Schema(description = "创建租户请求")
 public class TenantCreateRequest implements Serializable {

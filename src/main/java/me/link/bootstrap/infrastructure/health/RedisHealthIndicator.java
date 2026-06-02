@@ -29,6 +29,9 @@ public class RedisHealthIndicator implements HealthIndicator {
 
     private final RedisConnectionFactory redisConnectionFactory;
 
+    /**
+     * 返回当前组件健康状态。
+     */
     @Override
     public Health health() {
         try (RedisConnection connection = redisConnectionFactory.getConnection()) {

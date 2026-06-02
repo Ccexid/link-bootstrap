@@ -8,6 +8,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
 
+/**
+ * 统一接口响应对象，用于包装单对象或无数据的业务响应。
+ */
 @Schema(description = "统一响应结果")
 @Data
 public class ResultResponse<T> implements Serializable {

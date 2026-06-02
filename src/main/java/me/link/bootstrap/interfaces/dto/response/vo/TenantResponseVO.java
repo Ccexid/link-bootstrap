@@ -11,6 +11,9 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+/**
+ * 租户响应视图对象，定义接口返回给前端的租户字段。
+ */
 @Data
 @Schema(description = "租户信息")
 public class TenantResponseVO implements Serializable {

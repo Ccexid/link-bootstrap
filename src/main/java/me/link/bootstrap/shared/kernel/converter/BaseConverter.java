@@ -42,5 +42,8 @@ import java.util.List;
         // 7. 当源属性为 null 时，目标属性保持默认值（不设置 null）
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
+/**
+ * MapStruct 基础转换配置，统一项目对象转换策略。
+ */
 public interface BaseConverter {
 }

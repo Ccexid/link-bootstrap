@@ -9,6 +9,9 @@ import java.time.LocalDateTime;
 
 import static me.link.bootstrap.shared.kernel.constant.GlobalConstants.*;
 
+/**
+ * 数据库公共字段填充处理器，负责创建人、更新人、创建时间和更新时间的自动填充。
+ */
 @Slf4j
 public class LinkDefaultDBFieldHandler implements MetaObjectHandler {
 

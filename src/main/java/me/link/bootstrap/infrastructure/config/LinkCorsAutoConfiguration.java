@@ -25,6 +25,9 @@ import java.util.Collections;
  */
 @AutoConfiguration
 // 💡 仅当当前环境是一个 Web 应用（Servlet 容器）时，该自动配置才激活，避免命令行或测试任务报错
+/**
+ * 跨域自动配置，集中定义接口跨域访问策略。
+ */
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass(CorsFilter.class)
 public class LinkCorsAutoConfiguration {

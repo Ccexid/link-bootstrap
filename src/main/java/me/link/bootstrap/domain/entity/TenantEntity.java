@@ -10,6 +10,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * 租户领域实体，封装租户基础信息、联系方式、套餐订阅和启停状态。
+ */
 @Getter
 @ToString
 @EqualsAndHashCode
@@ -95,6 +98,9 @@ public class TenantEntity {
         this.updatedAt = updatedAt;
     }
 
+    /**
+     * 创建业务对象。
+     */
     public static TenantEntity create(String name,
                                       Long contactUserId,
                                       String contactName,

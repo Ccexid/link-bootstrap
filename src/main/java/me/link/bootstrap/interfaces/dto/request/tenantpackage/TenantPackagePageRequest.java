@@ -8,6 +8,9 @@ import me.link.bootstrap.interfaces.dto.request.SortablePageRequest;
 
 import java.io.Serial;
 
+/**
+ * 租户套餐分页查询请求 DTO，承载分页、筛选和排序参数。
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)

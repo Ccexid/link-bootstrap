@@ -10,6 +10,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * 数据库持久化基类，定义审计字段和逻辑删除字段。
+ */
 @Data
 public class BaseDO implements Serializable {
 

@@ -13,9 +13,15 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import static me.link.bootstrap.shared.kernel.constant.GlobalConstants.TRACE_ID_HEADER;
 
+/**
+ * 链路追踪响应增强器，负责在统一响应体中追加 traceId。
+ */
 @RestControllerAdvice(basePackages = "me.link.bootstrap.interfaces.controller")
 public class TraceIdResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 
+    /**
+     * 判断当前响应增强器是否支持该返回类型。
+     */
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
         Class<?> parameterType = returnType.getParameterType();
@@ -23,6 +29,9 @@ public class TraceIdResponseBodyAdvice implements ResponseBodyAdvice<Object> {
                 || ResultTableResponse.class.isAssignableFrom(parameterType);
     }
 
+    /**
+     * 在响应体写出前补充统一字段。
+     */
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
                                   Class<? extends HttpMessageConverter<?>> selectedConverterType,

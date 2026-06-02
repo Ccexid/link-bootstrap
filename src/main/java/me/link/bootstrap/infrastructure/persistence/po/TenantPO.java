@@ -12,6 +12,9 @@ import me.link.bootstrap.shared.kernel.database.mybatis.BaseDO;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+/**
+ * 租户持久化对象，字段与 system_tenant 表结构保持对应。
+ */
 @EqualsAndHashCode(callSuper = true)
 @Data
 @TableName(value = "system_tenant", autoResultMap = true)

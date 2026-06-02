@@ -11,6 +11,9 @@ import me.link.bootstrap.shared.kernel.database.mybatis.BaseDO;
 
 import java.util.Set;
 
+/**
+ * 租户套餐持久化对象，字段与 system_tenant_package 表结构保持对应。
+ */
 @EqualsAndHashCode(callSuper = true)
 @Data
 @TableName(value = "system_tenant_package", autoResultMap = true)

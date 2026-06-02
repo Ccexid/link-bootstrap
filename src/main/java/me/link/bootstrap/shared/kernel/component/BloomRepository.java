@@ -2,6 +2,9 @@ package me.link.bootstrap.shared.kernel.component;
 
 import org.redisson.api.RBloomFilter;
 
+/**
+ * 布隆过滤器仓储组件，封装基于 Redis/Redisson 的布隆过滤器操作。
+ */
 public interface BloomRepository<T> {
     /**
      * 获取布隆过滤器实例

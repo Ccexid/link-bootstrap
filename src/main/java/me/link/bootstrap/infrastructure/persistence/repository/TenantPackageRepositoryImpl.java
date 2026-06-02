@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * 租户套餐仓储实现，负责将领域仓储抽象适配到 MyBatis-Plus 持久化能力。
+ */
 @Repository
 @RequiredArgsConstructor
 public class TenantPackageRepositoryImpl implements TenantPackageRepository {
@@ -32,6 +35,9 @@ public class TenantPackageRepositoryImpl implements TenantPackageRepository {
     private final TenantPackageInternalService tenantPackageInternalService;
     private final TenantPackageConverter tenantPackageConverter;
 
+    /**
+     * 保存领域对象并返回持久化后的领域对象。
+     */
     @Override
     public TenantPackageEntity save(TenantPackageEntity tenantPackage) {
         TenantPackagePO tenantPackagePO = tenantPackageConverter.convert(tenantPackage);
@@ -39,18 +45,27 @@ public class TenantPackageRepositoryImpl implements TenantPackageRepository {
         return tenantPackageConverter.reverseConvert(tenantPackagePO);
     }
 
+    /**
+     * 更新业务对象。
+     */
     @Override
     public boolean update(TenantPackageEntity tenantPackage) {
         TenantPackagePO tenantPackagePO = tenantPackageConverter.convert(tenantPackage);
         return tenantPackageInternalService.updateById(tenantPackagePO);
     }
 
+    /**
+     * 根据主键查询领域对象。
+     */
     @Override
     public Optional<TenantPackageEntity> findById(Long id) {
         return Optional.ofNullable(tenantPackageInternalService.getById(id))
                 .map(tenantPackageConverter::reverseConvert);
     }
 
+    /**
+     * 分页查询业务对象列表。
+     */
     @Override
     public PageResult<TenantPackageEntity> page(Integer pageNo, Integer pageSize, String name, List<SortingField> sortingFields) {
         Page<TenantPackagePO> page = Page.of(pageNo, pageSize);
@@ -62,6 +77,9 @@ public class TenantPackageRepositoryImpl implements TenantPackageRepository {
         return new PageResult<>(tenantPackageConverter.reverseConvertList(result.getRecords()), result.getTotal());
     }
 
+    /**
+     * 根据主键删除领域对象。
+     */
     @Override
     public boolean deleteById(Long id) {
         return tenantPackageInternalService.removeById(id);

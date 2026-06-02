@@ -13,27 +13,42 @@ import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * 租户套餐应用服务，负责编排套餐创建、查询、更新和删除流程。
+ */
 @Service
 @RequiredArgsConstructor
 public class TenantPackageApplicationService {
 
     private final TenantPackageRepository tenantPackageRepository;
 
+    /**
+     * 创建业务对象。
+     */
     @Transactional
     public TenantPackageEntity create(CreateTenantPackageCommand command) {
         TenantPackageEntity tenantPackage = TenantPackageFactory.create(command.name(), command.remark(), command.menuIds());
         return tenantPackageRepository.save(tenantPackage);
     }
 
+    /**
+     * 根据主键查询业务对象详情。
+     */
     public TenantPackageEntity get(Long id) {
         return tenantPackageRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.TENANT_PACKAGE_NOT_FOUND));
     }
 
+    /**
+     * 分页查询业务对象列表。
+     */
     public PageResult<TenantPackageEntity> page(TenantPackagePageQuery query) {
         return tenantPackageRepository.page(query.pageNo(), query.pageSize(), query.name(), query.sortingFields());
     }
 
+    /**
+     * 更新业务对象。
+     */
     @Transactional
     public TenantPackageEntity update(UpdateTenantPackageCommand command) {
         TenantPackageEntity tenantPackage = get(command.id());
@@ -51,6 +66,9 @@ public class TenantPackageApplicationService {
         return get(command.id());
     }
 
+    /**
+     * 根据主键删除业务对象。
+     */
     @Transactional
     public void delete(Long id) {
         if (!tenantPackageRepository.deleteById(id)) {

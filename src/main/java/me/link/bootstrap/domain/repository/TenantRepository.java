@@ -7,6 +7,9 @@ import me.link.bootstrap.shared.kernel.valueobject.SortingField;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * 租户仓储接口，定义领域层访问租户持久化数据所需的抽象能力。
+ */
 public interface TenantRepository {
 
     TenantEntity save(TenantEntity tenant);

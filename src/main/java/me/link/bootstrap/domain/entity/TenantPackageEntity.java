@@ -10,6 +10,9 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+/**
+ * 租户套餐领域实体，封装套餐名称、状态、备注和菜单授权集合。
+ */
 @Getter
 @ToString
 @EqualsAndHashCode
@@ -45,6 +48,9 @@ public class TenantPackageEntity {
         this.updatedAt = updatedAt;
     }
 
+    /**
+     * 创建业务对象。
+     */
     public static TenantPackageEntity create(String name, String remark, Set<Long> menuIds) {
         return new TenantPackageEntity(null, name, StatusEnum.NORMAL, remark, menuIds, null, null);
     }
