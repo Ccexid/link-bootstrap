@@ -1,6 +1,7 @@
 package me.link.bootstrap.application.service;
 
 import lombok.RequiredArgsConstructor;
+import me.link.bootstrap.application.command.AssignUserRoleCommand;
 import me.link.bootstrap.application.command.CreateUserRoleCommand;
 import me.link.bootstrap.application.command.UserRolePageQuery;
 import me.link.bootstrap.application.command.UpdateUserRoleCommand;
@@ -12,6 +13,8 @@ import me.link.bootstrap.shared.kernel.exception.BusinessException;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +46,18 @@ public class UserRoleApplicationService {
             throw new BusinessException(ErrorCode.USER_ROLE_NOT_FOUND);
         }
         return get(command.id());
+    }
+
+    @Transactional
+    public void assign(AssignUserRoleCommand command) {
+        if (command.userId() == null || command.userId() <= 0) {
+            throw new IllegalArgumentException("用户角色关联userId必须大于0");
+        }
+        List<UserRoleEntity> userRoles = command.roleIds() == null ? List.of() : command.roleIds().stream()
+                .distinct()
+                .map(roleId -> UserRoleFactory.create(command.userId(), roleId, command.tenantId()))
+                .toList();
+        userRoleRepository.assign(command.userId(), command.tenantId(), userRoles);
     }
 
     @Transactional

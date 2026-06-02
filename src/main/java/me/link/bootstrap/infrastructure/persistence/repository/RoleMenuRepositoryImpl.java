@@ -1,6 +1,5 @@
 package me.link.bootstrap.infrastructure.persistence.repository;
 
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -69,6 +68,17 @@ public class RoleMenuRepositoryImpl implements RoleMenuRepository {
     @Override
     public boolean deleteById(Long id) {
         return roleMenuInternalService.removeById(id);
+    }
+
+    @Override
+    public void authorize(Long roleId, Long tenantId, List<RoleMenuEntity> roleMenus) {
+        roleMenuInternalService.remove(new LambdaQueryWrapper<RoleMenuPO>()
+                .eq(RoleMenuPO::getRoleId, roleId)
+                .eq(tenantId != null, RoleMenuPO::getTenantId, tenantId));
+        if (roleMenus == null || roleMenus.isEmpty()) {
+            return;
+        }
+        roleMenuInternalService.saveBatch(roleMenuConverter.convertList(roleMenus));
     }
 
     private void applyOrders(Page<RoleMenuPO> page, List<SortingField> sortingFields) {

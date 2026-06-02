@@ -1,6 +1,7 @@
 package me.link.bootstrap.application.service;
 
 import lombok.RequiredArgsConstructor;
+import me.link.bootstrap.application.command.AuthorizeRoleMenuCommand;
 import me.link.bootstrap.application.command.CreateRoleMenuCommand;
 import me.link.bootstrap.application.command.RoleMenuPageQuery;
 import me.link.bootstrap.application.command.UpdateRoleMenuCommand;
@@ -12,6 +13,8 @@ import me.link.bootstrap.shared.kernel.exception.BusinessException;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +46,18 @@ public class RoleMenuApplicationService {
             throw new BusinessException(ErrorCode.ROLE_MENU_NOT_FOUND);
         }
         return get(command.id());
+    }
+
+    @Transactional
+    public void authorize(AuthorizeRoleMenuCommand command) {
+        if (command.roleId() == null || command.roleId() <= 0) {
+            throw new IllegalArgumentException("角色菜单关联roleId必须大于0");
+        }
+        List<RoleMenuEntity> roleMenus = command.menuIds() == null ? List.of() : command.menuIds().stream()
+                .distinct()
+                .map(menuId -> RoleMenuFactory.create(command.roleId(), menuId, command.tenantId()))
+                .toList();
+        roleMenuRepository.authorize(command.roleId(), command.tenantId(), roleMenus);
     }
 
     @Transactional

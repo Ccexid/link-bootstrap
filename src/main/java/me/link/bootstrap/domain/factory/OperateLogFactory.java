@@ -25,14 +25,14 @@ public final class OperateLogFactory {
     }
 
     private static void validate(String traceId, Long userId, Integer userType, String userIp, String userAgent, String module, Integer operation, Long bizId, String action, String extra, Boolean success, String requestMethod, String requestUrl, Integer duration, Long tenantId) {
-        if (userId == null || userId <= 0) {
-            throw new IllegalArgumentException("操作日志userId必须大于0");
+        if (userId == null || userId < 0) {
+            throw new IllegalArgumentException("操作日志userId不能小于0");
         }
         if (module == null || module.trim().isEmpty()) {
             throw new IllegalArgumentException("操作日志module不能为空");
         }
-        if (bizId == null || bizId <= 0) {
-            throw new IllegalArgumentException("操作日志bizId必须大于0");
+        if (bizId == null || bizId < 0) {
+            throw new IllegalArgumentException("操作日志bizId不能小于0");
         }
         if (action == null || action.trim().isEmpty()) {
             throw new IllegalArgumentException("操作日志action不能为空");

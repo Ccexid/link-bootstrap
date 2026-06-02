@@ -1,6 +1,5 @@
 package me.link.bootstrap.infrastructure.persistence.repository;
 
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -69,6 +68,17 @@ public class UserRoleRepositoryImpl implements UserRoleRepository {
     @Override
     public boolean deleteById(Long id) {
         return userRoleInternalService.removeById(id);
+    }
+
+    @Override
+    public void assign(Long userId, Long tenantId, List<UserRoleEntity> userRoles) {
+        userRoleInternalService.remove(new LambdaQueryWrapper<UserRolePO>()
+                .eq(UserRolePO::getUserId, userId)
+                .eq(tenantId != null, UserRolePO::getTenantId, tenantId));
+        if (userRoles == null || userRoles.isEmpty()) {
+            return;
+        }
+        userRoleInternalService.saveBatch(userRoleConverter.convertList(userRoles));
     }
 
     private void applyOrders(Page<UserRolePO> page, List<SortingField> sortingFields) {

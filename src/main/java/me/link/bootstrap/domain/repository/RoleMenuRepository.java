@@ -18,4 +18,6 @@ public interface RoleMenuRepository {
     PageResult<RoleMenuEntity> page(Integer pageNo, Integer pageSize, Long roleId, Long menuId, Long tenantId, List<SortingField> sortingFields);
 
     boolean deleteById(Long id);
+
+    void authorize(Long roleId, Long tenantId, List<RoleMenuEntity> roleMenus);
 }

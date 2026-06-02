@@ -5,12 +5,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import me.link.bootstrap.application.command.AuthorizeRoleMenuCommand;
 import me.link.bootstrap.application.command.CreateRoleMenuCommand;
 import me.link.bootstrap.application.command.RoleMenuPageQuery;
 import me.link.bootstrap.application.command.UpdateRoleMenuCommand;
 import me.link.bootstrap.application.service.RoleMenuApplicationService;
 import me.link.bootstrap.domain.entity.RoleMenuEntity;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.interfaces.dto.request.rolemenu.RoleMenuAuthorizeRequest;
 import me.link.bootstrap.interfaces.dto.request.rolemenu.RoleMenuCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.rolemenu.RoleMenuPageRequest;
 import me.link.bootstrap.interfaces.dto.request.rolemenu.RoleMenuUpdateRequest;
@@ -49,6 +51,17 @@ public class RoleMenuController {
                 request.getTenantId()
         ));
         return ResultResponse.success(toResponse(roleMenu));
+    }
+
+    @PostMapping("/authorize")
+    @Operation(summary = "批量授权角色菜单", description = "覆盖指定角色的菜单授权")
+    public ResultResponse<Void> authorize(@Valid @RequestBody RoleMenuAuthorizeRequest request) {
+        roleMenuApplicationService.authorize(new AuthorizeRoleMenuCommand(
+                request.getRoleId(),
+                request.getMenuIds(),
+                request.getTenantId()
+        ));
+        return ResultResponse.success();
     }
 
     @GetMapping("/{id}")

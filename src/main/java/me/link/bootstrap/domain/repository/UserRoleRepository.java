@@ -18,4 +18,6 @@ public interface UserRoleRepository {
     PageResult<UserRoleEntity> page(Integer pageNo, Integer pageSize, Long userId, Long roleId, Long tenantId, List<SortingField> sortingFields);
 
     boolean deleteById(Long id);
+
+    void assign(Long userId, Long tenantId, List<UserRoleEntity> userRoles);
 }

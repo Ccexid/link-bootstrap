@@ -5,12 +5,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import me.link.bootstrap.application.command.AssignUserRoleCommand;
 import me.link.bootstrap.application.command.CreateUserRoleCommand;
 import me.link.bootstrap.application.command.UserRolePageQuery;
 import me.link.bootstrap.application.command.UpdateUserRoleCommand;
 import me.link.bootstrap.application.service.UserRoleApplicationService;
 import me.link.bootstrap.domain.entity.UserRoleEntity;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.interfaces.dto.request.userrole.UserRoleAssignRequest;
 import me.link.bootstrap.interfaces.dto.request.userrole.UserRoleCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.userrole.UserRolePageRequest;
 import me.link.bootstrap.interfaces.dto.request.userrole.UserRoleUpdateRequest;
@@ -49,6 +51,17 @@ public class UserRoleController {
                 request.getTenantId()
         ));
         return ResultResponse.success(toResponse(userRole));
+    }
+
+    @PostMapping("/assign")
+    @Operation(summary = "批量分配用户角色", description = "覆盖指定用户的角色分配")
+    public ResultResponse<Void> assign(@Valid @RequestBody UserRoleAssignRequest request) {
+        userRoleApplicationService.assign(new AssignUserRoleCommand(
+                request.getUserId(),
+                request.getRoleIds(),
+                request.getTenantId()
+        ));
+        return ResultResponse.success();
     }
 
     @GetMapping("/{id}")
