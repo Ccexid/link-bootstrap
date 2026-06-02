@@ -1,0 +1,35 @@
+package me.link.bootstrap.interfaces.dto.request.organization;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import me.link.bootstrap.domain.valueobject.StatusEnum;
+
+import java.time.LocalDateTime;
+import java.io.Serial;
+import java.io.Serializable;
+
+@Data
+@Schema(description = "创建组织请求")
+public class OrganizationCreateRequest implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    @Schema(description = "name")
+    private String name;
+    @Schema(description = "orgType")
+    private Integer orgType;
+    @Schema(description = "parentId")
+    private Long parentId;
+    @Schema(description = "ancestors")
+    private String ancestors;
+    @Schema(description = "level")
+    private Integer level;
+    @Schema(description = "contactName")
+    private String contactName;
+    @Schema(description = "contactMobile")
+    private String contactMobile;
+    @Schema(description = "status")
+    private StatusEnum status;
+    @Schema(description = "tenantId")
+    private Long tenantId;
+}

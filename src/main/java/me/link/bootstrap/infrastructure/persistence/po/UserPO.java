@@ -1,0 +1,42 @@
+package me.link.bootstrap.infrastructure.persistence.po;
+
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import me.link.bootstrap.domain.valueobject.StatusEnum;
+import me.link.bootstrap.shared.kernel.database.mybatis.TenantBaseDO;
+
+import java.time.LocalDateTime;
+
+@EqualsAndHashCode(callSuper = true)
+@Data
+@TableName(value = "system_users")
+public class UserPO extends TenantBaseDO {
+
+    @TableId
+    private Long id;
+    @TableField(value = "username")
+    private String username;
+    @TableField(value = "password")
+    private String password;
+    @TableField(value = "nickname")
+    private String nickname;
+    @TableField(value = "user_type")
+    private Integer userType;
+    @TableField(value = "mobile")
+    private String mobile;
+    @TableField(value = "avatar")
+    private String avatar;
+    @TableField(value = "`status`")
+    private StatusEnum status;
+    @TableField(value = "org_id")
+    private Long orgId;
+    @TableField(value = "dept_id")
+    private Long deptId;
+    @TableField(value = "login_ip")
+    private String loginIp;
+    @TableField(value = "login_date")
+    private LocalDateTime loginDate;
+}

@@ -1,0 +1,107 @@
+package me.link.bootstrap.interfaces.controller;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
+import me.link.bootstrap.application.command.CreateRoleMenuCommand;
+import me.link.bootstrap.application.command.RoleMenuPageQuery;
+import me.link.bootstrap.application.command.UpdateRoleMenuCommand;
+import me.link.bootstrap.application.service.RoleMenuApplicationService;
+import me.link.bootstrap.domain.entity.RoleMenuEntity;
+import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.interfaces.dto.request.rolemenu.RoleMenuCreateRequest;
+import me.link.bootstrap.interfaces.dto.request.rolemenu.RoleMenuPageRequest;
+import me.link.bootstrap.interfaces.dto.request.rolemenu.RoleMenuUpdateRequest;
+import me.link.bootstrap.interfaces.dto.response.ResultResponse;
+import me.link.bootstrap.interfaces.dto.response.ResultTableResponse;
+import me.link.bootstrap.interfaces.dto.response.vo.RoleMenuResponseVO;
+import me.link.bootstrap.interfaces.validation.SortWhitelist;
+import me.link.bootstrap.shared.kernel.constant.GlobalConstants;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(GlobalConstants.API_PREFIX + "/system/role-menu")
+@Validated
+@RequiredArgsConstructor
+@Tag(name = "角色菜单关联接口", description = "角色菜单关联增删改查接口")
+public class RoleMenuController {
+
+    private final RoleMenuApplicationService roleMenuApplicationService;
+
+    @PostMapping
+    @Operation(summary = "创建角色菜单关联", description = "创建角色菜单关联基础信息")
+    public ResultResponse<RoleMenuResponseVO> create(@Valid @RequestBody RoleMenuCreateRequest request) {
+        RoleMenuEntity roleMenu = roleMenuApplicationService.create(new CreateRoleMenuCommand(
+                request.getRoleId(),
+                request.getMenuId(),
+                request.getTenantId()
+        ));
+        return ResultResponse.success(toResponse(roleMenu));
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "查询角色菜单关联详情", description = "根据ID查询角色菜单关联详情")
+    public ResultResponse<RoleMenuResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
+        return ResultResponse.success(toResponse(roleMenuApplicationService.get(id)));
+    }
+
+    @GetMapping
+    @Operation(summary = "分页查询角色菜单关联", description = "分页查询角色菜单关联列表")
+    public ResultTableResponse<RoleMenuResponseVO> page(@Validated @SortWhitelist(RoleMenuResponseVO.class) RoleMenuPageRequest request) {
+        PageResult<RoleMenuEntity> pageResult = roleMenuApplicationService.page(new RoleMenuPageQuery(
+                request.getPageNo(),
+                request.getPageSize(),
+                request.getRoleId(),
+                request.getMenuId(),
+                request.getTenantId(),
+                request.getSortingFields()
+        ));
+        List<RoleMenuResponseVO> records = pageResult.records().stream()
+                .map(this::toResponse)
+                .toList();
+        return ResultTableResponse.success(records, pageResult.total());
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "更新角色菜单关联", description = "更新角色菜单关联基础信息")
+    public ResultResponse<RoleMenuResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
+                                                  @Valid @RequestBody RoleMenuUpdateRequest request) {
+        RoleMenuEntity roleMenu = roleMenuApplicationService.update(new UpdateRoleMenuCommand(
+                id,
+                request.getRoleId(),
+                request.getMenuId(),
+                request.getTenantId()
+        ));
+        return ResultResponse.success(toResponse(roleMenu));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "删除角色菜单关联", description = "根据ID删除角色菜单关联")
+    public ResultResponse<Void> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
+        roleMenuApplicationService.delete(id);
+        return ResultResponse.success();
+    }
+
+    private RoleMenuResponseVO toResponse(RoleMenuEntity roleMenu) {
+        RoleMenuResponseVO response = new RoleMenuResponseVO();
+        response.setId(roleMenu.getId());
+        response.setRoleId(roleMenu.getRoleId());
+        response.setMenuId(roleMenu.getMenuId());
+        response.setTenantId(roleMenu.getTenantId());
+        response.setCreatedAt(roleMenu.getCreatedAt());
+        response.setUpdatedAt(roleMenu.getUpdatedAt());
+        return response;
+    }
+}

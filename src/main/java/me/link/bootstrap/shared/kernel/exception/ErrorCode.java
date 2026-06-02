@@ -47,6 +47,12 @@ public enum ErrorCode {
     TENANT_NOT_FOUND(500_002_002, "租户不存在"),
     /** 业务错误: 根据租户套餐ID未查询到租户套餐记录 */
     TENANT_PACKAGE_NOT_FOUND(500_002_003, "租户套餐不存在"),
+    ORGANIZATION_NOT_FOUND(500_003_001, "组织不存在"),
+    ROLE_NOT_FOUND(500_003_002, "角色不存在"),
+    MENU_NOT_FOUND(500_003_003, "菜单不存在"),
+    ROLE_MENU_NOT_FOUND(500_003_004, "角色菜单关联不存在"),
+    USER_ROLE_NOT_FOUND(500_003_005, "用户角色关联不存在"),
+    OPERATE_LOG_NOT_FOUND(500_003_006, "操作日志不存在"),
     /** 业务错误: 系统内部发生未预期异常,需查看日志定位 */
     SYSTEM_ERROR(500_999_999, "系统内部错误");
 
