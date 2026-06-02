@@ -1,5 +1,6 @@
 package me.link.bootstrap.interfaces.dto.request.tenant;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
@@ -41,6 +42,7 @@ public class TenantCreateRequest implements Serializable {
 
     @Schema(description = "过期时间", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "过期时间不能为空")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Future(message = "过期时间必须晚于当前时间")
     private LocalDateTime expireTime;
 

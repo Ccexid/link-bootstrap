@@ -1,5 +1,6 @@
 package me.link.bootstrap.interfaces.dto.response.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import me.link.bootstrap.domain.valueobject.StatusEnum;
@@ -43,6 +44,7 @@ public class TenantResponseVO implements Serializable {
     private Long packageId;
 
     @Schema(description = "过期时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime expireTime;
 
     @Schema(description = "账号数量")
@@ -50,9 +52,11 @@ public class TenantResponseVO implements Serializable {
 
     @Schema(description = "创建时间")
     @Sortable(description = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
     @Schema(description = "更新时间")
     @Sortable(description = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 }
