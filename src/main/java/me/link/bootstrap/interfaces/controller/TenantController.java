@@ -1,5 +1,6 @@
 package me.link.bootstrap.interfaces.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -47,6 +48,7 @@ public class TenantController {
      * 创建业务对象。
      */
     @PostMapping
+    @SaCheckPermission("system:tenant:create")
     @Operation(summary = "创建租户", description = "创建租户基础信息")
     public ResultResponse<TenantResponseVO> create(@Valid @RequestBody TenantCreateRequest request) {
         TenantEntity tenant = tenantApplicationService.create(new CreateTenantCommand(
@@ -93,6 +95,7 @@ public class TenantController {
      * 更新业务对象。
      */
     @PutMapping("/{id}")
+    @SaCheckPermission("system:tenant:update")
     @Operation(summary = "更新租户", description = "更新租户基础信息")
     public ResultResponse<TenantResponseVO> update(@PathVariable @NotNull(message = "租户ID不能为空") Long id,
                                                    @Valid @RequestBody TenantUpdateRequest request) {
@@ -114,6 +117,7 @@ public class TenantController {
      * 根据主键删除业务对象。
      */
     @DeleteMapping("/{id}")
+    @SaCheckPermission("system:tenant:delete")
     @Operation(summary = "删除租户", description = "根据租户ID删除租户")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "租户ID不能为空") Long id) {
         tenantApplicationService.delete(id);

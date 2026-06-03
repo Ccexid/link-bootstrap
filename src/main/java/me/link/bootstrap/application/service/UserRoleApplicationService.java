@@ -9,6 +9,7 @@ import me.link.bootstrap.domain.entity.UserRoleEntity;
 import me.link.bootstrap.domain.factory.UserRoleFactory;
 import me.link.bootstrap.domain.repository.UserRoleRepository;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.infrastructure.security.PermissionCacheService;
 import me.link.bootstrap.shared.kernel.exception.BusinessException;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 import me.link.bootstrap.shared.kernel.util.SecurityHelper;
@@ -29,6 +30,7 @@ import java.util.List;
 public class UserRoleApplicationService {
 
     private final UserRoleRepository userRoleRepository;
+    private final PermissionCacheService permissionCacheService;
 
     /**
      * 创建用户角色关联。
@@ -37,7 +39,9 @@ public class UserRoleApplicationService {
     public UserRoleEntity create(CreateUserRoleCommand command) {
         Long tenantId = SecurityHelper.getRequiredTenantId();
         UserRoleEntity userRole = UserRoleFactory.create(command.userId(), command.roleId(), tenantId);
-        return userRoleRepository.save(userRole);
+        UserRoleEntity saved = userRoleRepository.save(userRole);
+        permissionCacheService.evictByUserId(command.userId());
+        return saved;
     }
 
     /**
@@ -62,9 +66,14 @@ public class UserRoleApplicationService {
     public UserRoleEntity update(UpdateUserRoleCommand command) {
         UserRoleEntity userRole = get(command.id());
         Long tenantId = SecurityHelper.getRequiredTenantId();
+        Long oldUserId = userRole.getUserId();
         UserRoleFactory.changeBasicInfo(userRole, command.userId(), command.roleId(), tenantId);
         if (!userRoleRepository.update(userRole)) {
             throw new BusinessException(ErrorCode.USER_ROLE_NOT_FOUND);
+        }
+        permissionCacheService.evictByUserId(oldUserId);
+        if (!oldUserId.equals(command.userId())) {
+            permissionCacheService.evictByUserId(command.userId());
         }
         return get(command.id());
     }
@@ -86,6 +95,7 @@ public class UserRoleApplicationService {
                 .map(roleId -> UserRoleFactory.create(command.userId(), roleId, tenantId))
                 .toList();
         userRoleRepository.assign(command.userId(), tenantId, userRoles);
+        permissionCacheService.evictByUserId(command.userId());
     }
 
     /**
@@ -93,8 +103,11 @@ public class UserRoleApplicationService {
      */
     @Transactional
     public void delete(Long id) {
+        // 先 get 拿 userId 用于 evict,再删除
+        UserRoleEntity userRole = get(id);
         if (!userRoleRepository.deleteById(id)) {
             throw new BusinessException(ErrorCode.USER_ROLE_NOT_FOUND);
         }
+        permissionCacheService.evictByUserId(userRole.getUserId());
     }
 }

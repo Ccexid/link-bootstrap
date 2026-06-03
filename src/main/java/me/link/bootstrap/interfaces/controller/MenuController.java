@@ -1,5 +1,6 @@
 package me.link.bootstrap.interfaces.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -41,6 +42,7 @@ public class MenuController {
     private final MenuApplicationService menuApplicationService;
 
     @PostMapping
+    @SaCheckPermission("system:menu:create")
     @Operation(summary = "创建菜单", description = "创建菜单基础信息")
     public ResultResponse<MenuResponseVO> create(@Valid @RequestBody MenuCreateRequest request) {
         MenuEntity menu = menuApplicationService.create(new CreateMenuCommand(
@@ -87,6 +89,7 @@ public class MenuController {
     }
 
     @PutMapping("/{id}")
+    @SaCheckPermission("system:menu:update")
     @Operation(summary = "更新菜单", description = "更新菜单基础信息")
     public ResultResponse<MenuResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
                                                   @Valid @RequestBody MenuUpdateRequest request) {
@@ -110,6 +113,7 @@ public class MenuController {
     }
 
     @DeleteMapping("/{id}")
+    @SaCheckPermission("system:menu:delete")
     @Operation(summary = "删除菜单", description = "根据ID删除菜单")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         menuApplicationService.delete(id);

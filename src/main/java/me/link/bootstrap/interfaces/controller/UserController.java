@@ -1,5 +1,6 @@
 package me.link.bootstrap.interfaces.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -41,6 +42,7 @@ public class UserController {
     private final UserApplicationService userApplicationService;
 
     @PostMapping
+    @SaCheckPermission("system:user:create")
     @Operation(summary = "创建用户", description = "创建用户基础信息")
     public ResultResponse<UserResponseVO> create(@Valid @RequestBody UserCreateRequest request) {
         UserEntity user = userApplicationService.create(new CreateUserCommand(
@@ -85,6 +87,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
+    @SaCheckPermission("system:user:update")
     @Operation(summary = "更新用户", description = "更新用户基础信息")
     public ResultResponse<UserResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
                                                   @Valid @RequestBody UserUpdateRequest request) {
@@ -106,6 +109,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @SaCheckPermission("system:user:delete")
     @Operation(summary = "删除用户", description = "根据ID删除用户")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         userApplicationService.delete(id);

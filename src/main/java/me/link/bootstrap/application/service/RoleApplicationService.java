@@ -8,6 +8,7 @@ import me.link.bootstrap.domain.entity.RoleEntity;
 import me.link.bootstrap.domain.factory.RoleFactory;
 import me.link.bootstrap.domain.repository.RoleRepository;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.infrastructure.security.PermissionCacheService;
 import me.link.bootstrap.shared.kernel.exception.BusinessException;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 import me.link.bootstrap.shared.kernel.util.SecurityHelper;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class RoleApplicationService {
 
     private final RoleRepository roleRepository;
+    private final PermissionCacheService permissionCacheService;
 
     /**
      * 创建角色。
@@ -71,6 +73,8 @@ public class RoleApplicationService {
         if (!roleRepository.update(role)) {
             throw new BusinessException(ErrorCode.ROLE_NOT_FOUND);
         }
+        // 角色信息(如 status、code)变化会影响所有持有该角色用户的权限码 / 角色码,级联失效缓存
+        permissionCacheService.evictByRoleId(command.id());
         return get(command.id());
     }
 
@@ -79,6 +83,8 @@ public class RoleApplicationService {
      */
     @Transactional
     public void delete(Long id) {
+        // 必须在 delete 之前 evict,evict 内部查 user_role 来拿受影响 userIds
+        permissionCacheService.evictByRoleId(id);
         if (!roleRepository.deleteById(id)) {
             throw new BusinessException(ErrorCode.ROLE_NOT_FOUND);
         }

@@ -1,5 +1,6 @@
 package me.link.bootstrap.interfaces.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -43,6 +44,7 @@ public class UserRoleController {
     private final UserRoleApplicationService userRoleApplicationService;
 
     @PostMapping
+    @SaCheckPermission("system:user-role:create")
     @Operation(summary = "创建用户角色关联", description = "创建用户角色关联基础信息")
     public ResultResponse<UserRoleResponseVO> create(@Valid @RequestBody UserRoleCreateRequest request) {
         UserRoleEntity userRole = userRoleApplicationService.create(new CreateUserRoleCommand(
@@ -53,6 +55,7 @@ public class UserRoleController {
     }
 
     @PostMapping("/assign")
+    @SaCheckPermission("system:user-role:assign")
     @Operation(summary = "批量分配用户角色", description = "覆盖指定用户的角色分配")
     public ResultResponse<Void> assign(@Valid @RequestBody UserRoleAssignRequest request) {
         userRoleApplicationService.assign(new AssignUserRoleCommand(
@@ -85,6 +88,7 @@ public class UserRoleController {
     }
 
     @PutMapping("/{id}")
+    @SaCheckPermission("system:user-role:update")
     @Operation(summary = "更新用户角色关联", description = "更新用户角色关联基础信息")
     public ResultResponse<UserRoleResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
                                                   @Valid @RequestBody UserRoleUpdateRequest request) {
@@ -97,6 +101,7 @@ public class UserRoleController {
     }
 
     @DeleteMapping("/{id}")
+    @SaCheckPermission("system:user-role:delete")
     @Operation(summary = "删除用户角色关联", description = "根据ID删除用户角色关联")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         userRoleApplicationService.delete(id);

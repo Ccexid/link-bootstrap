@@ -1,5 +1,6 @@
 package me.link.bootstrap.interfaces.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -41,6 +42,7 @@ public class OperateLogController {
     private final OperateLogApplicationService operateLogApplicationService;
 
     @PostMapping
+    @SaCheckPermission("system:operate-log:create")
     @Operation(summary = "创建操作日志", description = "创建操作日志基础信息")
     public ResultResponse<OperateLogResponseVO> create(@Valid @RequestBody OperateLogCreateRequest request) {
         OperateLogEntity operateLog = operateLogApplicationService.create(new CreateOperateLogCommand(
@@ -89,6 +91,7 @@ public class OperateLogController {
     }
 
     @PutMapping("/{id}")
+    @SaCheckPermission("system:operate-log:update")
     @Operation(summary = "更新操作日志", description = "更新操作日志基础信息")
     public ResultResponse<OperateLogResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
                                                   @Valid @RequestBody OperateLogUpdateRequest request) {
@@ -113,6 +116,7 @@ public class OperateLogController {
     }
 
     @DeleteMapping("/{id}")
+    @SaCheckPermission("system:operate-log:delete")
     @Operation(summary = "删除操作日志", description = "根据ID删除操作日志")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         operateLogApplicationService.delete(id);

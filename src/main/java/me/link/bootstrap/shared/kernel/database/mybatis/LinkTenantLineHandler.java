@@ -59,9 +59,22 @@ public class LinkTenantLineHandler implements TenantLineHandler {
         return "tenant_id";
     }
 
+    /**
+     * 忽略策略(按优先级):
+     * <ol>
+     *   <li>{@link TenantContextHolder#isIgnore()} 为 true(@TenantIgnore 切面进入)—— 全场景放行;</li>
+     *   <li>当前登录用户是平台超管({@link SecurityHelper#isSuperAdmin()})—— 全场景放行,实现跨租户运维。
+     *       注意 INSERT 时 tenant_id 不会被自动改写,调用方需在 PO 中显式设置目标租户 ID,
+     *       未设置时按 DB 默认值(通常 0)落库;</li>
+     *   <li>表名在 {@link #GLOBAL_TABLES} 中(菜单/租户/租户套餐)—— 该表始终放行。</li>
+     * </ol>
+     */
     @Override
     public boolean ignoreTable(String tableName) {
         if (TenantContextHolder.isIgnore()) {
+            return true;
+        }
+        if (SecurityHelper.isSuperAdmin()) {
             return true;
         }
         if (tableName == null) {

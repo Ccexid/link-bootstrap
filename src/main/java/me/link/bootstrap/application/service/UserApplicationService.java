@@ -1,6 +1,5 @@
 package me.link.bootstrap.application.service;
 
-import cn.hutool.crypto.digest.BCrypt;
 import lombok.RequiredArgsConstructor;
 import me.link.bootstrap.application.command.CreateUserCommand;
 import me.link.bootstrap.application.command.UserPageQuery;
@@ -36,9 +35,8 @@ public class UserApplicationService {
      */
     @Transactional
     public UserEntity create(CreateUserCommand command) {
-        String encryptedPassword = BCrypt.hashpw(command.password(), BCrypt.gensalt());
         Long tenantId = SecurityHelper.getRequiredTenantId();
-        UserEntity user = UserFactory.create(command.username(), encryptedPassword, command.nickname(), command.userType(), command.mobile(), command.avatar(), command.status(), command.orgId(), command.deptId(), command.loginIp(), command.loginDate(), tenantId);
+        UserEntity user = UserFactory.create(command.username(), command.password(), command.nickname(), command.userType(), command.mobile(), command.avatar(), command.status(), command.orgId(), command.deptId(), command.loginIp(), command.loginDate(), tenantId);
         return userRepository.save(user);
     }
 

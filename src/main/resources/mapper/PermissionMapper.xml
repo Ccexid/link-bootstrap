@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.link.bootstrap.infrastructure.persistence.mapper.PermissionMapper">
+
+    <!--
+        权限码查询:user -> user_role -> role_menu -> menu.permission
+
+        - system_menu 是全局表(LinkTenantLineHandler.GLOBAL_TABLES),不参与租户隔离。
+        - system_user_role / system_role_menu / system_role 由 TenantLineInnerInterceptor 自动注入
+          tenant_id = ? 条件(取自 Sa-Token Session)。
+        - status=0 表示正常启用,deleted=0 表示未逻辑删除。
+    -->
+    <select id="selectPermissionsByUserId" resultType="java.lang.String">
+        SELECT DISTINCT m.permission
+        FROM system_menu m
+                 INNER JOIN system_role_menu rm ON rm.menu_id = m.id AND rm.deleted = 0
+                 INNER JOIN system_user_role ur ON ur.role_id = rm.role_id AND ur.deleted = 0
+                 INNER JOIN system_role r ON r.id = ur.role_id AND r.deleted = 0 AND r.status = 0
+        WHERE ur.user_id = #{userId}
+          AND m.deleted = 0
+          AND m.status = 0
+          AND m.permission IS NOT NULL
+          AND m.permission != ''
+    </select>
+
+    <!--
+        角色码查询:user -> user_role -> role.code
+    -->
+    <select id="selectRoleCodesByUserId" resultType="java.lang.String">
+        SELECT DISTINCT r.code
+        FROM system_role r
+                 INNER JOIN system_user_role ur ON ur.role_id = r.id AND ur.deleted = 0
+        WHERE ur.user_id = #{userId}
+          AND r.deleted = 0
+          AND r.status = 0
+    </select>
+
+    <!--
+        反向查询:持有指定角色的所有用户 ID(用于权限缓存的级联失效)。
+        tenant_id 由 TenantLineInnerInterceptor 自动追加,超管登录时全局生效。
+    -->
+    <select id="selectUserIdsByRoleId" resultType="java.lang.Long">
+        SELECT DISTINCT user_id
+        FROM system_user_role
+        WHERE role_id = #{roleId}
+          AND deleted = 0
+    </select>
+
+</mapper>

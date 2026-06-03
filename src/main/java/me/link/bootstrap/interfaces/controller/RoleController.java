@@ -1,5 +1,6 @@
 package me.link.bootstrap.interfaces.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -41,6 +42,7 @@ public class RoleController {
     private final RoleApplicationService roleApplicationService;
 
     @PostMapping
+    @SaCheckPermission("system:role:create")
     @Operation(summary = "创建角色", description = "创建角色基础信息")
     public ResultResponse<RoleResponseVO> create(@Valid @RequestBody RoleCreateRequest request) {
         RoleEntity role = roleApplicationService.create(new CreateRoleCommand(
@@ -81,6 +83,7 @@ public class RoleController {
     }
 
     @PutMapping("/{id}")
+    @SaCheckPermission("system:role:update")
     @Operation(summary = "更新角色", description = "更新角色基础信息")
     public ResultResponse<RoleResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
                                                   @Valid @RequestBody RoleUpdateRequest request) {
@@ -99,6 +102,7 @@ public class RoleController {
     }
 
     @DeleteMapping("/{id}")
+    @SaCheckPermission("system:role:delete")
     @Operation(summary = "删除角色", description = "根据ID删除角色")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         roleApplicationService.delete(id);

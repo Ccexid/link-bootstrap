@@ -13,6 +13,7 @@ import me.link.bootstrap.domain.valueobject.PageResult;
 import me.link.bootstrap.infrastructure.persistence.converter.UserConverter;
 import me.link.bootstrap.infrastructure.persistence.internal.UserInternalService;
 import me.link.bootstrap.infrastructure.persistence.po.UserPO;
+import me.link.bootstrap.shared.kernel.database.mybatis.TenantIgnore;
 import me.link.bootstrap.shared.kernel.valueobject.SortingField;
 import org.springframework.stereotype.Repository;
 
@@ -53,6 +54,21 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Optional<UserEntity> findById(Long id) {
         return Optional.ofNullable(userInternalService.getById(id))
+                .map(userConverter::reverseConvert);
+    }
+
+    /**
+     * 登录场景调用:此时 Sa-Token 会话尚未建立,LinkTenantLineHandler 无法取到 tenantId,
+     * 会让查询退化为 {@code tenant_id IS NULL}。
+     * <p>方法标 {@link TenantIgnore} 显式绕过租户拦截器,改由手工传入的 tenantId 作为业务条件。</p>
+     */
+    @Override
+    @TenantIgnore
+    public Optional<UserEntity> findByUsernameAndTenantId(String username, Long tenantId) {
+        LambdaQueryWrapper<UserPO> wrapper = new LambdaQueryWrapper<UserPO>()
+                .eq(UserPO::getUsername, username)
+                .eq(UserPO::getTenantId, tenantId);
+        return Optional.ofNullable(userInternalService.getOne(wrapper))
                 .map(userConverter::reverseConvert);
     }
 

@@ -2,6 +2,7 @@ package me.link.bootstrap.shared.kernel.util;
 
 import cn.dev33.satoken.stp.StpUtil;
 import lombok.extern.slf4j.Slf4j;
+import me.link.bootstrap.shared.kernel.constant.SecurityConstants;
 
 /**
  * 安全上下文工具类，用于获取当前登录用户信息。
@@ -48,7 +49,7 @@ public final class SecurityHelper {
     public static Long getTenantId() {
         try {
             if (StpUtil.isLogin()) {
-                Object tenantId = StpUtil.getSession().get("tenantId");
+                Object tenantId = StpUtil.getSession().get(SecurityConstants.SESSION_KEY_TENANT_ID);
                 if (tenantId != null) {
                     return Long.valueOf(tenantId.toString());
                 }
@@ -59,6 +60,32 @@ public final class SecurityHelper {
         } catch (Exception e) {
             log.warn("获取当前用户租户ID失败: {}", e.getMessage());
             return null;
+        }
+    }
+
+    /**
+     * 判断当前登录用户是否平台超级管理员。
+     * <p>
+     * 登录时由 {@code AuthApplicationService} 写入 Session,
+     * 持有 {@link SecurityConstants#ROLE_SUPER_ADMIN} 角色码者为 true。
+     * </p>
+     * <p>
+     * <b>注意</b>:此方法被 {@code LinkTenantLineHandler} 在每条 SQL 解析时调用,
+     * 处于性能敏感路径。Sa-Token 自身对 Session 数据有线程级缓存,实际开销可控。
+     * </p>
+     *
+     * @return true-超管, false-非超管或未登录
+     */
+    public static boolean isSuperAdmin() {
+        try {
+            if (!StpUtil.isLogin()) {
+                return false;
+            }
+            Object flag = StpUtil.getSession().get(SecurityConstants.SESSION_KEY_SUPER_ADMIN);
+            return flag instanceof Boolean b && b;
+        } catch (Exception e) {
+            log.warn("获取当前用户超管标记失败: {}", e.getMessage());
+            return false;
         }
     }
 

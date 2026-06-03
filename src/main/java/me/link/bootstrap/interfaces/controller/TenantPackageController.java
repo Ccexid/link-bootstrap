@@ -1,5 +1,6 @@
 package me.link.bootstrap.interfaces.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -47,6 +48,7 @@ public class TenantPackageController {
      * 创建业务对象。
      */
     @PostMapping
+    @SaCheckPermission("system:tenant-package:create")
     @Operation(summary = "创建租户套餐", description = "创建租户套餐基础信息")
     public ResultResponse<TenantPackageResponseVO> create(@Valid @RequestBody TenantPackageCreateRequest request) {
         TenantPackageEntity tenantPackage = tenantPackageApplicationService.create(new CreateTenantPackageCommand(
@@ -88,6 +90,7 @@ public class TenantPackageController {
      * 更新业务对象。
      */
     @PutMapping("/{id}")
+    @SaCheckPermission("system:tenant-package:update")
     @Operation(summary = "更新租户套餐", description = "更新租户套餐基础信息")
     public ResultResponse<TenantPackageResponseVO> update(@PathVariable @NotNull(message = "租户套餐ID不能为空") Long id,
                                                           @Valid @RequestBody TenantPackageUpdateRequest request) {
@@ -105,6 +108,7 @@ public class TenantPackageController {
      * 根据主键删除业务对象。
      */
     @DeleteMapping("/{id}")
+    @SaCheckPermission("system:tenant-package:delete")
     @Operation(summary = "删除租户套餐", description = "根据租户套餐ID删除租户套餐")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "租户套餐ID不能为空") Long id) {
         tenantPackageApplicationService.delete(id);

@@ -9,6 +9,7 @@ import me.link.bootstrap.domain.entity.RoleMenuEntity;
 import me.link.bootstrap.domain.factory.RoleMenuFactory;
 import me.link.bootstrap.domain.repository.RoleMenuRepository;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.infrastructure.security.PermissionCacheService;
 import me.link.bootstrap.shared.kernel.exception.BusinessException;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 import me.link.bootstrap.shared.kernel.util.SecurityHelper;
@@ -29,6 +30,7 @@ import java.util.List;
 public class RoleMenuApplicationService {
 
     private final RoleMenuRepository roleMenuRepository;
+    private final PermissionCacheService permissionCacheService;
 
     /**
      * 创建角色菜单关联。
@@ -37,7 +39,9 @@ public class RoleMenuApplicationService {
     public RoleMenuEntity create(CreateRoleMenuCommand command) {
         Long tenantId = SecurityHelper.getRequiredTenantId();
         RoleMenuEntity roleMenu = RoleMenuFactory.create(command.roleId(), command.menuId(), tenantId);
-        return roleMenuRepository.save(roleMenu);
+        RoleMenuEntity saved = roleMenuRepository.save(roleMenu);
+        permissionCacheService.evictByRoleId(command.roleId());
+        return saved;
     }
 
     /**
@@ -62,9 +66,15 @@ public class RoleMenuApplicationService {
     public RoleMenuEntity update(UpdateRoleMenuCommand command) {
         RoleMenuEntity roleMenu = get(command.id());
         Long tenantId = SecurityHelper.getRequiredTenantId();
+        Long oldRoleId = roleMenu.getRoleId();
         RoleMenuFactory.changeBasicInfo(roleMenu, command.roleId(), command.menuId(), tenantId);
         if (!roleMenuRepository.update(roleMenu)) {
             throw new BusinessException(ErrorCode.ROLE_MENU_NOT_FOUND);
+        }
+        // 旧/新 roleId 都失效,避免改了关联后老 role 的缓存仍含旧菜单
+        permissionCacheService.evictByRoleId(oldRoleId);
+        if (!oldRoleId.equals(command.roleId())) {
+            permissionCacheService.evictByRoleId(command.roleId());
         }
         return get(command.id());
     }
@@ -86,6 +96,7 @@ public class RoleMenuApplicationService {
                 .map(menuId -> RoleMenuFactory.create(command.roleId(), menuId, tenantId))
                 .toList();
         roleMenuRepository.authorize(command.roleId(), tenantId, roleMenus);
+        permissionCacheService.evictByRoleId(command.roleId());
     }
 
     /**
@@ -93,8 +104,11 @@ public class RoleMenuApplicationService {
      */
     @Transactional
     public void delete(Long id) {
+        // 先 get 拿 roleId 用于 evict,再删除
+        RoleMenuEntity roleMenu = get(id);
         if (!roleMenuRepository.deleteById(id)) {
             throw new BusinessException(ErrorCode.ROLE_MENU_NOT_FOUND);
         }
+        permissionCacheService.evictByRoleId(roleMenu.getRoleId());
     }
 }

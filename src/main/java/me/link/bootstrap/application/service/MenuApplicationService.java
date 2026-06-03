@@ -8,6 +8,7 @@ import me.link.bootstrap.domain.entity.MenuEntity;
 import me.link.bootstrap.domain.factory.MenuFactory;
 import me.link.bootstrap.domain.repository.MenuRepository;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.infrastructure.security.PermissionCacheService;
 import me.link.bootstrap.shared.kernel.exception.BusinessException;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MenuApplicationService {
 
     private final MenuRepository menuRepository;
+    private final PermissionCacheService permissionCacheService;
 
     @Transactional
     public MenuEntity create(CreateMenuCommand command) {
@@ -42,6 +44,8 @@ public class MenuApplicationService {
         if (!updated) {
             throw new BusinessException(ErrorCode.MENU_NOT_FOUND);
         }
+        // 菜单是全局表,permission/status 变更影响所有用户,全量失效权限缓存
+        permissionCacheService.evictAll();
         return get(command.id());
     }
 
@@ -50,5 +54,6 @@ public class MenuApplicationService {
         if (!menuRepository.deleteById(id)) {
             throw new BusinessException(ErrorCode.MENU_NOT_FOUND);
         }
+        permissionCacheService.evictAll();
     }
 }

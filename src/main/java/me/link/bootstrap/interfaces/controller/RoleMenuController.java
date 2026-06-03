@@ -1,5 +1,6 @@
 package me.link.bootstrap.interfaces.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -43,6 +44,7 @@ public class RoleMenuController {
     private final RoleMenuApplicationService roleMenuApplicationService;
 
     @PostMapping
+    @SaCheckPermission("system:role-menu:create")
     @Operation(summary = "创建角色菜单关联", description = "创建角色菜单关联基础信息")
     public ResultResponse<RoleMenuResponseVO> create(@Valid @RequestBody RoleMenuCreateRequest request) {
         RoleMenuEntity roleMenu = roleMenuApplicationService.create(new CreateRoleMenuCommand(
@@ -53,6 +55,7 @@ public class RoleMenuController {
     }
 
     @PostMapping("/authorize")
+    @SaCheckPermission("system:role-menu:authorize")
     @Operation(summary = "批量授权角色菜单", description = "覆盖指定角色的菜单授权")
     public ResultResponse<Void> authorize(@Valid @RequestBody RoleMenuAuthorizeRequest request) {
         roleMenuApplicationService.authorize(new AuthorizeRoleMenuCommand(
@@ -85,6 +88,7 @@ public class RoleMenuController {
     }
 
     @PutMapping("/{id}")
+    @SaCheckPermission("system:role-menu:update")
     @Operation(summary = "更新角色菜单关联", description = "更新角色菜单关联基础信息")
     public ResultResponse<RoleMenuResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
                                                   @Valid @RequestBody RoleMenuUpdateRequest request) {
@@ -97,6 +101,7 @@ public class RoleMenuController {
     }
 
     @DeleteMapping("/{id}")
+    @SaCheckPermission("system:role-menu:delete")
     @Operation(summary = "删除角色菜单关联", description = "根据ID删除角色菜单关联")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         roleMenuApplicationService.delete(id);

@@ -1,5 +1,6 @@
 package me.link.bootstrap.interfaces.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -41,6 +42,7 @@ public class OrganizationController {
     private final OrganizationApplicationService organizationApplicationService;
 
     @PostMapping
+    @SaCheckPermission("system:organization:create")
     @Operation(summary = "创建组织", description = "创建组织基础信息")
     public ResultResponse<OrganizationResponseVO> create(@Valid @RequestBody OrganizationCreateRequest request) {
         OrganizationEntity organization = organizationApplicationService.create(new CreateOrganizationCommand(
@@ -81,6 +83,7 @@ public class OrganizationController {
     }
 
     @PutMapping("/{id}")
+    @SaCheckPermission("system:organization:update")
     @Operation(summary = "更新组织", description = "更新组织基础信息")
     public ResultResponse<OrganizationResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
                                                   @Valid @RequestBody OrganizationUpdateRequest request) {
@@ -99,6 +102,7 @@ public class OrganizationController {
     }
 
     @DeleteMapping("/{id}")
+    @SaCheckPermission("system:organization:delete")
     @Operation(summary = "删除组织", description = "根据ID删除组织")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         organizationApplicationService.delete(id);
