@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -82,11 +83,23 @@ public class UserRepositoryImpl implements UserRepository {
         }
         sortingFields.stream()
                 .map(this::toOrderItem)
+                .filter(Objects::nonNull)
                 .forEach(page::addOrder);
     }
 
+    /**
+     * 将前端排序字段转换为数据库排序字段。
+     *
+     * <p>字段不存在映射时返回 null，由上层过滤掉，避免向 MyBatis-Plus 传入空列名生成异常 ORDER BY。</p>
+     *
+     * @param sortingField 排序字段
+     * @return 排序项，字段未映射时返回 null
+     */
     private OrderItem toOrderItem(SortingField sortingField) {
         String column = SORT_FIELD_MAPPING.get(sortingField.getField());
+        if (column == null) {
+            return null;
+        }
         if (sortingField.isAsc()) {
             return OrderItem.asc(column);
         }

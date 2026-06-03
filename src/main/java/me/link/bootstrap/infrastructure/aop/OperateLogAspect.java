@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.link.bootstrap.application.command.CreateOperateLogCommand;
 import me.link.bootstrap.application.service.OperateLogApplicationService;
 import me.link.bootstrap.infrastructure.tracing.TraceIdContext;
+import me.link.bootstrap.shared.kernel.config.ClientIpProperties;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -66,6 +67,7 @@ public class OperateLogAspect {
 
     private final OperateLogApplicationService operateLogApplicationService;
     private final ObjectMapper objectMapper;
+    private final ClientIpProperties clientIpProperties;
 
     /**
      * 环绕所有 Controller 公共接口方法，自动记录成功和异常操作日志。
@@ -172,23 +174,50 @@ public class OperateLogAspect {
     }
 
     /**
-     * 从请求头中提取客户端真实 IP。
+     * 解析客户端真实 IP。
+     *
+     * <p>默认不信任任何反向代理转发头，直接使用 {@link HttpServletRequest#getRemoteAddr()}，
+     * 避免攻击者通过自定义 X-Forwarded-For 等请求头伪造来源 IP。</p>
+     *
+     * <p>当服务部署在受信任的反向代理之后，可通过
+     * {@code link.security.client-ip.trust-forward-headers=true} 开启转发头解析，
+     * 此时按配置的 {@code forward-headers} 顺序匹配，并在多级转发场景下取最右侧的 IP
+     * （最接近受信任代理的一跳），避免取到链路最前端用户伪造的值。</p>
      *
      * @param request HTTP 请求对象
      * @return 客户端 IP 地址
      */
     private String clientIp(HttpServletRequest request) {
-        String ip = firstNotBlank(
-                request.getHeader("X-Forwarded-For"),
-                request.getHeader("X-Real-IP"),
-                request.getHeader("Proxy-Client-IP"),
-                request.getHeader("WL-Proxy-Client-IP"),
-                request.getRemoteAddr()
-        );
-        if (ip != null && ip.contains(",")) {
-            ip = ip.substring(0, ip.indexOf(',')).trim();
+        String ip = null;
+        if (clientIpProperties.isTrustForwardHeaders()) {
+            for (String headerName : clientIpProperties.getForwardHeaders()) {
+                String headerValue = request.getHeader(headerName);
+                if (isNotBlank(headerValue)) {
+                    ip = pickRightmostIp(headerValue);
+                    break;
+                }
+            }
+        }
+        if (!isNotBlank(ip)) {
+            ip = request.getRemoteAddr();
         }
         return truncate(ip, 128);
+    }
+
+    /**
+     * 从多级转发头中取最右侧的 IP。
+     *
+     * <p>X-Forwarded-For 的格式为 {@code client, proxy1, proxy2}，
+     * 最右侧的 IP 由最接近本服务的受信任代理写入，最左侧的 IP 可由攻击者直接伪造。
+     * 因此取最右侧的 IP 在受信任代理场景下更安全。</p>
+     *
+     * @param headerValue 原始 header 值
+     * @return 解析后的 IP
+     */
+    private String pickRightmostIp(String headerValue) {
+        int lastComma = headerValue.lastIndexOf(',');
+        String candidate = lastComma >= 0 ? headerValue.substring(lastComma + 1) : headerValue;
+        return candidate.trim();
     }
 
     /**
@@ -418,21 +447,6 @@ public class OperateLogAspect {
     private int safeDuration(long startTime) {
         long duration = System.currentTimeMillis() - startTime;
         return duration > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) Math.max(duration, 0);
-    }
-
-    /**
-     * 返回第一个非空白字符串。
-     *
-     * @param values 候选字符串
-     * @return 第一个非空白字符串
-     */
-    private String firstNotBlank(String... values) {
-        for (String value : values) {
-            if (isNotBlank(value)) {
-                return value;
-            }
-        }
-        return "";
     }
 
     /**

@@ -48,6 +48,14 @@ server:
     buffer-size: 16384
     multipart-max-entity-size: 16777216
 
+# 客户端 IP 解析安全配置
+link:
+  security:
+    client-ip:
+      trust-forward-headers: false
+      forward-headers:
+        - X-Forwarded-For
+
 # MyBatis Plus 增强配置
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
