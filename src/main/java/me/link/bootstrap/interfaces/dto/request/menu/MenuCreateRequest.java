@@ -1,10 +1,11 @@
 package me.link.bootstrap.interfaces.dto.request.menu;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import me.link.bootstrap.domain.valueobject.StatusEnum;
 
-import java.time.LocalDateTime;
 import java.io.Serial;
 import java.io.Serializable;
 
@@ -14,30 +15,45 @@ public class MenuCreateRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Schema(description = "name")
+    @Schema(description = "菜单名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "用户管理")
+    @NotBlank(message = "菜单名称不能为空")
     private String name;
-    @Schema(description = "permission")
+
+    @Schema(description = "权限标识(对应 @SaCheckPermission 注解,格式 system:{module}:{action})",
+            example = "system:user:create")
     private String permission;
-    @Schema(description = "type")
+
+    @Schema(description = "菜单类型:1目录 2菜单 3按钮", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
+    @NotNull(message = "菜单类型不能为空")
     private Integer type;
-    @Schema(description = "sort")
+
+    @Schema(description = "显示顺序", example = "10")
     private Integer sort;
-    @Schema(description = "parentId")
+
+    @Schema(description = "父菜单 ID(0 代表顶级)", example = "0")
     private Long parentId;
-    @Schema(description = "path")
+
+    @Schema(description = "前端路由路径", example = "/user")
     private String path;
-    @Schema(description = "icon")
+
+    @Schema(description = "菜单图标")
     private String icon;
-    @Schema(description = "component")
+
+    @Schema(description = "前端组件路径", example = "system/user/index")
     private String component;
-    @Schema(description = "componentName")
+
+    @Schema(description = "前端组件名")
     private String componentName;
-    @Schema(description = "status")
+
+    @Schema(description = "菜单状态(0正常 1停用)")
     private StatusEnum status;
-    @Schema(description = "visible")
+
+    @Schema(description = "是否可见(0显示 1隐藏)")
     private Boolean visible;
-    @Schema(description = "keepAlive")
+
+    @Schema(description = "是否缓存(0开启 1关闭)")
     private Boolean keepAlive;
-    @Schema(description = "alwaysShow")
+
+    @Schema(description = "是否总是显示(0是 1否)")
     private Boolean alwaysShow;
 }

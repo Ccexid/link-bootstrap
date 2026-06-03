@@ -17,18 +17,18 @@ public class UserPageRequest extends SortablePageRequest {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Schema(description = "username")
+    @Schema(description = "用户账号(模糊匹配)")
     private String username;
 
-    @Schema(description = "nickname")
+    @Schema(description = "用户昵称(模糊匹配)")
     private String nickname;
 
-    @Schema(description = "mobile")
+    @Schema(description = "手机号码(模糊匹配)")
     private String mobile;
 
-    @Schema(description = "userType")
+    @Schema(description = "身份类型:1供应商 2平台 3商家 4用户")
     private Integer userType;
 
-    @Schema(description = "status")
+    @Schema(description = "账号状态(0正常 1停用)")
     private StatusEnum status;
 }

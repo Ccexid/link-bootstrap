@@ -1,12 +1,15 @@
 package me.link.bootstrap.interfaces.dto.request.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import me.link.bootstrap.domain.valueobject.StatusEnum;
 
-import java.time.LocalDateTime;
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Data
 @Schema(description = "更新用户请求")
@@ -14,26 +17,44 @@ public class UserUpdateRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Schema(description = "username")
+    @Schema(description = "用户账号(同租户内唯一)", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank(message = "用户账号不能为空")
+    @Size(min = 2, max = 30, message = "用户账号长度必须在 2 到 30 之间")
     private String username;
-    @Schema(description = "password")
+
+    @Schema(description = "用户密码(明文,服务端 BCrypt 加密后落库;每次更新都会被重新加密)",
+            requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank(message = "用户密码不能为空")
+    @Size(min = 8, max = 64, message = "用户密码长度必须在 8 到 64 之间")
     private String password;
-    @Schema(description = "nickname")
+
+    @Schema(description = "用户昵称", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank(message = "用户昵称不能为空")
     private String nickname;
-    @Schema(description = "userType")
+
+    @Schema(description = "身份类型:1供应商S 2平台P 3商家B 4用户C", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull(message = "身份类型不能为空")
     private Integer userType;
-    @Schema(description = "mobile")
+
+    @Schema(description = "手机号码", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank(message = "手机号码不能为空")
     private String mobile;
-    @Schema(description = "avatar")
+
+    @Schema(description = "头像 URL")
     private String avatar;
-    @Schema(description = "status")
+
+    @Schema(description = "账号状态(0正常 1停用)")
     private StatusEnum status;
-    @Schema(description = "orgId")
+
+    @Schema(description = "所属组织 ID")
     private Long orgId;
-    @Schema(description = "deptId")
+
+    @Schema(description = "平台内部部门 ID")
     private Long deptId;
-    @Schema(description = "loginIp")
+
+    @Schema(description = "最后登录 IP")
     private String loginIp;
-    @Schema(description = "loginDate")
+
+    @Schema(description = "最后登录时间")
     private LocalDateTime loginDate;
 }
