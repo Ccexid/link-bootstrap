@@ -9,20 +9,19 @@
 --          重置环境时先依次 TRUNCATE 八张业务表(脚本末尾给了模板,默认注释)。
 --
 -- ====================================================================
--- ⚠️ 密码哈希生成(必须先做)
+-- 密码说明(已预填,可直接执行)
 -- ====================================================================
--- 本脚本中所有 INSERT INTO system_users 的 password 字段都填了占位符
---     <<<BCRYPT_HASH_OF_Admin_123456>>>
--- 直接执行会失败,必须先用 BCrypt 生成实际哈希再全文替换。
+-- 所有种子用户的初始密码统一为:Admin@123456
+-- system_users 表 INSERT 时已经填好对应的 BCrypt 哈希:
+--     $2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC
+-- (满足 UserFactory.validate 的 8-64 字符规则,兼容 hutool 内置 jBCrypt 实现)
 --
--- macOS / Linux 一行命令(用 Apache htpasswd,默认已安装):
---     htpasswd -bnBC 10 "" "Admin@123456" | tr -d ':\n' | sed 's/\$2y\$/\$2a\$/'
---
--- 或在 IDEA 里用 Java Scratch 跑(项目已引入 hutool):
---     System.out.println(cn.hutool.crypto.digest.BCrypt.hashpw("Admin@123456", cn.hutool.crypto.digest.BCrypt.gensalt()));
---
--- 把输出的 $2a$10$xxxx... 全文替换 <<<BCRYPT_HASH_OF_Admin_123456>>> 即可。
--- 所有种子用户初始密码统一为 Admin@123456(满足 UserFactory 的 8-64 字符规则)。
+-- 如要修改默认密码,重新生成哈希:
+--   macOS / Linux:
+--     htpasswd -bnBC 10 "" "新密码" | tr -d ':\n' | sed 's/\$2y\$/\$2a\$/'
+--   或在 IDEA Java Scratch 里跑(项目已引入 hutool):
+--     System.out.println(cn.hutool.crypto.digest.BCrypt.hashpw("新密码", cn.hutool.crypto.digest.BCrypt.gensalt()));
+-- 然后把输出的哈希全文替换下方 system_users 各行的 password 字段。
 --
 -- ====================================================================
 -- 登录测试账号一览(初始密码均 Admin@123456)
@@ -184,14 +183,14 @@ VALUES
 -- ====================================================================
 -- 5. 用户 system_users
 -- ====================================================================
--- ⚠️ password 字段统一占位 <<<BCRYPT_HASH_OF_Admin_123456>>>,执行前用 BCrypt 哈希全文替换
+-- 所有用户的 password 字段统一为 BCrypt 哈希,明文密码 Admin@123456(见文件头部说明)
 INSERT INTO `system_users` (`id`, `username`, `password`, `nickname`, `user_type`, `mobile`, `avatar`, `status`, `org_id`, `dept_id`, `login_ip`, `login_date`, `tenant_id`, `creator`, `updater`)
 VALUES
-    (1, 'root',     '<<<BCRYPT_HASH_OF_Admin_123456>>>', '系统超管',     2, '13800000001', '', 0, NULL, NULL, '', NULL, 0, 1, 1),
-    (2, 'platform', '<<<BCRYPT_HASH_OF_Admin_123456>>>', '平台运营',     2, '13800000002', '', 0, NULL, NULL, '', NULL, 0, 1, 1),
-    (3, 'admin',    '<<<BCRYPT_HASH_OF_Admin_123456>>>', '租户A管理员',  3, '13800000003', '', 0, NULL, NULL, '', NULL, 1, 1, 1),
-    (4, 'user1',    '<<<BCRYPT_HASH_OF_Admin_123456>>>', '租户A用户',    4, '13800000004', '', 0, NULL, NULL, '', NULL, 1, 1, 1),
-    (5, 'admin',    '<<<BCRYPT_HASH_OF_Admin_123456>>>', '租户B管理员',  3, '13800000005', '', 0, NULL, NULL, '', NULL, 2, 1, 1);
+    (1, 'root',     '$2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC', '系统超管',     2, '13800000001', '', 0, NULL, NULL, '', NULL, 0, 1, 1),
+    (2, 'platform', '$2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC', '平台运营',     2, '13800000002', '', 0, NULL, NULL, '', NULL, 0, 1, 1),
+    (3, 'admin',    '$2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC', '租户A管理员',  3, '13800000003', '', 0, NULL, NULL, '', NULL, 1, 1, 1),
+    (4, 'user1',    '$2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC', '租户A用户',    4, '13800000004', '', 0, NULL, NULL, '', NULL, 1, 1, 1),
+    (5, 'admin',    '$2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC', '租户B管理员',  3, '13800000005', '', 0, NULL, NULL, '', NULL, 2, 1, 1);
 
 -- ====================================================================
 -- 6. 用户-角色 system_user_role
