@@ -22,7 +22,7 @@ public class OperateLogApplicationService {
 
     @Transactional
     public OperateLogEntity create(CreateOperateLogCommand command) {
-        Long tenantId = SecurityHelper.getTenantId();
+        Long tenantId = SecurityHelper.getRequiredTenantId();
         OperateLogEntity operateLog = OperateLogFactory.create(command.traceId(), command.userId(), command.userType(), command.userIp(), command.userAgent(), command.module(), command.operation(), command.bizId(), command.action(), command.extra(), command.success(), command.requestMethod(), command.requestUrl(), command.duration(), tenantId);
         return operateLogRepository.save(operateLog);
     }
@@ -33,17 +33,15 @@ public class OperateLogApplicationService {
     }
 
     public PageResult<OperateLogEntity> page(OperateLogPageQuery query) {
-        Long tenantId = SecurityHelper.getTenantId();
-        return operateLogRepository.page(query.pageNo(), query.pageSize(), query.traceId(), query.userId(), query.module(), query.operation(), query.bizId(), query.success(), tenantId, query.sortingFields());
+        return operateLogRepository.page(query.pageNo(), query.pageSize(), query.traceId(), query.userId(), query.module(), query.operation(), query.bizId(), query.success(), null, query.sortingFields());
     }
 
     @Transactional
     public OperateLogEntity update(UpdateOperateLogCommand command) {
         OperateLogEntity operateLog = get(command.id());
-        Long tenantId = SecurityHelper.getTenantId();
+        Long tenantId = SecurityHelper.getRequiredTenantId();
         OperateLogFactory.changeBasicInfo(operateLog, command.traceId(), command.userId(), command.userType(), command.userIp(), command.userAgent(), command.module(), command.operation(), command.bizId(), command.action(), command.extra(), command.success(), command.requestMethod(), command.requestUrl(), command.duration(), tenantId);
-        boolean updated = operateLogRepository.update(operateLog);
-        if (!updated) {
+        if (!operateLogRepository.update(operateLog)) {
             throw new BusinessException(ErrorCode.OPERATE_LOG_NOT_FOUND);
         }
         return get(command.id());

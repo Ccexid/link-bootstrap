@@ -7,8 +7,10 @@ import com.baomidou.mybatisplus.extension.parser.cache.JdkSerialCaffeineJsqlPars
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import me.link.bootstrap.infrastructure.persistence.handler.LinkDefaultDBFieldHandler;
+import me.link.bootstrap.shared.kernel.database.mybatis.LinkTenantLineHandler;
 import org.apache.ibatis.annotations.Mapper;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -43,12 +45,24 @@ public class LinkMybatisAutoConfiguration {
     }
 
     /**
-     * 配置 MyBatis-Plus 核心插件链
+     * 配置 MyBatis-Plus 核心插件链。
+     * <p>
+     * 插件加载顺序遵循 MyBatis-Plus 官方推荐：
+     * <ol>
+     *   <li><b>多租户</b>：必须放在分页之前，先注入 {@code tenant_id} 过滤条件，再做分页计数；</li>
+     *   <li><b>乐观锁</b>：拦截 UPDATE 自动追加 version 条件；</li>
+     *   <li><b>分页</b>：放在最后，包裹经过多租户改写后的 SQL 做 count 与 limit 拼接。</li>
+     * </ol>
+     * </p>
      */
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
         log.info("[MyBatis-Plus] 配置 MyBatis-Plus 插件链...");
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+
+        // 1. 多租户插件：统一处理水平越权（IDOR），见 LinkTenantLineHandler
+        interceptor.addInnerInterceptor(new TenantLineInnerInterceptor(new LinkTenantLineHandler()));
+
         // 2. 乐观锁插件
         interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
 

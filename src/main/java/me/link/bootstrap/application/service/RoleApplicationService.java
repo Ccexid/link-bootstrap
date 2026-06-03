@@ -17,7 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * 角色应用服务，负责编排角色创建、查询、更新和删除流程。
  * <p>
- * 租户ID从当前登录用户的上下文中自动获取，确保数据隔离安全性。
+ * 多租户隔离由 {@code TenantLineInnerInterceptor} 全局处理：所有针对 system_role 表
+ * 的 SELECT/UPDATE/DELETE 自动追加 {@code tenant_id = ?} 条件，规避水平越权（IDOR）。
  * </p>
  */
 @Service
@@ -29,13 +30,12 @@ public class RoleApplicationService {
     /**
      * 创建角色。
      * <p>
-     * 租户ID从当前登录用户的上下文中自动获取。
      * 包含权限编码（code）的唯一性校验，确保同一租户下编码不重复。
      * </p>
      */
     @Transactional
     public RoleEntity create(CreateRoleCommand command) {
-        Long tenantId = SecurityHelper.getTenantId();
+        Long tenantId = SecurityHelper.getRequiredTenantId();
         validateCodeUnique(tenantId, command.code(), null);
         RoleEntity role = RoleFactory.create(command.name(), command.code(), command.sort(), command.dataScope(), command.dataScopeDeptIds(), command.status(), command.type(), command.remark(), tenantId);
         return roleRepository.save(role);
@@ -51,30 +51,24 @@ public class RoleApplicationService {
 
     /**
      * 分页查询角色列表。
-     * <p>
-     * 租户ID从当前登录用户的上下文中自动获取。
-     * </p>
      */
     public PageResult<RoleEntity> page(RolePageQuery query) {
-        Long tenantId = SecurityHelper.getTenantId();
-        return roleRepository.page(query.pageNo(), query.pageSize(), query.name(), query.code(), query.status(), query.type(), tenantId, query.sortingFields());
+        return roleRepository.page(query.pageNo(), query.pageSize(), query.name(), query.code(), query.status(), query.type(), null, query.sortingFields());
     }
 
     /**
      * 更新角色信息。
      * <p>
-     * 租户ID从当前登录用户的上下文中自动获取。
      * 包含权限编码（code）的唯一性校验，确保同一租户下编码不重复（排除自身）。
      * </p>
      */
     @Transactional
     public RoleEntity update(UpdateRoleCommand command) {
         RoleEntity role = get(command.id());
-        Long tenantId = SecurityHelper.getTenantId();
+        Long tenantId = SecurityHelper.getRequiredTenantId();
         validateCodeUnique(tenantId, command.code(), command.id());
         RoleFactory.changeBasicInfo(role, command.name(), command.code(), command.sort(), command.dataScope(), command.dataScopeDeptIds(), command.status(), command.type(), command.remark(), tenantId);
-        boolean updated = roleRepository.update(role);
-        if (!updated) {
+        if (!roleRepository.update(role)) {
             throw new BusinessException(ErrorCode.ROLE_NOT_FOUND);
         }
         return get(command.id());

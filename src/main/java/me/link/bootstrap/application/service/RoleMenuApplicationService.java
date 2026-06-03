@@ -20,7 +20,8 @@ import java.util.List;
 /**
  * 角色菜单关联应用服务，负责编排角色-菜单权限的增删改查和批量授权流程。
  * <p>
- * 租户ID从当前登录用户的上下文中自动获取，确保数据隔离安全性。
+ * 多租户隔离由 {@code TenantLineInnerInterceptor} 全局处理：所有针对角色菜单表
+ * 的 SELECT/UPDATE/DELETE 自动追加 {@code tenant_id = ?} 条件，规避水平越权（IDOR）。
  * </p>
  */
 @Service
@@ -31,13 +32,10 @@ public class RoleMenuApplicationService {
 
     /**
      * 创建角色菜单关联。
-     * <p>
-     * 租户ID从当前登录用户的上下文中自动获取。
-     * </p>
      */
     @Transactional
     public RoleMenuEntity create(CreateRoleMenuCommand command) {
-        Long tenantId = SecurityHelper.getTenantId();
+        Long tenantId = SecurityHelper.getRequiredTenantId();
         RoleMenuEntity roleMenu = RoleMenuFactory.create(command.roleId(), command.menuId(), tenantId);
         return roleMenuRepository.save(roleMenu);
     }
@@ -52,28 +50,20 @@ public class RoleMenuApplicationService {
 
     /**
      * 分页查询角色菜单关联列表。
-     * <p>
-     * 租户ID从当前登录用户的上下文中自动获取。
-     * </p>
      */
     public PageResult<RoleMenuEntity> page(RoleMenuPageQuery query) {
-        Long tenantId = SecurityHelper.getTenantId();
-        return roleMenuRepository.page(query.pageNo(), query.pageSize(), query.roleId(), query.menuId(), tenantId, query.sortingFields());
+        return roleMenuRepository.page(query.pageNo(), query.pageSize(), query.roleId(), query.menuId(), null, query.sortingFields());
     }
 
     /**
      * 更新角色菜单关联信息。
-     * <p>
-     * 租户ID从当前登录用户的上下文中自动获取。
-     * </p>
      */
     @Transactional
     public RoleMenuEntity update(UpdateRoleMenuCommand command) {
         RoleMenuEntity roleMenu = get(command.id());
-        Long tenantId = SecurityHelper.getTenantId();
+        Long tenantId = SecurityHelper.getRequiredTenantId();
         RoleMenuFactory.changeBasicInfo(roleMenu, command.roleId(), command.menuId(), tenantId);
-        boolean updated = roleMenuRepository.update(roleMenu);
-        if (!updated) {
+        if (!roleMenuRepository.update(roleMenu)) {
             throw new BusinessException(ErrorCode.ROLE_MENU_NOT_FOUND);
         }
         return get(command.id());
@@ -82,7 +72,6 @@ public class RoleMenuApplicationService {
     /**
      * 批量授权角色菜单（覆盖式）。
      * <p>
-     * 租户ID从当前登录用户的上下文中自动获取。
      * 先删除该角色在该租户下的所有旧菜单关联，再批量插入新的菜单关联。
      * </p>
      */
@@ -91,7 +80,7 @@ public class RoleMenuApplicationService {
         if (command.roleId() == null || command.roleId() <= 0) {
             throw new IllegalArgumentException("角色菜单关联roleId必须大于0");
         }
-        Long tenantId = SecurityHelper.getTenantId();
+        Long tenantId = SecurityHelper.getRequiredTenantId();
         List<RoleMenuEntity> roleMenus = command.menuIds() == null ? List.of() : command.menuIds().stream()
                 .distinct()
                 .map(menuId -> RoleMenuFactory.create(command.roleId(), menuId, tenantId))

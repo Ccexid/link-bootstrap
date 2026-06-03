@@ -18,7 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * 用户应用服务，负责编排用户创建、查询、更新和删除流程。
  * <p>
- * 租户ID从当前登录用户的上下文中自动获取，确保数据隔离安全性。
+ * 多租户隔离由 {@code TenantLineInnerInterceptor} 全局处理：所有针对 system_users 表
+ * 的 SELECT/UPDATE/DELETE 自动追加 {@code tenant_id = ?} 条件，规避水平越权（IDOR）。
+ * 如确需跨租户操作（如超管），在方法/类上标注
+ * {@link me.link.bootstrap.shared.kernel.database.mybatis.TenantIgnore @TenantIgnore}
+ * 显式放行。
  * </p>
  */
 @Service
@@ -29,14 +33,11 @@ public class UserApplicationService {
 
     /**
      * 创建用户。
-     * <p>
-     * 租户ID从当前登录用户的上下文中自动获取。
-     * </p>
      */
     @Transactional
     public UserEntity create(CreateUserCommand command) {
         String encryptedPassword = BCrypt.hashpw(command.password(), BCrypt.gensalt());
-        Long tenantId = SecurityHelper.getTenantId();
+        Long tenantId = SecurityHelper.getRequiredTenantId();
         UserEntity user = UserFactory.create(command.username(), encryptedPassword, command.nickname(), command.userType(), command.mobile(), command.avatar(), command.status(), command.orgId(), command.deptId(), command.loginIp(), command.loginDate(), tenantId);
         return userRepository.save(user);
     }
@@ -51,28 +52,20 @@ public class UserApplicationService {
 
     /**
      * 分页查询用户列表。
-     * <p>
-     * 租户ID从当前登录用户的上下文中自动获取。
-     * </p>
      */
     public PageResult<UserEntity> page(UserPageQuery query) {
-        Long tenantId = SecurityHelper.getTenantId();
-        return userRepository.page(query.pageNo(), query.pageSize(), query.username(), query.nickname(), query.mobile(), query.userType(), query.status(), tenantId, query.sortingFields());
+        return userRepository.page(query.pageNo(), query.pageSize(), query.username(), query.nickname(), query.mobile(), query.userType(), query.status(), null, query.sortingFields());
     }
 
     /**
      * 更新用户信息。
-     * <p>
-     * 租户ID从当前登录用户的上下文中自动获取。
-     * </p>
      */
     @Transactional
     public UserEntity update(UpdateUserCommand command) {
         UserEntity user = get(command.id());
-        Long tenantId = SecurityHelper.getTenantId();
+        Long tenantId = SecurityHelper.getRequiredTenantId();
         UserFactory.changeBasicInfo(user, command.username(), command.password(), command.nickname(), command.userType(), command.mobile(), command.avatar(), command.status(), command.orgId(), command.deptId(), command.loginIp(), command.loginDate(), tenantId);
-        boolean updated = userRepository.update(user);
-        if (!updated) {
+        if (!userRepository.update(user)) {
             throw new BusinessException(ErrorCode.USER_NOT_FOUND);
         }
         return get(command.id());

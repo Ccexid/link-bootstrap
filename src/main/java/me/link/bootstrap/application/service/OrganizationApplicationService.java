@@ -17,7 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * 组织应用服务，负责编排组织创建、查询、更新和删除流程。
  * <p>
- * 租户ID从当前登录用户的上下文中自动获取，确保数据隔离安全性。
+ * 多租户隔离由 {@code TenantLineInnerInterceptor} 全局处理：所有针对组织表
+ * 的 SELECT/UPDATE/DELETE 自动追加 {@code tenant_id = ?} 条件，规避水平越权（IDOR）。
  * </p>
  */
 @Service
@@ -28,13 +29,10 @@ public class OrganizationApplicationService {
 
     /**
      * 创建组织。
-     * <p>
-     * 租户ID从当前登录用户的上下文中自动获取。
-     * </p>
      */
     @Transactional
     public OrganizationEntity create(CreateOrganizationCommand command) {
-        Long tenantId = SecurityHelper.getTenantId();
+        Long tenantId = SecurityHelper.getRequiredTenantId();
         OrganizationEntity organization = OrganizationFactory.create(command.name(), command.orgType(), command.parentId(), command.ancestors(), command.level(), command.contactName(), command.contactMobile(), command.status(), tenantId);
         return organizationRepository.save(organization);
     }
@@ -49,28 +47,20 @@ public class OrganizationApplicationService {
 
     /**
      * 分页查询组织列表。
-     * <p>
-     * 租户ID从当前登录用户的上下文中自动获取。
-     * </p>
      */
     public PageResult<OrganizationEntity> page(OrganizationPageQuery query) {
-        Long tenantId = SecurityHelper.getTenantId();
-        return organizationRepository.page(query.pageNo(), query.pageSize(), query.name(), query.orgType(), query.parentId(), query.status(), tenantId, query.sortingFields());
+        return organizationRepository.page(query.pageNo(), query.pageSize(), query.name(), query.orgType(), query.parentId(), query.status(), null, query.sortingFields());
     }
 
     /**
      * 更新组织信息。
-     * <p>
-     * 租户ID从当前登录用户的上下文中自动获取。
-     * </p>
      */
     @Transactional
     public OrganizationEntity update(UpdateOrganizationCommand command) {
         OrganizationEntity organization = get(command.id());
-        Long tenantId = SecurityHelper.getTenantId();
+        Long tenantId = SecurityHelper.getRequiredTenantId();
         OrganizationFactory.changeBasicInfo(organization, command.name(), command.orgType(), command.parentId(), command.ancestors(), command.level(), command.contactName(), command.contactMobile(), command.status(), tenantId);
-        boolean updated = organizationRepository.update(organization);
-        if (!updated) {
+        if (!organizationRepository.update(organization)) {
             throw new BusinessException(ErrorCode.ORGANIZATION_NOT_FOUND);
         }
         return get(command.id());
