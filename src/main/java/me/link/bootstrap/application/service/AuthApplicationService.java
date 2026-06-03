@@ -1,10 +1,12 @@
 package me.link.bootstrap.application.service;
 
+import cn.dev33.satoken.SaManager;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.crypto.digest.BCrypt;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.link.bootstrap.application.command.LoginCommand;
+import me.link.bootstrap.application.command.TokenRefreshResult;
 import me.link.bootstrap.domain.entity.UserEntity;
 import me.link.bootstrap.domain.repository.UserRepository;
 import me.link.bootstrap.domain.valueobject.StatusEnum;
@@ -87,6 +89,26 @@ public class AuthApplicationService {
 
         log.info("登录成功: userId={}, tenantId={}, isSuperAdmin={}", user.getId(), user.getTenantId(), isSuperAdmin);
         return StpUtil.getTokenValue();
+    }
+
+    public TokenRefreshResult refreshToken() {
+        StpUtil.checkLogin();
+        long timeout = SaManager.getConfig().getTimeout();
+        if (timeout > 0) {
+            StpUtil.renewTimeout(timeout);
+        }
+        StpUtil.updateLastActiveToNow();
+        return currentToken();
+    }
+
+    public TokenRefreshResult currentToken() {
+        return new TokenRefreshResult(
+                StpUtil.getTokenName(),
+                StpUtil.getTokenValue(),
+                SaManager.getConfig().getTokenPrefix(),
+                StpUtil.getTokenTimeout(),
+                StpUtil.getTokenActiveTimeout()
+        );
     }
 
     /**

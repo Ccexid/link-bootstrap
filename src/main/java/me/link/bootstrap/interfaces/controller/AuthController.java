@@ -1,17 +1,18 @@
 package me.link.bootstrap.interfaces.controller;
 
-import cn.dev33.satoken.stp.StpUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import me.link.bootstrap.application.command.LoginCommand;
+import me.link.bootstrap.application.command.TokenRefreshResult;
 import me.link.bootstrap.application.service.AuthApplicationService;
 import me.link.bootstrap.interfaces.dto.request.auth.LoginRequest;
 import me.link.bootstrap.interfaces.dto.response.ResultResponse;
-import me.link.bootstrap.interfaces.dto.response.vo.LoginResponseVO;
+import me.link.bootstrap.interfaces.dto.response.vo.TokenResponseVO;
 import me.link.bootstrap.shared.kernel.constant.GlobalConstants;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,13 +33,25 @@ public class AuthController {
 
     @PostMapping("/login")
     @Operation(summary = "用户登录", description = "校验账号密码并签发 Token")
-    public ResultResponse<LoginResponseVO> login(@Valid @RequestBody LoginRequest request) {
-        String tokenValue = authApplicationService.login(new LoginCommand(
+    public ResultResponse<TokenResponseVO> login(@Valid @RequestBody LoginRequest request) {
+        authApplicationService.login(new LoginCommand(
                 request.getUsername(),
                 request.getPassword(),
                 request.getTenantId()
         ));
-        return ResultResponse.success(new LoginResponseVO(StpUtil.getTokenName(), tokenValue));
+        return ResultResponse.success(toResponse(authApplicationService.currentToken()));
+    }
+
+    @PostMapping("/refresh-token")
+    @Operation(summary = "刷新 Token", description = "基于当前有效 Token 续期,并返回最新剩余有效期")
+    public ResultResponse<TokenResponseVO> refreshToken() {
+        return ResultResponse.success(toResponse(authApplicationService.refreshToken()));
+    }
+
+    @GetMapping("/token")
+    @Operation(summary = "查询当前 Token", description = "返回当前 Token 名称、值、前缀及剩余有效期")
+    public ResultResponse<TokenResponseVO> currentToken() {
+        return ResultResponse.success(toResponse(authApplicationService.currentToken()));
     }
 
     @PostMapping("/logout")
@@ -46,5 +59,15 @@ public class AuthController {
     public ResultResponse<Void> logout() {
         authApplicationService.logout();
         return ResultResponse.success();
+    }
+
+    private static TokenResponseVO toResponse(TokenRefreshResult result) {
+        return new TokenResponseVO(
+                result.tokenName(),
+                result.tokenValue(),
+                result.tokenPrefix(),
+                result.tokenTimeout(),
+                result.tokenActiveTimeout()
+        );
     }
 }
