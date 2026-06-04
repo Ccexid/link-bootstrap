@@ -17,7 +17,7 @@ public class LoginRequest {
 
     @NotBlank(message = "密码不能为空")
     @Size(min = 8, max = 64, message = "密码长度必须在 8 到 64 之间")
-    @Schema(description = "密码(明文,服务端 BCrypt 比对)", example = "admin@123")
+    @Schema(description = "密码(明文,服务端 Bcrypt 比对)", example = "admin@123")
     private String password;
 
     @NotNull(message = "租户ID不能为空")
