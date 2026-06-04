@@ -8,5 +8,8 @@ import java.util.List;
  * 租户ID将从当前登录用户的上下文中自动获取，无需前端传入。
  * </p>
  */
-public record AuthorizeRoleMenuCommand(Long roleId, List<Long> menuIds) {
+public record AuthorizeRoleMenuCommand(
+        Long roleId,
+        List<Long> menuIds
+) {
 }

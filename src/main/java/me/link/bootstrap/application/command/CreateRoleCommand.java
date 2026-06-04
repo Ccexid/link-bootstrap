@@ -8,5 +8,6 @@ import me.link.bootstrap.domain.valueobject.StatusEnum;
  * 租户ID将从当前登录用户的上下文中自动获取，无需前端传入。
  * </p>
  */
-public record CreateRoleCommand(String name, String code, Integer sort, Integer dataScope, String dataScopeDeptIds, StatusEnum status, Integer type, String remark) {
+public record CreateRoleCommand(String name, String code, Integer sort, Integer dataScope, String dataScopeDeptIds,
+                                StatusEnum status, Integer type, String remark) {
 }

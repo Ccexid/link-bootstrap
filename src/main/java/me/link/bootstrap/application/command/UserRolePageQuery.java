@@ -10,5 +10,11 @@ import java.util.List;
  * 租户ID将从当前登录用户的上下文中自动获取，无需前端传入。
  * </p>
  */
-public record UserRolePageQuery(Integer pageNo, Integer pageSize, Long userId, Long roleId, List<SortingField> sortingFields) {
+public record UserRolePageQuery(
+        Integer pageNo,
+        Integer pageSize,
+        Long userId,
+        Long roleId,
+        List<SortingField> sortingFields
+) {
 }
