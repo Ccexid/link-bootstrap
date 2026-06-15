@@ -12,6 +12,7 @@ import me.link.bootstrap.application.command.UpdateTenantPackageCommand;
 import me.link.bootstrap.application.service.TenantPackageApplicationService;
 import me.link.bootstrap.domain.entity.TenantPackageEntity;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.tenantpackage.TenantPackageCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.tenantpackage.TenantPackagePageRequest;
 import me.link.bootstrap.interfaces.dto.request.tenantpackage.TenantPackageUpdateRequest;
@@ -30,8 +31,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 /**
  * 租户套餐接口控制器，对外提供套餐增删改查 REST 接口。
  */
@@ -43,6 +42,7 @@ import java.util.List;
 public class TenantPackageController {
 
     private final TenantPackageApplicationService tenantPackageApplicationService;
+    private final ResponseVOConverter responseVOConverter;
 
     /**
      * 创建业务对象。
@@ -56,7 +56,7 @@ public class TenantPackageController {
                 request.getRemark(),
                 request.getMenuIds()
         ));
-        return ResultResponse.success(toResponse(tenantPackage));
+        return ResultResponse.success(responseVOConverter.toResponse(tenantPackage));
     }
 
     /**
@@ -65,7 +65,7 @@ public class TenantPackageController {
     @GetMapping("/{id}")
     @Operation(summary = "查询租户套餐详情", description = "根据租户套餐ID查询租户套餐详情")
     public ResultResponse<TenantPackageResponseVO> get(@PathVariable @NotNull(message = "租户套餐ID不能为空") Long id) {
-        return ResultResponse.success(toResponse(tenantPackageApplicationService.get(id)));
+        return ResultResponse.success(responseVOConverter.toResponse(tenantPackageApplicationService.get(id)));
     }
 
     /**
@@ -80,10 +80,7 @@ public class TenantPackageController {
                 request.getName(),
                 request.getSortingFields()
         ));
-        List<TenantPackageResponseVO> records = pageResult.records().stream()
-                .map(this::toResponse)
-                .toList();
-        return ResultTableResponse.success(records, pageResult.total());
+        return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
     }
 
     /**
@@ -101,7 +98,7 @@ public class TenantPackageController {
                 request.getMenuIds(),
                 request.getEnabled()
         ));
-        return ResultResponse.success(toResponse(tenantPackage));
+        return ResultResponse.success(responseVOConverter.toResponse(tenantPackage));
     }
 
     /**
@@ -115,15 +112,4 @@ public class TenantPackageController {
         return ResultResponse.success();
     }
 
-    private TenantPackageResponseVO toResponse(TenantPackageEntity tenantPackage) {
-        TenantPackageResponseVO response = new TenantPackageResponseVO();
-        response.setId(tenantPackage.getId());
-        response.setName(tenantPackage.getName());
-        response.setStatus(tenantPackage.getStatus());
-        response.setRemark(tenantPackage.getRemark());
-        response.setMenuIds(tenantPackage.getMenuIds());
-        response.setCreatedAt(tenantPackage.getCreatedAt());
-        response.setUpdatedAt(tenantPackage.getUpdatedAt());
-        return response;
-    }
 }

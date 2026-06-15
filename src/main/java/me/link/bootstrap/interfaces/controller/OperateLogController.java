@@ -12,6 +12,7 @@ import me.link.bootstrap.application.command.UpdateOperateLogCommand;
 import me.link.bootstrap.application.service.OperateLogApplicationService;
 import me.link.bootstrap.domain.entity.OperateLogEntity;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.operatelog.OperateLogCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.operatelog.OperateLogPageRequest;
 import me.link.bootstrap.interfaces.dto.request.operatelog.OperateLogUpdateRequest;
@@ -30,8 +31,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping(GlobalConstants.API_PREFIX + "/system/operate-log")
 @Validated
@@ -40,6 +39,7 @@ import java.util.List;
 public class OperateLogController {
 
     private final OperateLogApplicationService operateLogApplicationService;
+    private final ResponseVOConverter responseVOConverter;
 
     @PostMapping
     @SaCheckPermission("system:operate-log:create")
@@ -61,13 +61,13 @@ public class OperateLogController {
                 request.getRequestUrl(),
                 request.getDuration()
         ));
-        return ResultResponse.success(toResponse(operateLog));
+        return ResultResponse.success(responseVOConverter.toResponse(operateLog));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "查询操作日志详情", description = "根据ID查询操作日志详情")
     public ResultResponse<OperateLogResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
-        return ResultResponse.success(toResponse(operateLogApplicationService.get(id)));
+        return ResultResponse.success(responseVOConverter.toResponse(operateLogApplicationService.get(id)));
     }
 
     @GetMapping
@@ -84,10 +84,7 @@ public class OperateLogController {
                 request.getSuccess(),
                 request.getSortingFields()
         ));
-        List<OperateLogResponseVO> records = pageResult.records().stream()
-                .map(this::toResponse)
-                .toList();
-        return ResultTableResponse.success(records, pageResult.total());
+        return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
     }
 
     @PutMapping("/{id}")
@@ -112,7 +109,7 @@ public class OperateLogController {
                 request.getRequestUrl(),
                 request.getDuration()
         ));
-        return ResultResponse.success(toResponse(operateLog));
+        return ResultResponse.success(responseVOConverter.toResponse(operateLog));
     }
 
     @DeleteMapping("/{id}")
@@ -123,26 +120,4 @@ public class OperateLogController {
         return ResultResponse.success();
     }
 
-    private OperateLogResponseVO toResponse(OperateLogEntity operateLog) {
-        OperateLogResponseVO response = new OperateLogResponseVO();
-        response.setId(operateLog.getId());
-        response.setTraceId(operateLog.getTraceId());
-        response.setUserId(operateLog.getUserId());
-        response.setUserType(operateLog.getUserType());
-        response.setUserIp(operateLog.getUserIp());
-        response.setUserAgent(operateLog.getUserAgent());
-        response.setModule(operateLog.getModule());
-        response.setOperation(operateLog.getOperation());
-        response.setBizId(operateLog.getBizId());
-        response.setAction(operateLog.getAction());
-        response.setExtra(operateLog.getExtra());
-        response.setSuccess(operateLog.getSuccess());
-        response.setRequestMethod(operateLog.getRequestMethod());
-        response.setRequestUrl(operateLog.getRequestUrl());
-        response.setDuration(operateLog.getDuration());
-        response.setTenantId(operateLog.getTenantId());
-        response.setCreatedAt(operateLog.getCreatedAt());
-        response.setUpdatedAt(operateLog.getUpdatedAt());
-        return response;
-    }
 }

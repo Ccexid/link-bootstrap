@@ -1,6 +1,7 @@
 package me.link.bootstrap.application.service;
 
 import lombok.RequiredArgsConstructor;
+import me.link.bootstrap.application.support.ApplicationAssert;
 import me.link.bootstrap.application.command.AssignUserRoleCommand;
 import me.link.bootstrap.application.command.CreateUserRoleCommand;
 import me.link.bootstrap.application.command.UserRolePageQuery;
@@ -10,7 +11,6 @@ import me.link.bootstrap.domain.factory.UserRoleFactory;
 import me.link.bootstrap.domain.repository.UserRoleRepository;
 import me.link.bootstrap.domain.valueobject.PageResult;
 import me.link.bootstrap.infrastructure.security.PermissionCacheService;
-import me.link.bootstrap.shared.kernel.exception.BusinessException;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 import me.link.bootstrap.shared.kernel.util.SecurityHelper;
 import org.springframework.stereotype.Service;
@@ -48,8 +48,7 @@ public class UserRoleApplicationService {
      * 根据主键查询用户角色关联详情。
      */
     public UserRoleEntity get(Long id) {
-        return userRoleRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_ROLE_NOT_FOUND));
+        return ApplicationAssert.requireFound(userRoleRepository.findById(id), ErrorCode.USER_ROLE_NOT_FOUND);
     }
 
     /**
@@ -68,9 +67,7 @@ public class UserRoleApplicationService {
         Long tenantId = SecurityHelper.getRequiredTenantId();
         Long oldUserId = userRole.getUserId();
         UserRoleFactory.changeBasicInfo(userRole, command.userId(), command.roleId(), tenantId);
-        if (!userRoleRepository.update(userRole)) {
-            throw new BusinessException(ErrorCode.USER_ROLE_NOT_FOUND);
-        }
+        ApplicationAssert.requireSuccess(userRoleRepository.update(userRole), ErrorCode.USER_ROLE_NOT_FOUND);
         permissionCacheService.evictByUserId(oldUserId);
         if (!oldUserId.equals(command.userId())) {
             permissionCacheService.evictByUserId(command.userId());
@@ -105,9 +102,7 @@ public class UserRoleApplicationService {
     public void delete(Long id) {
         // 先 get 拿 userId 用于 evict,再删除
         UserRoleEntity userRole = get(id);
-        if (!userRoleRepository.deleteById(id)) {
-            throw new BusinessException(ErrorCode.USER_ROLE_NOT_FOUND);
-        }
+        ApplicationAssert.requireSuccess(userRoleRepository.deleteById(id), ErrorCode.USER_ROLE_NOT_FOUND);
         permissionCacheService.evictByUserId(userRole.getUserId());
     }
 }

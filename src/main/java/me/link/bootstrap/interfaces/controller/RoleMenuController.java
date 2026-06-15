@@ -13,6 +13,7 @@ import me.link.bootstrap.application.command.UpdateRoleMenuCommand;
 import me.link.bootstrap.application.service.RoleMenuApplicationService;
 import me.link.bootstrap.domain.entity.RoleMenuEntity;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.rolemenu.RoleMenuAuthorizeRequest;
 import me.link.bootstrap.interfaces.dto.request.rolemenu.RoleMenuCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.rolemenu.RoleMenuPageRequest;
@@ -32,8 +33,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping(GlobalConstants.API_PREFIX + "/system/role-menu")
 @Validated
@@ -42,6 +41,7 @@ import java.util.List;
 public class RoleMenuController {
 
     private final RoleMenuApplicationService roleMenuApplicationService;
+    private final ResponseVOConverter responseVOConverter;
 
     @PostMapping
     @SaCheckPermission("system:role-menu:create")
@@ -51,7 +51,7 @@ public class RoleMenuController {
                 request.getRoleId(),
                 request.getMenuId()
         ));
-        return ResultResponse.success(toResponse(roleMenu));
+        return ResultResponse.success(responseVOConverter.toResponse(roleMenu));
     }
 
     @PostMapping("/authorize")
@@ -68,7 +68,7 @@ public class RoleMenuController {
     @GetMapping("/{id}")
     @Operation(summary = "查询角色菜单关联详情", description = "根据ID查询角色菜单关联详情")
     public ResultResponse<RoleMenuResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
-        return ResultResponse.success(toResponse(roleMenuApplicationService.get(id)));
+        return ResultResponse.success(responseVOConverter.toResponse(roleMenuApplicationService.get(id)));
     }
 
     @GetMapping
@@ -81,10 +81,7 @@ public class RoleMenuController {
                 request.getMenuId(),
                 request.getSortingFields()
         ));
-        List<RoleMenuResponseVO> records = pageResult.records().stream()
-                .map(this::toResponse)
-                .toList();
-        return ResultTableResponse.success(records, pageResult.total());
+        return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
     }
 
     @PutMapping("/{id}")
@@ -97,7 +94,7 @@ public class RoleMenuController {
                 request.getRoleId(),
                 request.getMenuId()
         ));
-        return ResultResponse.success(toResponse(roleMenu));
+        return ResultResponse.success(responseVOConverter.toResponse(roleMenu));
     }
 
     @DeleteMapping("/{id}")
@@ -108,14 +105,4 @@ public class RoleMenuController {
         return ResultResponse.success();
     }
 
-    private RoleMenuResponseVO toResponse(RoleMenuEntity roleMenu) {
-        RoleMenuResponseVO response = new RoleMenuResponseVO();
-        response.setId(roleMenu.getId());
-        response.setRoleId(roleMenu.getRoleId());
-        response.setMenuId(roleMenu.getMenuId());
-        response.setTenantId(roleMenu.getTenantId());
-        response.setCreatedAt(roleMenu.getCreatedAt());
-        response.setUpdatedAt(roleMenu.getUpdatedAt());
-        return response;
-    }
 }

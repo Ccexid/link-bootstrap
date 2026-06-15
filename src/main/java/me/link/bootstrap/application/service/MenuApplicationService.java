@@ -1,6 +1,7 @@
 package me.link.bootstrap.application.service;
 
 import lombok.RequiredArgsConstructor;
+import me.link.bootstrap.application.support.ApplicationAssert;
 import me.link.bootstrap.application.command.CreateMenuCommand;
 import me.link.bootstrap.application.command.MenuPageQuery;
 import me.link.bootstrap.application.command.UpdateMenuCommand;
@@ -9,7 +10,6 @@ import me.link.bootstrap.domain.factory.MenuFactory;
 import me.link.bootstrap.domain.repository.MenuRepository;
 import me.link.bootstrap.domain.valueobject.PageResult;
 import me.link.bootstrap.infrastructure.security.PermissionCacheService;
-import me.link.bootstrap.shared.kernel.exception.BusinessException;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,8 +28,7 @@ public class MenuApplicationService {
     }
 
     public MenuEntity get(Long id) {
-        return menuRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.MENU_NOT_FOUND));
+        return ApplicationAssert.requireFound(menuRepository.findById(id), ErrorCode.MENU_NOT_FOUND);
     }
 
     public PageResult<MenuEntity> page(MenuPageQuery query) {
@@ -40,10 +39,7 @@ public class MenuApplicationService {
     public MenuEntity update(UpdateMenuCommand command) {
         MenuEntity menu = get(command.id());
         MenuFactory.changeBasicInfo(menu, command.name(), command.permission(), command.type(), command.sort(), command.parentId(), command.path(), command.icon(), command.component(), command.componentName(), command.status(), command.visible(), command.keepAlive(), command.alwaysShow());
-        boolean updated = menuRepository.update(menu);
-        if (!updated) {
-            throw new BusinessException(ErrorCode.MENU_NOT_FOUND);
-        }
+        ApplicationAssert.requireSuccess(menuRepository.update(menu), ErrorCode.MENU_NOT_FOUND);
         // 菜单是全局表,permission/status 变更影响所有用户,全量失效权限缓存
         permissionCacheService.evictAll();
         return get(command.id());
@@ -51,9 +47,7 @@ public class MenuApplicationService {
 
     @Transactional
     public void delete(Long id) {
-        if (!menuRepository.deleteById(id)) {
-            throw new BusinessException(ErrorCode.MENU_NOT_FOUND);
-        }
+        ApplicationAssert.requireSuccess(menuRepository.deleteById(id), ErrorCode.MENU_NOT_FOUND);
         permissionCacheService.evictAll();
     }
 }

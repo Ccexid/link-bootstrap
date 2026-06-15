@@ -13,6 +13,7 @@ import me.link.bootstrap.application.command.UpdateUserRoleCommand;
 import me.link.bootstrap.application.service.UserRoleApplicationService;
 import me.link.bootstrap.domain.entity.UserRoleEntity;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.userrole.UserRoleAssignRequest;
 import me.link.bootstrap.interfaces.dto.request.userrole.UserRoleCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.userrole.UserRolePageRequest;
@@ -32,8 +33,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping(GlobalConstants.API_PREFIX + "/system/user-role")
 @Validated
@@ -42,6 +41,7 @@ import java.util.List;
 public class UserRoleController {
 
     private final UserRoleApplicationService userRoleApplicationService;
+    private final ResponseVOConverter responseVOConverter;
 
     @PostMapping
     @SaCheckPermission("system:user-role:create")
@@ -51,7 +51,7 @@ public class UserRoleController {
                 request.getUserId(),
                 request.getRoleId()
         ));
-        return ResultResponse.success(toResponse(userRole));
+        return ResultResponse.success(responseVOConverter.toResponse(userRole));
     }
 
     @PostMapping("/assign")
@@ -68,7 +68,7 @@ public class UserRoleController {
     @GetMapping("/{id}")
     @Operation(summary = "查询用户角色关联详情", description = "根据ID查询用户角色关联详情")
     public ResultResponse<UserRoleResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
-        return ResultResponse.success(toResponse(userRoleApplicationService.get(id)));
+        return ResultResponse.success(responseVOConverter.toResponse(userRoleApplicationService.get(id)));
     }
 
     @GetMapping
@@ -81,10 +81,7 @@ public class UserRoleController {
                 request.getRoleId(),
                 request.getSortingFields()
         ));
-        List<UserRoleResponseVO> records = pageResult.records().stream()
-                .map(this::toResponse)
-                .toList();
-        return ResultTableResponse.success(records, pageResult.total());
+        return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
     }
 
     @PutMapping("/{id}")
@@ -97,7 +94,7 @@ public class UserRoleController {
                 request.getUserId(),
                 request.getRoleId()
         ));
-        return ResultResponse.success(toResponse(userRole));
+        return ResultResponse.success(responseVOConverter.toResponse(userRole));
     }
 
     @DeleteMapping("/{id}")
@@ -108,14 +105,4 @@ public class UserRoleController {
         return ResultResponse.success();
     }
 
-    private UserRoleResponseVO toResponse(UserRoleEntity userRole) {
-        UserRoleResponseVO response = new UserRoleResponseVO();
-        response.setId(userRole.getId());
-        response.setUserId(userRole.getUserId());
-        response.setRoleId(userRole.getRoleId());
-        response.setTenantId(userRole.getTenantId());
-        response.setCreatedAt(userRole.getCreatedAt());
-        response.setUpdatedAt(userRole.getUpdatedAt());
-        return response;
-    }
 }

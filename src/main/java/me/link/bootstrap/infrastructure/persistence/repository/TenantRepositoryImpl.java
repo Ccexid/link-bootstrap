@@ -2,7 +2,6 @@ package me.link.bootstrap.infrastructure.persistence.repository;
 
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import me.link.bootstrap.domain.entity.TenantEntity;
@@ -11,6 +10,7 @@ import me.link.bootstrap.domain.valueobject.PageResult;
 import me.link.bootstrap.infrastructure.persistence.converter.TenantConverter;
 import me.link.bootstrap.infrastructure.persistence.internal.TenantInternalService;
 import me.link.bootstrap.infrastructure.persistence.po.TenantPO;
+import me.link.bootstrap.infrastructure.persistence.repository.support.PageOrderHelper;
 import me.link.bootstrap.shared.kernel.valueobject.SortingField;
 import org.springframework.stereotype.Repository;
 
@@ -69,7 +69,7 @@ public class TenantRepositoryImpl implements TenantRepository {
     @Override
     public PageResult<TenantEntity> page(Integer pageNo, Integer pageSize, String name, List<SortingField> sortingFields) {
         Page<TenantPO> page = Page.of(pageNo, pageSize);
-        applyOrders(page, sortingFields);
+        PageOrderHelper.applyOrders(page, sortingFields, SORT_FIELD_MAPPING);
         LambdaQueryWrapper<TenantPO> wrapper = new LambdaQueryWrapper<TenantPO>()
                 .like(StrUtil.isNotBlank(name), TenantPO::getName, name)
                 .orderByDesc(sortingFields == null || sortingFields.isEmpty(), TenantPO::getId);
@@ -85,20 +85,4 @@ public class TenantRepositoryImpl implements TenantRepository {
         return tenantInternalService.removeById(id);
     }
 
-    private void applyOrders(Page<TenantPO> page, List<SortingField> sortingFields) {
-        if (sortingFields == null || sortingFields.isEmpty()) {
-            return;
-        }
-        sortingFields.stream()
-                .map(this::toOrderItem)
-                .forEach(page::addOrder);
-    }
-
-    private OrderItem toOrderItem(SortingField sortingField) {
-        String column = SORT_FIELD_MAPPING.get(sortingField.getField());
-        if (sortingField.isAsc()) {
-            return OrderItem.asc(column);
-        }
-        return OrderItem.desc(column);
-    }
 }

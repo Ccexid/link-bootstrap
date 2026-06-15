@@ -1,6 +1,7 @@
 package me.link.bootstrap.application.service;
 
 import lombok.RequiredArgsConstructor;
+import me.link.bootstrap.application.support.ApplicationAssert;
 import me.link.bootstrap.application.command.CreateTenantCommand;
 import me.link.bootstrap.application.command.TenantPageQuery;
 import me.link.bootstrap.application.command.UpdateTenantCommand;
@@ -8,7 +9,6 @@ import me.link.bootstrap.domain.entity.TenantEntity;
 import me.link.bootstrap.domain.factory.TenantFactory;
 import me.link.bootstrap.domain.repository.TenantRepository;
 import me.link.bootstrap.domain.valueobject.PageResult;
-import me.link.bootstrap.shared.kernel.exception.BusinessException;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,8 +44,7 @@ public class TenantApplicationService {
      * 根据主键查询业务对象详情。
      */
     public TenantEntity get(Long id) {
-        return tenantRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.TENANT_NOT_FOUND));
+        return ApplicationAssert.requireFound(tenantRepository.findById(id), ErrorCode.TENANT_NOT_FOUND);
     }
 
     /**
@@ -70,10 +69,7 @@ public class TenantApplicationService {
         if (Boolean.FALSE.equals(command.enabled())) {
             tenant.disable();
         }
-        boolean updated = tenantRepository.update(tenant);
-        if (!updated) {
-            throw new BusinessException(ErrorCode.TENANT_NOT_FOUND);
-        }
+        ApplicationAssert.requireSuccess(tenantRepository.update(tenant), ErrorCode.TENANT_NOT_FOUND);
         return get(command.id());
     }
 
@@ -82,8 +78,6 @@ public class TenantApplicationService {
      */
     @Transactional
     public void delete(Long id) {
-        if (!tenantRepository.deleteById(id)) {
-            throw new BusinessException(ErrorCode.TENANT_NOT_FOUND);
-        }
+        ApplicationAssert.requireSuccess(tenantRepository.deleteById(id), ErrorCode.TENANT_NOT_FOUND);
     }
 }

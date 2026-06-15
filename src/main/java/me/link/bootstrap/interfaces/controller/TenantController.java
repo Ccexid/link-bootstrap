@@ -12,6 +12,7 @@ import me.link.bootstrap.application.command.UpdateTenantCommand;
 import me.link.bootstrap.application.service.TenantApplicationService;
 import me.link.bootstrap.domain.entity.TenantEntity;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.tenant.TenantCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.tenant.TenantPageRequest;
 import me.link.bootstrap.interfaces.dto.request.tenant.TenantUpdateRequest;
@@ -30,8 +31,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 /**
  * 租户接口控制器，对外提供租户增删改查 REST 接口。
  */
@@ -43,6 +42,7 @@ import java.util.List;
 public class TenantController {
 
     private final TenantApplicationService tenantApplicationService;
+    private final ResponseVOConverter responseVOConverter;
 
     /**
      * 创建业务对象。
@@ -61,7 +61,7 @@ public class TenantController {
                 request.getExpireTime(),
                 request.getAccountCount()
         ));
-        return ResultResponse.success(toResponse(tenant));
+        return ResultResponse.success(responseVOConverter.toResponse(tenant));
     }
 
     /**
@@ -70,7 +70,7 @@ public class TenantController {
     @GetMapping("/{id}")
     @Operation(summary = "查询租户详情", description = "根据租户ID查询租户详情")
     public ResultResponse<TenantResponseVO> get(@PathVariable @NotNull(message = "租户ID不能为空") Long id) {
-        return ResultResponse.success(toResponse(tenantApplicationService.get(id)));
+        return ResultResponse.success(responseVOConverter.toResponse(tenantApplicationService.get(id)));
     }
 
     /**
@@ -85,10 +85,7 @@ public class TenantController {
                 request.getName(),
                 request.getSortingFields()
         ));
-        List<TenantResponseVO> records = pageResult.records().stream()
-                .map(this::toResponse)
-                .toList();
-        return ResultTableResponse.success(records, pageResult.total());
+        return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
     }
 
     /**
@@ -110,7 +107,7 @@ public class TenantController {
                 request.getAccountCount(),
                 request.getEnabled()
         ));
-        return ResultResponse.success(toResponse(tenant));
+        return ResultResponse.success(responseVOConverter.toResponse(tenant));
     }
 
     /**
@@ -124,20 +121,4 @@ public class TenantController {
         return ResultResponse.success();
     }
 
-    private TenantResponseVO toResponse(TenantEntity tenant) {
-        TenantResponseVO response = new TenantResponseVO();
-        response.setId(tenant.getId());
-        response.setName(tenant.getName());
-        response.setContactUserId(tenant.getContactUserId());
-        response.setContactName(tenant.getContactName());
-        response.setContactMobile(tenant.getContactMobile());
-        response.setStatus(tenant.getStatus());
-        response.setWebsites(tenant.getWebsites());
-        response.setPackageId(tenant.getPackageId());
-        response.setExpireTime(tenant.getExpireTime());
-        response.setAccountCount(tenant.getAccountCount());
-        response.setCreatedAt(tenant.getCreatedAt());
-        response.setUpdatedAt(tenant.getUpdatedAt());
-        return response;
-    }
 }

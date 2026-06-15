@@ -1,6 +1,7 @@
 package me.link.bootstrap.application.service;
 
 import lombok.RequiredArgsConstructor;
+import me.link.bootstrap.application.support.ApplicationAssert;
 import me.link.bootstrap.application.command.AuthorizeRoleMenuCommand;
 import me.link.bootstrap.application.command.CreateRoleMenuCommand;
 import me.link.bootstrap.application.command.RoleMenuPageQuery;
@@ -10,7 +11,6 @@ import me.link.bootstrap.domain.factory.RoleMenuFactory;
 import me.link.bootstrap.domain.repository.RoleMenuRepository;
 import me.link.bootstrap.domain.valueobject.PageResult;
 import me.link.bootstrap.infrastructure.security.PermissionCacheService;
-import me.link.bootstrap.shared.kernel.exception.BusinessException;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 import me.link.bootstrap.shared.kernel.util.SecurityHelper;
 import org.springframework.stereotype.Service;
@@ -48,8 +48,7 @@ public class RoleMenuApplicationService {
      * 根据主键查询角色菜单关联详情。
      */
     public RoleMenuEntity get(Long id) {
-        return roleMenuRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.ROLE_MENU_NOT_FOUND));
+        return ApplicationAssert.requireFound(roleMenuRepository.findById(id), ErrorCode.ROLE_MENU_NOT_FOUND);
     }
 
     /**
@@ -68,9 +67,7 @@ public class RoleMenuApplicationService {
         Long tenantId = SecurityHelper.getRequiredTenantId();
         Long oldRoleId = roleMenu.getRoleId();
         RoleMenuFactory.changeBasicInfo(roleMenu, command.roleId(), command.menuId(), tenantId);
-        if (!roleMenuRepository.update(roleMenu)) {
-            throw new BusinessException(ErrorCode.ROLE_MENU_NOT_FOUND);
-        }
+        ApplicationAssert.requireSuccess(roleMenuRepository.update(roleMenu), ErrorCode.ROLE_MENU_NOT_FOUND);
         // 旧/新 roleId 都失效,避免改了关联后老 role 的缓存仍含旧菜单
         permissionCacheService.evictByRoleId(oldRoleId);
         if (!oldRoleId.equals(command.roleId())) {
@@ -106,9 +103,7 @@ public class RoleMenuApplicationService {
     public void delete(Long id) {
         // 先 get 拿 roleId 用于 evict,再删除
         RoleMenuEntity roleMenu = get(id);
-        if (!roleMenuRepository.deleteById(id)) {
-            throw new BusinessException(ErrorCode.ROLE_MENU_NOT_FOUND);
-        }
+        ApplicationAssert.requireSuccess(roleMenuRepository.deleteById(id), ErrorCode.ROLE_MENU_NOT_FOUND);
         permissionCacheService.evictByRoleId(roleMenu.getRoleId());
     }
 }

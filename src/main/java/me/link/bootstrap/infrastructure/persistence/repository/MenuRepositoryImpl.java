@@ -4,7 +4,6 @@ import me.link.bootstrap.domain.valueobject.StatusEnum;
 
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import me.link.bootstrap.domain.entity.MenuEntity;
@@ -13,6 +12,7 @@ import me.link.bootstrap.domain.valueobject.PageResult;
 import me.link.bootstrap.infrastructure.persistence.converter.MenuConverter;
 import me.link.bootstrap.infrastructure.persistence.internal.MenuInternalService;
 import me.link.bootstrap.infrastructure.persistence.po.MenuPO;
+import me.link.bootstrap.infrastructure.persistence.repository.support.PageOrderHelper;
 import me.link.bootstrap.shared.kernel.valueobject.SortingField;
 import org.springframework.stereotype.Repository;
 
@@ -58,7 +58,7 @@ public class MenuRepositoryImpl implements MenuRepository {
     @Override
     public PageResult<MenuEntity> page(Integer pageNo, Integer pageSize, String name, String permission, Integer type, Long parentId, StatusEnum status, List<SortingField> sortingFields) {
         Page<MenuPO> page = Page.of(pageNo, pageSize);
-        applyOrders(page, sortingFields);
+        PageOrderHelper.applyOrders(page, sortingFields, SORT_FIELD_MAPPING);
         LambdaQueryWrapper<MenuPO> wrapper = new LambdaQueryWrapper<MenuPO>()
                 .like(StrUtil.isNotBlank(name), MenuPO::getName, name)
                 .like(StrUtil.isNotBlank(permission), MenuPO::getPermission, permission)
@@ -75,20 +75,4 @@ public class MenuRepositoryImpl implements MenuRepository {
         return menuInternalService.removeById(id);
     }
 
-    private void applyOrders(Page<MenuPO> page, List<SortingField> sortingFields) {
-        if (sortingFields == null || sortingFields.isEmpty()) {
-            return;
-        }
-        sortingFields.stream()
-                .map(this::toOrderItem)
-                .forEach(page::addOrder);
-    }
-
-    private OrderItem toOrderItem(SortingField sortingField) {
-        String column = SORT_FIELD_MAPPING.get(sortingField.getField());
-        if (sortingField.isAsc()) {
-            return OrderItem.asc(column);
-        }
-        return OrderItem.desc(column);
-    }
 }

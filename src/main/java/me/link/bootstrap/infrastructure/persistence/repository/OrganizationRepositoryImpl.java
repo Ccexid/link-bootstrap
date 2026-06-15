@@ -4,7 +4,6 @@ import me.link.bootstrap.domain.valueobject.StatusEnum;
 
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import me.link.bootstrap.domain.entity.OrganizationEntity;
@@ -13,6 +12,7 @@ import me.link.bootstrap.domain.valueobject.PageResult;
 import me.link.bootstrap.infrastructure.persistence.converter.OrganizationConverter;
 import me.link.bootstrap.infrastructure.persistence.internal.OrganizationInternalService;
 import me.link.bootstrap.infrastructure.persistence.po.OrganizationPO;
+import me.link.bootstrap.infrastructure.persistence.repository.support.PageOrderHelper;
 import me.link.bootstrap.shared.kernel.valueobject.SortingField;
 import org.springframework.stereotype.Repository;
 
@@ -58,7 +58,7 @@ public class OrganizationRepositoryImpl implements OrganizationRepository {
     @Override
     public PageResult<OrganizationEntity> page(Integer pageNo, Integer pageSize, String name, Integer orgType, Long parentId, StatusEnum status, Long tenantId, List<SortingField> sortingFields) {
         Page<OrganizationPO> page = Page.of(pageNo, pageSize);
-        applyOrders(page, sortingFields);
+        PageOrderHelper.applyOrders(page, sortingFields, SORT_FIELD_MAPPING);
         LambdaQueryWrapper<OrganizationPO> wrapper = new LambdaQueryWrapper<OrganizationPO>()
                 .like(StrUtil.isNotBlank(name), OrganizationPO::getName, name)
                 .eq(orgType != null, OrganizationPO::getOrgType, orgType)
@@ -75,20 +75,4 @@ public class OrganizationRepositoryImpl implements OrganizationRepository {
         return organizationInternalService.removeById(id);
     }
 
-    private void applyOrders(Page<OrganizationPO> page, List<SortingField> sortingFields) {
-        if (sortingFields == null || sortingFields.isEmpty()) {
-            return;
-        }
-        sortingFields.stream()
-                .map(this::toOrderItem)
-                .forEach(page::addOrder);
-    }
-
-    private OrderItem toOrderItem(SortingField sortingField) {
-        String column = SORT_FIELD_MAPPING.get(sortingField.getField());
-        if (sortingField.isAsc()) {
-            return OrderItem.asc(column);
-        }
-        return OrderItem.desc(column);
-    }
 }

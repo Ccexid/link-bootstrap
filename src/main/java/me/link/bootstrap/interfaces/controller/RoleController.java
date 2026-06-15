@@ -12,6 +12,7 @@ import me.link.bootstrap.application.command.UpdateRoleCommand;
 import me.link.bootstrap.application.service.RoleApplicationService;
 import me.link.bootstrap.domain.entity.RoleEntity;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.role.RoleCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.role.RolePageRequest;
 import me.link.bootstrap.interfaces.dto.request.role.RoleUpdateRequest;
@@ -30,8 +31,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping(GlobalConstants.API_PREFIX + "/system/role")
 @Validated
@@ -40,6 +39,7 @@ import java.util.List;
 public class RoleController {
 
     private final RoleApplicationService roleApplicationService;
+    private final ResponseVOConverter responseVOConverter;
 
     @PostMapping
     @SaCheckPermission("system:role:create")
@@ -55,13 +55,13 @@ public class RoleController {
                 request.getType(),
                 request.getRemark()
         ));
-        return ResultResponse.success(toResponse(role));
+        return ResultResponse.success(responseVOConverter.toResponse(role));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "查询角色详情", description = "根据ID查询角色详情")
     public ResultResponse<RoleResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
-        return ResultResponse.success(toResponse(roleApplicationService.get(id)));
+        return ResultResponse.success(responseVOConverter.toResponse(roleApplicationService.get(id)));
     }
 
     @GetMapping
@@ -76,10 +76,7 @@ public class RoleController {
                 request.getType(),
                 request.getSortingFields()
         ));
-        List<RoleResponseVO> records = pageResult.records().stream()
-                .map(this::toResponse)
-                .toList();
-        return ResultTableResponse.success(records, pageResult.total());
+        return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
     }
 
     @PutMapping("/{id}")
@@ -98,7 +95,7 @@ public class RoleController {
                 request.getType(),
                 request.getRemark()
         ));
-        return ResultResponse.success(toResponse(role));
+        return ResultResponse.success(responseVOConverter.toResponse(role));
     }
 
     @DeleteMapping("/{id}")
@@ -109,20 +106,4 @@ public class RoleController {
         return ResultResponse.success();
     }
 
-    private RoleResponseVO toResponse(RoleEntity role) {
-        RoleResponseVO response = new RoleResponseVO();
-        response.setId(role.getId());
-        response.setName(role.getName());
-        response.setCode(role.getCode());
-        response.setSort(role.getSort());
-        response.setDataScope(role.getDataScope());
-        response.setDataScopeDeptIds(role.getDataScopeDeptIds());
-        response.setStatus(role.getStatus());
-        response.setType(role.getType());
-        response.setRemark(role.getRemark());
-        response.setTenantId(role.getTenantId());
-        response.setCreatedAt(role.getCreatedAt());
-        response.setUpdatedAt(role.getUpdatedAt());
-        return response;
-    }
 }

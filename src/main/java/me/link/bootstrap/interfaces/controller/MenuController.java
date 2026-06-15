@@ -12,6 +12,7 @@ import me.link.bootstrap.application.command.UpdateMenuCommand;
 import me.link.bootstrap.application.service.MenuApplicationService;
 import me.link.bootstrap.domain.entity.MenuEntity;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.menu.MenuCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.menu.MenuPageRequest;
 import me.link.bootstrap.interfaces.dto.request.menu.MenuUpdateRequest;
@@ -30,8 +31,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping(GlobalConstants.API_PREFIX + "/system/menu")
 @Validated
@@ -40,6 +39,7 @@ import java.util.List;
 public class MenuController {
 
     private final MenuApplicationService menuApplicationService;
+    private final ResponseVOConverter responseVOConverter;
 
     @PostMapping
     @SaCheckPermission("system:menu:create")
@@ -60,13 +60,13 @@ public class MenuController {
                 request.getKeepAlive(),
                 request.getAlwaysShow()
         ));
-        return ResultResponse.success(toResponse(menu));
+        return ResultResponse.success(responseVOConverter.toResponse(menu));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "查询菜单详情", description = "根据ID查询菜单详情")
     public ResultResponse<MenuResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
-        return ResultResponse.success(toResponse(menuApplicationService.get(id)));
+        return ResultResponse.success(responseVOConverter.toResponse(menuApplicationService.get(id)));
     }
 
     @GetMapping
@@ -82,10 +82,7 @@ public class MenuController {
                 request.getStatus(),
                 request.getSortingFields()
         ));
-        List<MenuResponseVO> records = pageResult.records().stream()
-                .map(this::toResponse)
-                .toList();
-        return ResultTableResponse.success(records, pageResult.total());
+        return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
     }
 
     @PutMapping("/{id}")
@@ -109,7 +106,7 @@ public class MenuController {
                 request.getKeepAlive(),
                 request.getAlwaysShow()
         ));
-        return ResultResponse.success(toResponse(menu));
+        return ResultResponse.success(responseVOConverter.toResponse(menu));
     }
 
     @DeleteMapping("/{id}")
@@ -120,24 +117,4 @@ public class MenuController {
         return ResultResponse.success();
     }
 
-    private MenuResponseVO toResponse(MenuEntity menu) {
-        MenuResponseVO response = new MenuResponseVO();
-        response.setId(menu.getId());
-        response.setName(menu.getName());
-        response.setPermission(menu.getPermission());
-        response.setType(menu.getType());
-        response.setSort(menu.getSort());
-        response.setParentId(menu.getParentId());
-        response.setPath(menu.getPath());
-        response.setIcon(menu.getIcon());
-        response.setComponent(menu.getComponent());
-        response.setComponentName(menu.getComponentName());
-        response.setStatus(menu.getStatus());
-        response.setVisible(menu.getVisible());
-        response.setKeepAlive(menu.getKeepAlive());
-        response.setAlwaysShow(menu.getAlwaysShow());
-        response.setCreatedAt(menu.getCreatedAt());
-        response.setUpdatedAt(menu.getUpdatedAt());
-        return response;
-    }
 }

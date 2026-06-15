@@ -5,8 +5,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import me.link.bootstrap.application.command.LoginCommand;
-import me.link.bootstrap.application.command.TokenRefreshResult;
 import me.link.bootstrap.application.service.AuthApplicationService;
+import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.auth.LoginRequest;
 import me.link.bootstrap.interfaces.dto.response.ResultResponse;
 import me.link.bootstrap.interfaces.dto.response.vo.TokenResponseVO;
@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthApplicationService authApplicationService;
+    private final ResponseVOConverter responseVOConverter;
 
     @PostMapping("/login")
     @Operation(summary = "用户登录", description = "校验账号密码并签发 Token")
@@ -39,19 +40,19 @@ public class AuthController {
                 request.getPassword(),
                 request.getTenantId()
         ));
-        return ResultResponse.success(toResponse(authApplicationService.currentToken()));
+        return ResultResponse.success(responseVOConverter.toResponse(authApplicationService.currentToken()));
     }
 
     @PostMapping("/refresh-token")
     @Operation(summary = "刷新 Token", description = "基于当前有效 Token 续期,并返回最新剩余有效期")
     public ResultResponse<TokenResponseVO> refreshToken() {
-        return ResultResponse.success(toResponse(authApplicationService.refreshToken()));
+        return ResultResponse.success(responseVOConverter.toResponse(authApplicationService.refreshToken()));
     }
 
     @GetMapping("/token")
     @Operation(summary = "查询当前 Token", description = "返回当前 Token 名称、值、前缀及剩余有效期")
     public ResultResponse<TokenResponseVO> currentToken() {
-        return ResultResponse.success(toResponse(authApplicationService.currentToken()));
+        return ResultResponse.success(responseVOConverter.toResponse(authApplicationService.currentToken()));
     }
 
     @PostMapping("/logout")
@@ -61,13 +62,4 @@ public class AuthController {
         return ResultResponse.success();
     }
 
-    private static TokenResponseVO toResponse(TokenRefreshResult result) {
-        return new TokenResponseVO(
-                result.tokenName(),
-                result.tokenValue(),
-                result.tokenPrefix(),
-                result.tokenTimeout(),
-                result.tokenActiveTimeout()
-        );
-    }
 }

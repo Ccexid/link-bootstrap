@@ -2,7 +2,6 @@ package me.link.bootstrap.infrastructure.persistence.repository;
 
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import me.link.bootstrap.domain.entity.OperateLogEntity;
@@ -11,6 +10,7 @@ import me.link.bootstrap.domain.valueobject.PageResult;
 import me.link.bootstrap.infrastructure.persistence.converter.OperateLogConverter;
 import me.link.bootstrap.infrastructure.persistence.internal.OperateLogInternalService;
 import me.link.bootstrap.infrastructure.persistence.po.OperateLogPO;
+import me.link.bootstrap.infrastructure.persistence.repository.support.PageOrderHelper;
 import me.link.bootstrap.shared.kernel.valueobject.SortingField;
 import org.springframework.stereotype.Repository;
 
@@ -56,7 +56,7 @@ public class OperateLogRepositoryImpl implements OperateLogRepository {
     @Override
     public PageResult<OperateLogEntity> page(Integer pageNo, Integer pageSize, String traceId, Long userId, String module, Integer operation, Long bizId, Boolean success, Long tenantId, List<SortingField> sortingFields) {
         Page<OperateLogPO> page = Page.of(pageNo, pageSize);
-        applyOrders(page, sortingFields);
+        PageOrderHelper.applyOrders(page, sortingFields, SORT_FIELD_MAPPING);
         LambdaQueryWrapper<OperateLogPO> wrapper = new LambdaQueryWrapper<OperateLogPO>()
                 .like(StrUtil.isNotBlank(traceId), OperateLogPO::getTraceId, traceId)
                 .eq(userId != null, OperateLogPO::getUserId, userId)
@@ -75,20 +75,4 @@ public class OperateLogRepositoryImpl implements OperateLogRepository {
         return operateLogInternalService.removeById(id);
     }
 
-    private void applyOrders(Page<OperateLogPO> page, List<SortingField> sortingFields) {
-        if (sortingFields == null || sortingFields.isEmpty()) {
-            return;
-        }
-        sortingFields.stream()
-                .map(this::toOrderItem)
-                .forEach(page::addOrder);
-    }
-
-    private OrderItem toOrderItem(SortingField sortingField) {
-        String column = SORT_FIELD_MAPPING.get(sortingField.getField());
-        if (sortingField.isAsc()) {
-            return OrderItem.asc(column);
-        }
-        return OrderItem.desc(column);
-    }
 }

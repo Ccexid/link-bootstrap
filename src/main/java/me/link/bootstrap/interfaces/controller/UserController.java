@@ -12,6 +12,7 @@ import me.link.bootstrap.application.command.UpdateUserCommand;
 import me.link.bootstrap.application.service.UserApplicationService;
 import me.link.bootstrap.domain.entity.UserEntity;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.user.UserCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.user.UserPageRequest;
 import me.link.bootstrap.interfaces.dto.request.user.UserUpdateRequest;
@@ -30,8 +31,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping(GlobalConstants.API_PREFIX + "/system/users")
 @Validated
@@ -40,6 +39,7 @@ import java.util.List;
 public class UserController {
 
     private final UserApplicationService userApplicationService;
+    private final ResponseVOConverter responseVOConverter;
 
     @PostMapping
     @SaCheckPermission("system:user:create")
@@ -58,13 +58,13 @@ public class UserController {
                 request.getLoginIp(),
                 request.getLoginDate()
         ));
-        return ResultResponse.success(toResponse(user));
+        return ResultResponse.success(responseVOConverter.toResponse(user));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "查询用户详情", description = "根据ID查询用户详情")
     public ResultResponse<UserResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
-        return ResultResponse.success(toResponse(userApplicationService.get(id)));
+        return ResultResponse.success(responseVOConverter.toResponse(userApplicationService.get(id)));
     }
 
     @GetMapping
@@ -80,10 +80,7 @@ public class UserController {
                 request.getStatus(),
                 request.getSortingFields()
         ));
-        List<UserResponseVO> records = pageResult.records().stream()
-                .map(this::toResponse)
-                .toList();
-        return ResultTableResponse.success(records, pageResult.total());
+        return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
     }
 
     @PutMapping("/{id}")
@@ -105,7 +102,7 @@ public class UserController {
                 request.getLoginIp(),
                 request.getLoginDate()
         ));
-        return ResultResponse.success(toResponse(user));
+        return ResultResponse.success(responseVOConverter.toResponse(user));
     }
 
     @DeleteMapping("/{id}")
@@ -116,22 +113,4 @@ public class UserController {
         return ResultResponse.success();
     }
 
-    private UserResponseVO toResponse(UserEntity user) {
-        UserResponseVO response = new UserResponseVO();
-        response.setId(user.getId());
-        response.setUsername(user.getUsername());
-        response.setNickname(user.getNickname());
-        response.setUserType(user.getUserType());
-        response.setMobile(user.getMobile());
-        response.setAvatar(user.getAvatar());
-        response.setStatus(user.getStatus());
-        response.setOrgId(user.getOrgId());
-        response.setDeptId(user.getDeptId());
-        response.setLoginIp(user.getLoginIp());
-        response.setLoginDate(user.getLoginDate());
-        response.setTenantId(user.getTenantId());
-        response.setCreatedAt(user.getCreatedAt());
-        response.setUpdatedAt(user.getUpdatedAt());
-        return response;
-    }
 }

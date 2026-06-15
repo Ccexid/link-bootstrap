@@ -5,6 +5,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.crypto.digest.BCrypt;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.link.bootstrap.application.support.ApplicationAssert;
 import me.link.bootstrap.application.command.LoginCommand;
 import me.link.bootstrap.application.command.TokenRefreshResult;
 import me.link.bootstrap.domain.entity.UserEntity;
@@ -62,8 +63,7 @@ public class AuthApplicationService {
             throw new BusinessException(ErrorCode.USER_LOCKED);
         }
 
-        UserEntity user = userRepository.findByUsernameAndTenantId(command.username(), command.tenantId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        UserEntity user = ApplicationAssert.requireFound(userRepository.findByUsernameAndTenantId(command.username(), command.tenantId()), ErrorCode.USER_NOT_FOUND);
 
         if (!BCrypt.checkpw(command.password(), user.getPassword())) {
             long failures = loginAttemptService.recordFailure(command.username(), command.tenantId());

@@ -1,6 +1,7 @@
 package me.link.bootstrap.application.service;
 
 import lombok.RequiredArgsConstructor;
+import me.link.bootstrap.application.support.ApplicationAssert;
 import me.link.bootstrap.application.command.CreateRoleCommand;
 import me.link.bootstrap.application.command.RolePageQuery;
 import me.link.bootstrap.application.command.UpdateRoleCommand;
@@ -47,8 +48,7 @@ public class RoleApplicationService {
      * 根据主键查询角色详情。
      */
     public RoleEntity get(Long id) {
-        return roleRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.ROLE_NOT_FOUND));
+        return ApplicationAssert.requireFound(roleRepository.findById(id), ErrorCode.ROLE_NOT_FOUND);
     }
 
     /**
@@ -70,9 +70,7 @@ public class RoleApplicationService {
         Long tenantId = SecurityHelper.getRequiredTenantId();
         validateCodeUnique(tenantId, command.code(), command.id());
         RoleFactory.changeBasicInfo(role, command.name(), command.code(), command.sort(), command.dataScope(), command.dataScopeDeptIds(), command.status(), command.type(), command.remark(), tenantId);
-        if (!roleRepository.update(role)) {
-            throw new BusinessException(ErrorCode.ROLE_NOT_FOUND);
-        }
+        ApplicationAssert.requireSuccess(roleRepository.update(role), ErrorCode.ROLE_NOT_FOUND);
         // 角色信息(如 status、code)变化会影响所有持有该角色用户的权限码 / 角色码,级联失效缓存
         permissionCacheService.evictByRoleId(command.id());
         return get(command.id());
@@ -85,9 +83,7 @@ public class RoleApplicationService {
     public void delete(Long id) {
         // 必须在 delete 之前 evict,evict 内部查 user_role 来拿受影响 userIds
         permissionCacheService.evictByRoleId(id);
-        if (!roleRepository.deleteById(id)) {
-            throw new BusinessException(ErrorCode.ROLE_NOT_FOUND);
-        }
+        ApplicationAssert.requireSuccess(roleRepository.deleteById(id), ErrorCode.ROLE_NOT_FOUND);
     }
 
     /**

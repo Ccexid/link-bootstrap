@@ -1,6 +1,7 @@
 package me.link.bootstrap.application.service;
 
 import lombok.RequiredArgsConstructor;
+import me.link.bootstrap.application.support.ApplicationAssert;
 import me.link.bootstrap.application.command.CreateTenantPackageCommand;
 import me.link.bootstrap.application.command.TenantPackagePageQuery;
 import me.link.bootstrap.application.command.UpdateTenantPackageCommand;
@@ -8,7 +9,6 @@ import me.link.bootstrap.domain.entity.TenantPackageEntity;
 import me.link.bootstrap.domain.factory.TenantPackageFactory;
 import me.link.bootstrap.domain.repository.TenantPackageRepository;
 import me.link.bootstrap.domain.valueobject.PageResult;
-import me.link.bootstrap.shared.kernel.exception.BusinessException;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,8 +35,7 @@ public class TenantPackageApplicationService {
      * 根据主键查询业务对象详情。
      */
     public TenantPackageEntity get(Long id) {
-        return tenantPackageRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.TENANT_PACKAGE_NOT_FOUND));
+        return ApplicationAssert.requireFound(tenantPackageRepository.findById(id), ErrorCode.TENANT_PACKAGE_NOT_FOUND);
     }
 
     /**
@@ -59,10 +58,7 @@ public class TenantPackageApplicationService {
         if (Boolean.FALSE.equals(command.enabled())) {
             tenantPackage.disable();
         }
-        boolean updated = tenantPackageRepository.update(tenantPackage);
-        if (!updated) {
-            throw new BusinessException(ErrorCode.TENANT_PACKAGE_NOT_FOUND);
-        }
+        ApplicationAssert.requireSuccess(tenantPackageRepository.update(tenantPackage), ErrorCode.TENANT_PACKAGE_NOT_FOUND);
         return get(command.id());
     }
 
@@ -71,8 +67,6 @@ public class TenantPackageApplicationService {
      */
     @Transactional
     public void delete(Long id) {
-        if (!tenantPackageRepository.deleteById(id)) {
-            throw new BusinessException(ErrorCode.TENANT_PACKAGE_NOT_FOUND);
-        }
+        ApplicationAssert.requireSuccess(tenantPackageRepository.deleteById(id), ErrorCode.TENANT_PACKAGE_NOT_FOUND);
     }
 }

@@ -12,6 +12,7 @@ import me.link.bootstrap.application.command.UpdateOrganizationCommand;
 import me.link.bootstrap.application.service.OrganizationApplicationService;
 import me.link.bootstrap.domain.entity.OrganizationEntity;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.organization.OrganizationCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.organization.OrganizationPageRequest;
 import me.link.bootstrap.interfaces.dto.request.organization.OrganizationUpdateRequest;
@@ -30,8 +31,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping(GlobalConstants.API_PREFIX + "/system/organization")
 @Validated
@@ -40,6 +39,7 @@ import java.util.List;
 public class OrganizationController {
 
     private final OrganizationApplicationService organizationApplicationService;
+    private final ResponseVOConverter responseVOConverter;
 
     @PostMapping
     @SaCheckPermission("system:organization:create")
@@ -55,13 +55,13 @@ public class OrganizationController {
                 request.getContactMobile(),
                 request.getStatus()
         ));
-        return ResultResponse.success(toResponse(organization));
+        return ResultResponse.success(responseVOConverter.toResponse(organization));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "查询组织详情", description = "根据ID查询组织详情")
     public ResultResponse<OrganizationResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
-        return ResultResponse.success(toResponse(organizationApplicationService.get(id)));
+        return ResultResponse.success(responseVOConverter.toResponse(organizationApplicationService.get(id)));
     }
 
     @GetMapping
@@ -76,10 +76,7 @@ public class OrganizationController {
                 request.getStatus(),
                 request.getSortingFields()
         ));
-        List<OrganizationResponseVO> records = pageResult.records().stream()
-                .map(this::toResponse)
-                .toList();
-        return ResultTableResponse.success(records, pageResult.total());
+        return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
     }
 
     @PutMapping("/{id}")
@@ -98,7 +95,7 @@ public class OrganizationController {
                 request.getContactMobile(),
                 request.getStatus()
         ));
-        return ResultResponse.success(toResponse(organization));
+        return ResultResponse.success(responseVOConverter.toResponse(organization));
     }
 
     @DeleteMapping("/{id}")
@@ -109,20 +106,4 @@ public class OrganizationController {
         return ResultResponse.success();
     }
 
-    private OrganizationResponseVO toResponse(OrganizationEntity organization) {
-        OrganizationResponseVO response = new OrganizationResponseVO();
-        response.setId(organization.getId());
-        response.setName(organization.getName());
-        response.setOrgType(organization.getOrgType());
-        response.setParentId(organization.getParentId());
-        response.setAncestors(organization.getAncestors());
-        response.setLevel(organization.getLevel());
-        response.setContactName(organization.getContactName());
-        response.setContactMobile(organization.getContactMobile());
-        response.setStatus(organization.getStatus());
-        response.setTenantId(organization.getTenantId());
-        response.setCreatedAt(organization.getCreatedAt());
-        response.setUpdatedAt(organization.getUpdatedAt());
-        return response;
-    }
 }

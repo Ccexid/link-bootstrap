@@ -2,19 +2,21 @@ package me.link.bootstrap.interfaces.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import me.link.bootstrap.domain.valueobject.PageResult;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * 统一表格响应对象，用于包装分页列表数据和总记录数。
  */
 @Schema(description = "统一响应结果")
 @Data
-    public class ResultTableResponse<E> implements Serializable {
+public class ResultTableResponse<E> implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -52,6 +54,13 @@ import java.util.List;
 
     public static <E> ResultTableResponse<E> success(final List<E> records, final Long total) {
         return new ResultTableResponse<>(records, total, ErrorCode.SUCCESS.getCode(), Instant.now().toEpochMilli(), null);
+    }
+
+    public static <T, E> ResultTableResponse<E> success(final PageResult<T> pageResult, final Function<T, E> mapper) {
+        List<E> records = pageResult.records().stream()
+                .map(mapper)
+                .toList();
+        return success(records, pageResult.total());
     }
 
     public static <E> ResultTableResponse<E> failure(ErrorCode errorCode) {

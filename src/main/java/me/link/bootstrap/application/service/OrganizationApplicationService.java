@@ -1,6 +1,7 @@
 package me.link.bootstrap.application.service;
 
 import lombok.RequiredArgsConstructor;
+import me.link.bootstrap.application.support.ApplicationAssert;
 import me.link.bootstrap.application.command.CreateOrganizationCommand;
 import me.link.bootstrap.application.command.OrganizationPageQuery;
 import me.link.bootstrap.application.command.UpdateOrganizationCommand;
@@ -8,7 +9,6 @@ import me.link.bootstrap.domain.entity.OrganizationEntity;
 import me.link.bootstrap.domain.factory.OrganizationFactory;
 import me.link.bootstrap.domain.repository.OrganizationRepository;
 import me.link.bootstrap.domain.valueobject.PageResult;
-import me.link.bootstrap.shared.kernel.exception.BusinessException;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 import me.link.bootstrap.shared.kernel.util.SecurityHelper;
 import org.springframework.stereotype.Service;
@@ -41,8 +41,7 @@ public class OrganizationApplicationService {
      * 根据主键查询组织详情。
      */
     public OrganizationEntity get(Long id) {
-        return organizationRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.ORGANIZATION_NOT_FOUND));
+        return ApplicationAssert.requireFound(organizationRepository.findById(id), ErrorCode.ORGANIZATION_NOT_FOUND);
     }
 
     /**
@@ -60,9 +59,7 @@ public class OrganizationApplicationService {
         OrganizationEntity organization = get(command.id());
         Long tenantId = SecurityHelper.getRequiredTenantId();
         OrganizationFactory.changeBasicInfo(organization, command.name(), command.orgType(), command.parentId(), command.ancestors(), command.level(), command.contactName(), command.contactMobile(), command.status(), tenantId);
-        if (!organizationRepository.update(organization)) {
-            throw new BusinessException(ErrorCode.ORGANIZATION_NOT_FOUND);
-        }
+        ApplicationAssert.requireSuccess(organizationRepository.update(organization), ErrorCode.ORGANIZATION_NOT_FOUND);
         return get(command.id());
     }
 
@@ -71,8 +68,6 @@ public class OrganizationApplicationService {
      */
     @Transactional
     public void delete(Long id) {
-        if (!organizationRepository.deleteById(id)) {
-            throw new BusinessException(ErrorCode.ORGANIZATION_NOT_FOUND);
-        }
+        ApplicationAssert.requireSuccess(organizationRepository.deleteById(id), ErrorCode.ORGANIZATION_NOT_FOUND);
     }
 }

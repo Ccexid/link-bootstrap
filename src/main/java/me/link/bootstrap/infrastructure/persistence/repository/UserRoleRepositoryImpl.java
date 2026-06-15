@@ -1,7 +1,6 @@
 package me.link.bootstrap.infrastructure.persistence.repository;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import me.link.bootstrap.domain.entity.UserRoleEntity;
@@ -10,6 +9,7 @@ import me.link.bootstrap.domain.valueobject.PageResult;
 import me.link.bootstrap.infrastructure.persistence.converter.UserRoleConverter;
 import me.link.bootstrap.infrastructure.persistence.internal.UserRoleInternalService;
 import me.link.bootstrap.infrastructure.persistence.po.UserRolePO;
+import me.link.bootstrap.infrastructure.persistence.repository.support.PageOrderHelper;
 import me.link.bootstrap.shared.kernel.valueobject.SortingField;
 import org.springframework.stereotype.Repository;
 
@@ -55,7 +55,7 @@ public class UserRoleRepositoryImpl implements UserRoleRepository {
     @Override
     public PageResult<UserRoleEntity> page(Integer pageNo, Integer pageSize, Long userId, Long roleId, Long tenantId, List<SortingField> sortingFields) {
         Page<UserRolePO> page = Page.of(pageNo, pageSize);
-        applyOrders(page, sortingFields);
+        PageOrderHelper.applyOrders(page, sortingFields, SORT_FIELD_MAPPING);
         LambdaQueryWrapper<UserRolePO> wrapper = new LambdaQueryWrapper<UserRolePO>()
                 .eq(userId != null, UserRolePO::getUserId, userId)
                 .eq(roleId != null, UserRolePO::getRoleId, roleId)
@@ -81,20 +81,4 @@ public class UserRoleRepositoryImpl implements UserRoleRepository {
         userRoleInternalService.saveBatch(userRoleConverter.convertList(userRoles));
     }
 
-    private void applyOrders(Page<UserRolePO> page, List<SortingField> sortingFields) {
-        if (sortingFields == null || sortingFields.isEmpty()) {
-            return;
-        }
-        sortingFields.stream()
-                .map(this::toOrderItem)
-                .forEach(page::addOrder);
-    }
-
-    private OrderItem toOrderItem(SortingField sortingField) {
-        String column = SORT_FIELD_MAPPING.get(sortingField.getField());
-        if (sortingField.isAsc()) {
-            return OrderItem.asc(column);
-        }
-        return OrderItem.desc(column);
-    }
 }
