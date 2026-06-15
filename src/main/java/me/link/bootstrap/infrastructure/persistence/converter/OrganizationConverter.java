@@ -8,6 +8,9 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
+/**
+ * 组织持久化转换器，负责 OrganizationEntity 与 OrganizationPO 之间的双向转换。
+ */
 @Mapper(config = BaseConverter.class)
 public interface OrganizationConverter extends BaseConverter {
 

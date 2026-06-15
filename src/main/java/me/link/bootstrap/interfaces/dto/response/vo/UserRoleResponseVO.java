@@ -10,6 +10,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * 用户角色关联响应 VO，定义接口返回给前端的分配关系字段。
+ */
 @Data
 @Schema(description = "用户角色关联信息")
 public class UserRoleResponseVO implements Serializable {

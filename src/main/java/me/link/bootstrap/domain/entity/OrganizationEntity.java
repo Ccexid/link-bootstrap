@@ -4,6 +4,9 @@ import me.link.bootstrap.domain.valueobject.StatusEnum;
 
 import java.time.LocalDateTime;
 
+/**
+ * 组织领域实体，封装组织层级、联系人和租户归属信息。
+ */
 public class OrganizationEntity {
 
     private Long id;

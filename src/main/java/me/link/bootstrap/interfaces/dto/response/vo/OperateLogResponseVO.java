@@ -10,6 +10,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * 操作日志响应 VO，定义接口返回给前端的审计日志字段。
+ */
 @Data
 @Schema(description = "操作日志信息")
 public class OperateLogResponseVO implements Serializable {

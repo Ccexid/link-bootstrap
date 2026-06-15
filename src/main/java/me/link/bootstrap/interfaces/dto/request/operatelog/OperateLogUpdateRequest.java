@@ -5,6 +5,9 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 
+/**
+ * 更新操作日志请求 DTO，承载审计日志记录的变更值。
+ */
 @Data
 @Schema(description = "更新操作日志请求")
 public class OperateLogUpdateRequest implements Serializable {

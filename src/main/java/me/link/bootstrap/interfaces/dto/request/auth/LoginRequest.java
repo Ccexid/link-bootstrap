@@ -6,6 +6,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+/**
+ * 登录请求 DTO，承载账号、密码和租户定位信息。
+ */
 @Data
 @Schema(description = "登录请求")
 public class LoginRequest {

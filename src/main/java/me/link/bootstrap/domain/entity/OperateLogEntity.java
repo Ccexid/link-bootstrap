@@ -4,6 +4,9 @@ import me.link.bootstrap.domain.valueobject.StatusEnum;
 
 import java.time.LocalDateTime;
 
+/**
+ * 操作日志领域实体，记录用户操作、请求信息、业务标识和执行结果。
+ */
 public class OperateLogEntity {
 
     private Long id;

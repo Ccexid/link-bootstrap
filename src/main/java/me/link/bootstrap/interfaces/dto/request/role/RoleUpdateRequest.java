@@ -8,6 +8,9 @@ import java.time.LocalDateTime;
 import java.io.Serial;
 import java.io.Serializable;
 
+/**
+ * 更新角色请求 DTO，承载角色基础信息、权限编码和数据权限配置的变更值。
+ */
 @Data
 @Schema(description = "更新角色请求")
 public class RoleUpdateRequest implements Serializable {

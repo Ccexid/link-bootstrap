@@ -4,6 +4,9 @@ import me.link.bootstrap.domain.valueobject.StatusEnum;
 
 import java.time.LocalDateTime;
 
+/**
+ * 角色领域实体，封装角色编码、数据权限范围、状态和租户归属信息。
+ */
 public class RoleEntity {
 
     private Long id;

@@ -31,6 +31,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 菜单接口控制器，对外提供菜单增删改查 REST 接口。
+ */
 @RestController
 @RequestMapping(GlobalConstants.API_PREFIX + "/system/menu")
 @Validated

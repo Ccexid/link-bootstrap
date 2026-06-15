@@ -8,6 +8,9 @@ import java.time.LocalDateTime;
 import java.io.Serial;
 import java.io.Serializable;
 
+/**
+ * 更新组织请求 DTO，承载组织基础信息、层级关系和状态的变更值。
+ */
 @Data
 @Schema(description = "更新组织请求")
 public class OrganizationUpdateRequest implements Serializable {

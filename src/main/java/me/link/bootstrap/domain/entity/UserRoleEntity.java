@@ -4,6 +4,9 @@ import me.link.bootstrap.domain.valueobject.StatusEnum;
 
 import java.time.LocalDateTime;
 
+/**
+ * 用户角色关联领域实体，表示用户与角色之间的授权关系。
+ */
 public class UserRoleEntity {
 
     private Long id;

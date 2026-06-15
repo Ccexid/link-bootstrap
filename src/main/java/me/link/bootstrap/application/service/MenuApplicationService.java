@@ -14,6 +14,10 @@ import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * 菜单应用服务，负责编排菜单创建、查询、更新和删除流程。
+ * <p>菜单是全局权限资源，菜单权限或状态变化后需要主动失效权限缓存。</p>
+ */
 @Service
 @RequiredArgsConstructor
 public class MenuApplicationService {

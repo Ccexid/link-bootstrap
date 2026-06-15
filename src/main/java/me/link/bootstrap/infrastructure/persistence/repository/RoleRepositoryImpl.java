@@ -20,6 +20,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * 角色仓储实现，负责将领域仓储抽象适配到 MyBatis-Plus 持久化能力。
+ */
 @Repository
 @RequiredArgsConstructor
 public class RoleRepositoryImpl implements RoleRepository {

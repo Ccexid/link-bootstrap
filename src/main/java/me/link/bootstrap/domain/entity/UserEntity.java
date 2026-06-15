@@ -4,6 +4,9 @@ import me.link.bootstrap.domain.valueobject.StatusEnum;
 
 import java.time.LocalDateTime;
 
+/**
+ * 用户领域实体，封装登录账号、基础资料、组织归属和租户归属信息。
+ */
 public class UserEntity {
 
     private Long id;

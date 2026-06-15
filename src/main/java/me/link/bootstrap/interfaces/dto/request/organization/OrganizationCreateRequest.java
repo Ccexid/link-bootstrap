@@ -9,6 +9,9 @@ import me.link.bootstrap.domain.valueobject.StatusEnum;
 import java.io.Serial;
 import java.io.Serializable;
 
+/**
+ * 创建组织请求 DTO，承载组织基础信息、层级关系和联系人信息。
+ */
 @Data
 @Schema(description = "创建组织请求")
 public class OrganizationCreateRequest implements Serializable {

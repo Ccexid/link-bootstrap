@@ -10,6 +10,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * 菜单响应 VO，定义接口返回给前端的菜单字段。
+ */
 @Data
 @Schema(description = "菜单信息")
 public class MenuResponseVO implements Serializable {

@@ -9,6 +9,9 @@ import me.link.bootstrap.domain.valueobject.StatusEnum;
 import java.io.Serial;
 import java.io.Serializable;
 
+/**
+ * 创建菜单请求 DTO，承载菜单基础信息、权限标识和前端路由配置。
+ */
 @Data
 @Schema(description = "创建菜单请求")
 public class MenuCreateRequest implements Serializable {

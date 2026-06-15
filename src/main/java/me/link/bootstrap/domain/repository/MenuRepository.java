@@ -9,6 +9,9 @@ import me.link.bootstrap.shared.kernel.valueobject.SortingField;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * 菜单仓储接口，定义领域层访问菜单持久化数据所需的抽象能力。
+ */
 public interface MenuRepository {
 
     MenuEntity save(MenuEntity menu);

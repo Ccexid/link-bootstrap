@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * 登录响应 VO，返回客户端登录后需要保存的 Token 信息。
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

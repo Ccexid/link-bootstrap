@@ -10,6 +10,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * 用户响应 VO，定义接口返回给前端的用户字段。
+ */
 @Data
 @Schema(description = "用户信息")
 public class UserResponseVO implements Serializable {

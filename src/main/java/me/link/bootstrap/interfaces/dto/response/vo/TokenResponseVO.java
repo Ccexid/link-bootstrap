@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Token 响应 VO，返回当前登录凭证及有效期信息。
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

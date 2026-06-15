@@ -33,6 +33,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 角色菜单关联接口控制器，对外提供角色菜单授权关系维护接口。
+ */
 @RestController
 @RequestMapping(GlobalConstants.API_PREFIX + "/system/role-menu")
 @Validated

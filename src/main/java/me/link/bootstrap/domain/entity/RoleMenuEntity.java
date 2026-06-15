@@ -4,6 +4,9 @@ import me.link.bootstrap.domain.valueobject.StatusEnum;
 
 import java.time.LocalDateTime;
 
+/**
+ * 角色菜单关联领域实体，表示角色与菜单权限之间的授权关系。
+ */
 public class RoleMenuEntity {
 
     private Long id;

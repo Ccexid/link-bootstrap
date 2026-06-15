@@ -5,6 +5,9 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 
+/**
+ * 创建操作日志请求 DTO，承载一次业务操作的审计信息。
+ */
 @Data
 @Schema(description = "创建操作日志请求")
 public class OperateLogCreateRequest implements Serializable {

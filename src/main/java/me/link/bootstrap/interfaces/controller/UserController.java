@@ -31,6 +31,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 用户接口控制器，对外提供用户增删改查 REST 接口。
+ */
 @RestController
 @RequestMapping(GlobalConstants.API_PREFIX + "/system/users")
 @Validated

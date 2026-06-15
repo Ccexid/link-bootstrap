@@ -5,6 +5,9 @@ import me.link.bootstrap.domain.valueobject.StatusEnum;
 
 import java.time.LocalDateTime;
 
+/**
+ * 角色领域工厂，集中封装角色创建和变更时的业务规则校验。
+ */
 public final class RoleFactory {
 
     private RoleFactory() {

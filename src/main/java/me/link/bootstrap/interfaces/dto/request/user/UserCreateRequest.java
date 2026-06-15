@@ -11,6 +11,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * 创建用户请求 DTO，承载账号、密码、基础资料和组织归属信息。
+ */
 @Data
 @Schema(description = "创建用户请求")
 public class UserCreateRequest implements Serializable {

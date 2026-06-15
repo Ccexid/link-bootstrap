@@ -7,6 +7,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * 用户角色批量分配请求 DTO，承载用户与角色集合的分配关系。
+ */
 @Data
 @Schema(description = "用户角色批量分配请求")
 public class UserRoleAssignRequest implements Serializable {

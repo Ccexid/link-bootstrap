@@ -10,6 +10,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * 角色菜单关联响应 VO，定义接口返回给前端的授权关系字段。
+ */
 @Data
 @Schema(description = "角色菜单关联信息")
 public class RoleMenuResponseVO implements Serializable {

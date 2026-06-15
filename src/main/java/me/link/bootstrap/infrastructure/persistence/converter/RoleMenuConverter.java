@@ -8,6 +8,9 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
+/**
+ * 角色菜单关联持久化转换器，负责 RoleMenuEntity 与 RoleMenuPO 之间的双向转换。
+ */
 @Mapper(config = BaseConverter.class)
 public interface RoleMenuConverter extends BaseConverter {
 

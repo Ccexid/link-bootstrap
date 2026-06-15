@@ -7,6 +7,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * 角色菜单批量授权请求 DTO，承载角色与菜单集合的授权关系。
+ */
 @Data
 @Schema(description = "角色菜单批量授权请求")
 public class RoleMenuAuthorizeRequest implements Serializable {

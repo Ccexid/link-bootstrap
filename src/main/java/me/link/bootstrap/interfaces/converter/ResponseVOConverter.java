@@ -23,6 +23,9 @@ import me.link.bootstrap.interfaces.dto.response.vo.UserRoleResponseVO;
 import me.link.bootstrap.shared.kernel.converter.BaseConverter;
 import org.mapstruct.Mapper;
 
+/**
+ * 接口层响应对象转换器，统一将应用层结果和领域实体转换为前端 VO。
+ */
 @Mapper(config = BaseConverter.class)
 public interface ResponseVOConverter {
 

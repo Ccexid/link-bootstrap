@@ -17,6 +17,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * 用户角色关联仓储实现，负责将领域仓储抽象适配到 MyBatis-Plus 持久化能力。
+ */
 @Repository
 @RequiredArgsConstructor
 public class UserRoleRepositoryImpl implements UserRoleRepository {

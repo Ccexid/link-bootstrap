@@ -11,6 +11,9 @@ import me.link.bootstrap.shared.kernel.database.mybatis.TenantBaseDO;
 
 import java.time.LocalDateTime;
 
+/**
+ * 操作日志持久化对象，字段与 system_operate_log 表结构保持对应。
+ */
 @EqualsAndHashCode(callSuper = true)
 @Data
 @TableName(value = "system_operate_log", autoResultMap = true)

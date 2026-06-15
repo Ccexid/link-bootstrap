@@ -8,6 +8,9 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
+/**
+ * 用户角色关联持久化转换器，负责 UserRoleEntity 与 UserRolePO 之间的双向转换。
+ */
 @Mapper(config = BaseConverter.class)
 public interface UserRoleConverter extends BaseConverter {
 

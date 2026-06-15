@@ -33,6 +33,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 用户角色关联接口控制器，对外提供用户角色分配关系维护接口。
+ */
 @RestController
 @RequestMapping(GlobalConstants.API_PREFIX + "/system/user-role")
 @Validated

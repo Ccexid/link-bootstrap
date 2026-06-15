@@ -9,6 +9,9 @@ import me.link.bootstrap.interfaces.dto.request.SortablePageRequest;
 
 import java.io.Serial;
 
+/**
+ * 用户分页查询请求 DTO，承载用户筛选条件、分页参数和排序字段。
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)

@@ -8,6 +8,9 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
+/**
+ * 操作日志持久化转换器，负责 OperateLogEntity 与 OperateLogPO 之间的双向转换。
+ */
 @Mapper(config = BaseConverter.class)
 public interface OperateLogConverter extends BaseConverter {
 

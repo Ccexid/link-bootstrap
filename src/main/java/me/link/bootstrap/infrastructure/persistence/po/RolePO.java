@@ -10,6 +10,9 @@ import me.link.bootstrap.shared.kernel.database.mybatis.TenantBaseDO;
 
 import java.time.LocalDateTime;
 
+/**
+ * 角色持久化对象，字段与 system_role 表结构保持对应。
+ */
 @EqualsAndHashCode(callSuper = true)
 @Data
 @TableName(value = "system_role")

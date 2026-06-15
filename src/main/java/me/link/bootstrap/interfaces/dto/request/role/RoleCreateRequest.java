@@ -9,6 +9,9 @@ import me.link.bootstrap.domain.valueobject.StatusEnum;
 import java.io.Serial;
 import java.io.Serializable;
 
+/**
+ * 创建角色请求 DTO，承载角色基础信息、权限编码和数据权限配置。
+ */
 @Data
 @Schema(description = "创建角色请求")
 public class RoleCreateRequest implements Serializable {

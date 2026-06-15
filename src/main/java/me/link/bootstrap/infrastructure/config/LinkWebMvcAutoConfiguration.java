@@ -20,6 +20,9 @@ import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Web MVC 自动配置，注册请求参数蛇形命名到驼峰命名的兼容绑定过滤器。
+ */
 @AutoConfiguration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass(OncePerRequestFilter.class)

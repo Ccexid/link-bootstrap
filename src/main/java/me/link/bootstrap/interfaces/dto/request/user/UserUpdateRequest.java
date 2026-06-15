@@ -11,6 +11,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * 更新用户请求 DTO，承载用户基础资料、状态和组织归属的变更值。
+ */
 @Data
 @Schema(description = "更新用户请求")
 public class UserUpdateRequest implements Serializable {

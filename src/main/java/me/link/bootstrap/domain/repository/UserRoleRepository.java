@@ -7,6 +7,9 @@ import me.link.bootstrap.shared.kernel.valueobject.SortingField;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * 用户角色关联仓储接口，定义领域层访问用户授权关系所需的抽象能力。
+ */
 public interface UserRoleRepository {
 
     UserRoleEntity save(UserRoleEntity userRole);
@@ -19,5 +22,8 @@ public interface UserRoleRepository {
 
     boolean deleteById(Long id);
 
+    /**
+     * 覆盖式保存指定用户在当前租户下的角色分配关系。
+     */
     void assign(Long userId, Long tenantId, List<UserRoleEntity> userRoles);
 }

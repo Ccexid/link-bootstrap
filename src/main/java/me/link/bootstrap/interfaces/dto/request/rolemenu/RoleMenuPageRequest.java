@@ -9,6 +9,9 @@ import me.link.bootstrap.interfaces.dto.request.SortablePageRequest;
 
 import java.io.Serial;
 
+/**
+ * 角色菜单关联分页查询请求 DTO，承载角色菜单关系的筛选、分页和排序条件。
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)

@@ -1,5 +1,8 @@
 package me.link.bootstrap.application.command;
 
+/**
+ * Token 查询或刷新结果，承载 Sa-Token 当前签发信息和剩余有效期。
+ */
 public record TokenRefreshResult(
         String tokenName,
         String tokenValue,

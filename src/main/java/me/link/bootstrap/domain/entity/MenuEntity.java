@@ -4,6 +4,9 @@ import me.link.bootstrap.domain.valueobject.StatusEnum;
 
 import java.time.LocalDateTime;
 
+/**
+ * 菜单领域实体，封装权限标识、前端路由配置和菜单展示状态。
+ */
 public class MenuEntity {
 
     private Long id;

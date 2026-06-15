@@ -8,6 +8,9 @@ import java.time.LocalDateTime;
 import java.io.Serial;
 import java.io.Serializable;
 
+/**
+ * 更新菜单请求 DTO，承载可变更的菜单基础信息和前端路由配置。
+ */
 @Data
 @Schema(description = "更新菜单请求")
 public class MenuUpdateRequest implements Serializable {

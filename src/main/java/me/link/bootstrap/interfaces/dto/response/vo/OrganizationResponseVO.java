@@ -10,6 +10,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * 组织响应 VO，定义接口返回给前端的组织字段。
+ */
 @Data
 @Schema(description = "组织信息")
 public class OrganizationResponseVO implements Serializable {

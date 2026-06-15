@@ -6,6 +6,9 @@ import me.link.bootstrap.domain.valueobject.StatusEnum;
 
 import java.time.LocalDateTime;
 
+/**
+ * 用户领域工厂，集中封装用户创建和变更校验，并负责密码加密。
+ */
 public final class UserFactory {
 
     private static final int PASSWORD_MIN_LENGTH = 8;

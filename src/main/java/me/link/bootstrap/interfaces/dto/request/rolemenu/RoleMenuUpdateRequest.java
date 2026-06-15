@@ -5,6 +5,9 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 
+/**
+ * 更新角色菜单关联请求 DTO，承载角色与菜单绑定关系的变更值。
+ */
 @Data
 @Schema(description = "更新角色菜单关联请求")
 public class RoleMenuUpdateRequest implements Serializable {

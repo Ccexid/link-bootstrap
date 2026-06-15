@@ -14,6 +14,10 @@ import me.link.bootstrap.shared.kernel.util.SecurityHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * 操作日志应用服务，负责编排操作日志创建、查询、更新和删除流程。
+ * <p>写入时从当前登录上下文补齐租户 ID，查询侧由租户拦截器负责隔离。</p>
+ */
 @Service
 @RequiredArgsConstructor
 public class OperateLogApplicationService {

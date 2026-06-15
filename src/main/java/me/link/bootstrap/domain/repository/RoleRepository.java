@@ -9,6 +9,9 @@ import me.link.bootstrap.shared.kernel.valueobject.SortingField;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * 角色仓储接口，定义领域层访问角色持久化数据所需的抽象能力。
+ */
 public interface RoleRepository {
 
     RoleEntity save(RoleEntity role);
