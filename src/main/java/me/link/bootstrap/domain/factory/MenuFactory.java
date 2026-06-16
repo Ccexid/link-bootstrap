@@ -3,8 +3,6 @@ package me.link.bootstrap.domain.factory;
 import me.link.bootstrap.domain.entity.MenuEntity;
 import me.link.bootstrap.domain.valueobject.StatusEnum;
 
-import java.time.LocalDateTime;
-
 /**
  * 菜单领域工厂，集中封装菜单创建和变更时的业务规则校验。
  */

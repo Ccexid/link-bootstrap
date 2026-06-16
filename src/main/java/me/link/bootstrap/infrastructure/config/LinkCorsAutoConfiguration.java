@@ -32,6 +32,7 @@ import java.util.Collections;
 @ConditionalOnClass(CorsFilter.class)
 public class LinkCorsAutoConfiguration {
 
+    @SuppressWarnings("null")
     @Bean
     @ConditionalOnMissingBean(name = "linkCorsFilter")
     public FilterRegistrationBean<CorsFilter> linkCorsFilter() {

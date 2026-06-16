@@ -5,6 +5,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.link.bootstrap.shared.kernel.constant.GlobalConstants;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -47,8 +48,9 @@ public class SaTokenConfigure implements WebMvcConfigurer {
             "/favicon.ico"
     );
 
+    @SuppressWarnings("null")
     @Override
-    public void addInterceptors(InterceptorRegistry registry) {
+    public void addInterceptors(@NonNull InterceptorRegistry registry) {
         registry.addInterceptor(new SaInterceptor(handler -> StpUtil.checkLogin()))
                 .addPathPatterns("/**")
                 .excludePathPatterns(WHITELIST);

@@ -36,6 +36,7 @@ public class LinkJacksonAutoConfiguration {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    @SuppressWarnings("null")
     @Bean
     @ConditionalOnMissingBean
     public Jackson2ObjectMapperBuilderCustomizer jacksonObjectMapperCustomizer() {

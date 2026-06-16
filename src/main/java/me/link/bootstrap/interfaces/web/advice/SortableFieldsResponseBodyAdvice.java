@@ -7,6 +7,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
@@ -29,7 +31,8 @@ public class SortableFieldsResponseBodyAdvice implements ResponseBodyAdvice<Obje
      * 判断当前响应增强器是否支持该返回类型。
      */
     @Override
-    public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
+    public boolean supports(@NonNull MethodParameter returnType,
+            @NonNull Class<? extends HttpMessageConverter<?>> converterType) {
         return ResultTableResponse.class.isAssignableFrom(returnType.getParameterType());
     }
 
@@ -37,9 +40,9 @@ public class SortableFieldsResponseBodyAdvice implements ResponseBodyAdvice<Obje
      * 在响应体写出前补充统一字段。
      */
     @Override
-    public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
-                                  Class<? extends HttpMessageConverter<?>> selectedConverterType,
-                                  ServerHttpRequest request, ServerHttpResponse response) {
+    public Object beforeBodyWrite(@Nullable Object body, @NonNull MethodParameter returnType,@Nullable MediaType selectedContentType,
+            @NonNull Class<? extends HttpMessageConverter<?>> selectedConverterType,
+            @Nullable ServerHttpRequest request,@Nullable ServerHttpResponse response) {
         if (!(body instanceof ResultTableResponse<?> resultResponse) || resultResponse.getRecords() == null) {
             return body;
         }
@@ -47,7 +50,8 @@ public class SortableFieldsResponseBodyAdvice implements ResponseBodyAdvice<Obje
         Class<?> targetClass = extractTargetClass(resultResponse.getRecords(), returnType);
 
         if (targetClass != null) {
-            List<String> sortableFields = sortableCache.computeIfAbsent(targetClass, SortableFieldUtils::parseSortableFields);
+            List<String> sortableFields = sortableCache.computeIfAbsent(targetClass,
+                    SortableFieldUtils::parseSortableFields);
             if (!sortableFields.isEmpty()) {
                 resultResponse.setSortableFields(sortableFields);
             }

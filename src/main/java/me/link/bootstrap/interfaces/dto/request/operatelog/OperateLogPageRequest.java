@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import me.link.bootstrap.domain.valueobject.StatusEnum;
 import me.link.bootstrap.interfaces.dto.request.SortablePageRequest;
 
 import java.io.Serial;

@@ -2,8 +2,6 @@ package me.link.bootstrap.shared.kernel.converter;
 
 import org.mapstruct.*;
 
-import java.util.List;
-
 /**
  * MapStruct 全局通用转换配置基接口
  * <p>

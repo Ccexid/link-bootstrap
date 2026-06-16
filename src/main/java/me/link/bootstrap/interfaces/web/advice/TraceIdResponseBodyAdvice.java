@@ -8,6 +8,8 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
@@ -23,7 +25,8 @@ public class TraceIdResponseBodyAdvice implements ResponseBodyAdvice<Object> {
      * 判断当前响应增强器是否支持该返回类型。
      */
     @Override
-    public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
+    public boolean supports(@NonNull MethodParameter returnType,
+            @NonNull Class<? extends HttpMessageConverter<?>> converterType) {
         Class<?> parameterType = returnType.getParameterType();
         return ResultResponse.class.isAssignableFrom(parameterType)
                 || ResultTableResponse.class.isAssignableFrom(parameterType);
@@ -33,9 +36,10 @@ public class TraceIdResponseBodyAdvice implements ResponseBodyAdvice<Object> {
      * 在响应体写出前补充统一字段。
      */
     @Override
-    public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
-                                  Class<? extends HttpMessageConverter<?>> selectedConverterType,
-                                  ServerHttpRequest request, ServerHttpResponse response) {
+    public Object beforeBodyWrite(@Nullable Object body, @NonNull MethodParameter returnType,
+            @NonNull MediaType selectedContentType,
+            @NonNull Class<? extends HttpMessageConverter<?>> selectedConverterType,
+            @NonNull ServerHttpRequest request, @NonNull ServerHttpResponse response) {
         String traceId = resolveTraceId(request, response);
 
         if (body instanceof ResultResponse<?> resultResponse) {

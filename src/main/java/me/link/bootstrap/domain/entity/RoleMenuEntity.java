@@ -1,7 +1,5 @@
 package me.link.bootstrap.domain.entity;
 
-import me.link.bootstrap.domain.valueobject.StatusEnum;
-
 import java.time.LocalDateTime;
 
 /**

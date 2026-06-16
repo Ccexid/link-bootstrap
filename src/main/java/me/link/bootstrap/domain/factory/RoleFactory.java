@@ -3,8 +3,6 @@ package me.link.bootstrap.domain.factory;
 import me.link.bootstrap.domain.entity.RoleEntity;
 import me.link.bootstrap.domain.valueobject.StatusEnum;
 
-import java.time.LocalDateTime;
-
 /**
  * 角色领域工厂，集中封装角色创建和变更时的业务规则校验。
  */

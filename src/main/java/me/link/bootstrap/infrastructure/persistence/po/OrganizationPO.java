@@ -8,8 +8,6 @@ import lombok.EqualsAndHashCode;
 import me.link.bootstrap.domain.valueobject.StatusEnum;
 import me.link.bootstrap.shared.kernel.database.mybatis.TenantBaseDO;
 
-import java.time.LocalDateTime;
-
 /**
  * 组织持久化对象，字段与 system_organization 表结构保持对应。
  */

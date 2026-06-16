@@ -6,10 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import me.link.bootstrap.domain.valueobject.StatusEnum;
 import me.link.bootstrap.shared.kernel.database.mybatis.TenantBaseDO;
-
-import java.time.LocalDateTime;
 
 /**
  * 操作日志持久化对象，字段与 system_operate_log 表结构保持对应。

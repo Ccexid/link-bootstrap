@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import me.link.bootstrap.domain.valueobject.StatusEnum;
 import me.link.bootstrap.shared.kernel.database.mybatis.TenantBaseDO;
-
-import java.time.LocalDateTime;
 
 /**
  * 用户角色关联持久化对象，字段与 system_user_role 表结构保持对应。

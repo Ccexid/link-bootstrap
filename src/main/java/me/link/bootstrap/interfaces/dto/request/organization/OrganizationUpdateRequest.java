@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import me.link.bootstrap.domain.valueobject.StatusEnum;
 
-import java.time.LocalDateTime;
 import java.io.Serial;
 import java.io.Serializable;
 

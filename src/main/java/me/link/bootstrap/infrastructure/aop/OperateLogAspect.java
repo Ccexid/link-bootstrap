@@ -17,6 +17,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -115,6 +116,7 @@ public class OperateLogAspect {
      * @param thrown    接口执行异常，成功时为空
      * @param duration  接口执行耗时，单位毫秒
      */
+    @SuppressWarnings("null")
     private void record(ProceedingJoinPoint joinPoint, boolean success, Throwable thrown, int duration) {
         HttpServletRequest request = currentRequest();
         if (request == null) {
@@ -227,11 +229,12 @@ public class OperateLogAspect {
      * @param method    当前接口方法
      * @return 模块名称
      */
-    private String moduleName(ProceedingJoinPoint joinPoint, Method method) {
+    private String moduleName(ProceedingJoinPoint joinPoint, @NonNull Method method) {
         Tag methodTag = AnnotationUtils.findAnnotation(method, Tag.class);
         if (methodTag != null && isNotBlank(methodTag.name())) {
             return methodTag.name();
         }
+        @SuppressWarnings("null")
         Tag classTag = AnnotationUtils.findAnnotation(joinPoint.getSignature().getDeclaringType(), Tag.class);
         if (classTag != null && isNotBlank(classTag.name())) {
             return classTag.name();
@@ -245,6 +248,7 @@ public class OperateLogAspect {
      * @param method 当前接口方法
      * @return 动作名称
      */
+    @SuppressWarnings("null")
     private String actionName(Method method) {
         Operation operation = AnnotationUtils.findAnnotation(method, Operation.class);
         if (operation != null && isNotBlank(operation.summary())) {
@@ -286,16 +290,6 @@ public class OperateLogAspect {
         }
         Long id = readLongProperty(args, "getId");
         return id == null ? DEFAULT_BIZ_ID : id;
-    }
-
-    /**
-     * 从请求对象中提取租户 ID。
-     *
-     * @param args Controller 方法参数
-     * @return 租户 ID，无法提取时返回 null
-     */
-    private Long tenantId(Object[] args) {
-        return readLongProperty(args, "getTenantId");
     }
 
     /**
