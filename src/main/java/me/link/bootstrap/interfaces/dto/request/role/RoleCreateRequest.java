@@ -22,7 +22,7 @@ public class RoleCreateRequest implements Serializable {
     @NotBlank(message = "角色名称不能为空")
     private String name;
 
-    @Schema(description = "角色权限编码(同租户内唯一,用于 @SaCheckRole 校验)",
+    @Schema(description = "角色权限编码(同租户内唯一,用于角色权限校验)",
             requiredMode = Schema.RequiredMode.REQUIRED, example = "tenant_admin")
     @NotBlank(message = "角色权限编码不能为空")
     private String code;
@@ -34,7 +34,7 @@ public class RoleCreateRequest implements Serializable {
     @Schema(description = "数据范围:1全部 2自定义 3本组织 4本组织及以下", example = "1")
     private Integer dataScope;
 
-    @Schema(description = "数据范围(指定组织/部门 ID 数组,逗号分隔)")
+    @Schema(description = "数据范围(指定组织或部门编号数组,逗号分隔)")
     private String dataScopeDeptIds;
 
     @Schema(description = "角色状态(0正常 1停用)", example = "0")

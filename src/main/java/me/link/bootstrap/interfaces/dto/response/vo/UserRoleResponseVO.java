@@ -19,23 +19,23 @@ public class UserRoleResponseVO implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Schema(description = "id")
+    @Schema(description = "编号")
     @Sortable(description = "id")
     private Long id;
-    @Schema(description = "userId")
+    @Schema(description = "用户编号")
     @Sortable(description = "userId")
     private Long userId;
-    @Schema(description = "roleId")
+    @Schema(description = "角色编号")
     @Sortable(description = "roleId")
     private Long roleId;
-    @Schema(description = "tenantId")
+    @Schema(description = "租户编号")
     @Sortable(description = "tenantId")
     private Long tenantId;
-    @Schema(description = "createdAt")
+    @Schema(description = "创建时间")
     @Sortable(description = "createdAt")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
-    @Schema(description = "updatedAt")
+    @Schema(description = "更新时间")
     @Sortable(description = "updatedAt")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;

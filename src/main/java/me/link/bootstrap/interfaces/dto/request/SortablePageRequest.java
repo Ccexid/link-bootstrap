@@ -62,7 +62,7 @@ public class SortablePageRequest extends PageRequest {
      *   <li>字段名只能包含字母、数字、下划线和点号，最长 100 字符</li>
      * </ul>
      */
-    @Schema(description = "排序字段，格式：-field1,field2", example = "-created_at,id")
+    @Schema(description = "排序字段，多个字段以英文逗号分隔，字段名前加短横线表示降序", example = "-created_at,id")
     private String sort;
 
     /**

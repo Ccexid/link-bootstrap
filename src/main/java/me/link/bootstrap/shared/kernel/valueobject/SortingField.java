@@ -25,17 +25,14 @@ import lombok.NoArgsConstructor;
 @Schema(description = "排序对象")
 public class SortingField {
 
-    /** 字段名最大长度限制 */
-    private static final int FIELD_MAX_LENGTH = 100;
-
     /**
-     * 字段标识 (Field)
+     * 字段标识 (Field) 
      * <p>
      * 用于指定需要排序的字段名称或唯一标识符。
      * 支持嵌套字段名（如 "user.name"）和单字段名（如 "createTime"）。
      * </p>
      */
-    @Schema(description = "字段标识，支持嵌套字段名（如 user.name）", example = "createTime")
+    @Schema(description = "字段标识，支持嵌套字段名", example = "createTime")
     @Pattern(regexp = "^[a-zA-Z0-9_.]+$", message = "字段名只能包含字母、数字、下划线和点号")
     private String field;
 
@@ -46,6 +43,6 @@ public class SortingField {
      * 默认为 false（降序）。
      * </p>
      */
-    @Schema(description = "是否升序，true 为 ASC，false 为 DESC，默认为 false", example = "true")
+    @Schema(description = "是否升序，真值表示升序，假值表示降序，默认为假", example = "true")
     private boolean asc;
 }

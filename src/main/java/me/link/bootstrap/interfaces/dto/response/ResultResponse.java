@@ -23,13 +23,13 @@ public class ResultResponse<T> implements Serializable {
     @Schema(description = "用户可读提示消息", example = "操作成功")
     private String message;
 
-    @Schema(description = "业务错误码（非HTTP状态码）", example = "401_000_001")
+    @Schema(description = "业务错误码（非接口状态码）", example = "401_000_001")
     private long code;
 
-    @Schema(description = "服务端处理完成时间戳（ISO 8601）", example = "2026-05-19T15:46:22.123Z")
+    @Schema(description = "服务端处理完成时间戳（国际标准时间格式）", example = "2026-05-19T15:46:22.123Z")
     private long timestamp;
 
-    @Schema(description = "链路追踪ID（用于日志关联）", example = "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8")
+    @Schema(description = "链路追踪编号（用于日志关联）", example = "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8")
     private String traceId;
 
 

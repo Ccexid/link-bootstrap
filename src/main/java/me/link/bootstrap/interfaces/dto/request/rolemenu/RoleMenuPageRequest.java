@@ -20,9 +20,9 @@ public class RoleMenuPageRequest extends SortablePageRequest {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Schema(description = "roleId")
+    @Schema(description = "角色编号")
     private Long roleId;
 
-    @Schema(description = "menuId")
+    @Schema(description = "菜单编号")
     private Long menuId;
 }

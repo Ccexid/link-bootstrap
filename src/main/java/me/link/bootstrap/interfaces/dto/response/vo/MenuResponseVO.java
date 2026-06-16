@@ -19,42 +19,42 @@ public class MenuResponseVO implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Schema(description = "id")
+    @Schema(description = "编号")
     @Sortable(description = "id")
     private Long id;
-    @Schema(description = "name")
+    @Schema(description = "名称")
     @Sortable(description = "name")
     private String name;
-    @Schema(description = "permission")
+    @Schema(description = "权限标识")
     private String permission;
-    @Schema(description = "type")
+    @Schema(description = "类型")
     private Integer type;
-    @Schema(description = "sort")
+    @Schema(description = "显示顺序")
     @Sortable(description = "sort")
     private Integer sort;
-    @Schema(description = "parentId")
+    @Schema(description = "父级编号")
     private Long parentId;
-    @Schema(description = "path")
+    @Schema(description = "路由路径")
     private String path;
-    @Schema(description = "icon")
+    @Schema(description = "图标")
     private String icon;
-    @Schema(description = "component")
+    @Schema(description = "组件路径")
     private String component;
-    @Schema(description = "componentName")
+    @Schema(description = "组件名称")
     private String componentName;
-    @Schema(description = "status")
+    @Schema(description = "状态")
     private StatusEnum status;
-    @Schema(description = "visible")
+    @Schema(description = "是否可见")
     private Boolean visible;
-    @Schema(description = "keepAlive")
+    @Schema(description = "是否缓存")
     private Boolean keepAlive;
-    @Schema(description = "alwaysShow")
+    @Schema(description = "是否总是显示")
     private Boolean alwaysShow;
-    @Schema(description = "createdAt")
+    @Schema(description = "创建时间")
     @Sortable(description = "createdAt")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
-    @Schema(description = "updatedAt")
+    @Schema(description = "更新时间")
     @Sortable(description = "updatedAt")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;

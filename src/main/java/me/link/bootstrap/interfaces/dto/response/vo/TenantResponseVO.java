@@ -20,8 +20,8 @@ public class TenantResponseVO implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Schema(description = "租户ID")
-    @Sortable(description = "租户ID")
+    @Schema(description = "租户编号")
+    @Sortable(description = "tenantId")
     private Long id;
 
     @Schema(description = "租户名称")
@@ -54,12 +54,12 @@ public class TenantResponseVO implements Serializable {
     private Integer accountCount;
 
     @Schema(description = "创建时间")
-    @Sortable(description = "创建时间")
+    @Sortable(description = "createdAt")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
     @Schema(description = "更新时间")
-    @Sortable(description = "更新时间")
+    @Sortable(description = "updatedAt")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 }

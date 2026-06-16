@@ -17,20 +17,20 @@ public class RoleUpdateRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Schema(description = "name")
+    @Schema(description = "名称")
     private String name;
-    @Schema(description = "code")
+    @Schema(description = "编码")
     private String code;
-    @Schema(description = "sort")
+    @Schema(description = "显示顺序")
     private Integer sort;
-    @Schema(description = "dataScope")
+    @Schema(description = "数据范围")
     private Integer dataScope;
-    @Schema(description = "dataScopeDeptIds")
+    @Schema(description = "数据范围组织编号数组")
     private String dataScopeDeptIds;
-    @Schema(description = "status")
+    @Schema(description = "状态")
     private StatusEnum status;
-    @Schema(description = "type")
+    @Schema(description = "类型")
     private Integer type;
-    @Schema(description = "remark")
+    @Schema(description = "备注")
     private String remark;
 }

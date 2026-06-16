@@ -19,23 +19,23 @@ public class RoleMenuResponseVO implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Schema(description = "id")
+    @Schema(description = "编号")
     @Sortable(description = "id")
     private Long id;
-    @Schema(description = "roleId")
+    @Schema(description = "角色编号")
     @Sortable(description = "roleId")
     private Long roleId;
-    @Schema(description = "menuId")
+    @Schema(description = "菜单编号")
     @Sortable(description = "menuId")
     private Long menuId;
-    @Schema(description = "tenantId")
+    @Schema(description = "租户编号")
     @Sortable(description = "tenantId")
     private Long tenantId;
-    @Schema(description = "createdAt")
+    @Schema(description = "创建时间")
     @Sortable(description = "createdAt")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
-    @Schema(description = "updatedAt")
+    @Schema(description = "更新时间")
     @Sortable(description = "updatedAt")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;

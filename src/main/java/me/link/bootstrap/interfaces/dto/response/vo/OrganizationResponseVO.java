@@ -19,34 +19,34 @@ public class OrganizationResponseVO implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Schema(description = "id")
+    @Schema(description = "编号")
     @Sortable(description = "id")
     private Long id;
-    @Schema(description = "name")
+    @Schema(description = "名称")
     @Sortable(description = "name")
     private String name;
-    @Schema(description = "orgType")
+    @Schema(description = "组织类型")
     private Integer orgType;
-    @Schema(description = "parentId")
+    @Schema(description = "父级编号")
     private Long parentId;
-    @Schema(description = "ancestors")
+    @Schema(description = "层级路径")
     private String ancestors;
-    @Schema(description = "level")
+    @Schema(description = "层级深度")
     private Integer level;
-    @Schema(description = "contactName")
+    @Schema(description = "负责人姓名")
     private String contactName;
-    @Schema(description = "contactMobile")
+    @Schema(description = "联系电话")
     private String contactMobile;
-    @Schema(description = "status")
+    @Schema(description = "状态")
     private StatusEnum status;
-    @Schema(description = "tenantId")
+    @Schema(description = "租户编号")
     @Sortable(description = "tenantId")
     private Long tenantId;
-    @Schema(description = "createdAt")
+    @Schema(description = "创建时间")
     @Sortable(description = "createdAt")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
-    @Schema(description = "updatedAt")
+    @Schema(description = "更新时间")
     @Sortable(description = "updatedAt")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;

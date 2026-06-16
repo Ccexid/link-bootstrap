@@ -20,15 +20,15 @@ public class OrganizationPageRequest extends SortablePageRequest {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Schema(description = "name")
+    @Schema(description = "名称")
     private String name;
 
-    @Schema(description = "orgType")
+    @Schema(description = "组织类型")
     private Integer orgType;
 
-    @Schema(description = "parentId")
+    @Schema(description = "父级编号")
     private Long parentId;
 
-    @Schema(description = "status")
+    @Schema(description = "状态")
     private StatusEnum status;
 }

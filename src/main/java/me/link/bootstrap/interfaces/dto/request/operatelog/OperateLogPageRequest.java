@@ -20,21 +20,21 @@ public class OperateLogPageRequest extends SortablePageRequest {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Schema(description = "traceId")
+    @Schema(description = "链路追踪编号")
     private String traceId;
 
-    @Schema(description = "userId")
+    @Schema(description = "用户编号")
     private Long userId;
 
-    @Schema(description = "module")
+    @Schema(description = "模块")
     private String module;
 
-    @Schema(description = "operation")
+    @Schema(description = "操作类型")
     private Integer operation;
 
-    @Schema(description = "bizId")
+    @Schema(description = "业务编号")
     private Long bizId;
 
-    @Schema(description = "success")
+    @Schema(description = "是否成功")
     private Boolean success;
 }

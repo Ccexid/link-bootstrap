@@ -14,9 +14,9 @@ import lombok.NoArgsConstructor;
 @Schema(description = "登录响应")
 public class LoginResponseVO {
 
-    @Schema(description = "Token 名称(请求头 key,默认 Authorization)", example = "Authorization")
+    @Schema(description = "令牌名称(请求头键,默认授权头)", example = "Authorization")
     private String tokenName;
 
-    @Schema(description = "Token 值(不含 Bearer 前缀,前端使用时拼为 Bearer {token})")
+    @Schema(description = "令牌值(不含令牌前缀,前端使用时需拼接前缀)")
     private String tokenValue;
 }

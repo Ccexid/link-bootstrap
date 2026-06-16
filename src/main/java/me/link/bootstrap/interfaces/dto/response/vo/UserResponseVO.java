@@ -19,39 +19,39 @@ public class UserResponseVO implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Schema(description = "id")
+    @Schema(description = "编号")
     @Sortable(description = "id")
     private Long id;
-    @Schema(description = "username")
+    @Schema(description = "用户账号")
     @Sortable(description = "username")
     private String username;
-    @Schema(description = "nickname")
+    @Schema(description = "用户昵称")
     private String nickname;
-    @Schema(description = "userType")
+    @Schema(description = "用户类型")
     private Integer userType;
-    @Schema(description = "mobile")
+    @Schema(description = "手机号码")
     private String mobile;
-    @Schema(description = "avatar")
+    @Schema(description = "头像地址")
     private String avatar;
-    @Schema(description = "status")
+    @Schema(description = "状态")
     private StatusEnum status;
-    @Schema(description = "orgId")
+    @Schema(description = "所属组织编号")
     private Long orgId;
-    @Schema(description = "deptId")
+    @Schema(description = "平台内部部门编号")
     private Long deptId;
-    @Schema(description = "loginIp")
+    @Schema(description = "最后登录地址")
     private String loginIp;
-    @Schema(description = "loginDate")
+    @Schema(description = "最后登录时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime loginDate;
-    @Schema(description = "tenantId")
+    @Schema(description = "租户编号")
     @Sortable(description = "tenantId")
     private Long tenantId;
-    @Schema(description = "createdAt")
+    @Schema(description = "创建时间")
     @Sortable(description = "createdAt")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
-    @Schema(description = "updatedAt")
+    @Schema(description = "更新时间")
     @Sortable(description = "updatedAt")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;

@@ -14,8 +14,8 @@ public class UserRoleUpdateRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Schema(description = "userId")
+    @Schema(description = "用户编号")
     private Long userId;
-    @Schema(description = "roleId")
+    @Schema(description = "角色编号")
     private Long roleId;
 }

@@ -22,11 +22,11 @@ public class OrganizationCreateRequest implements Serializable {
     @NotBlank(message = "主体名称不能为空")
     private String name;
 
-    @Schema(description = "主体类型:1供应商S 2平台P 3商家B", requiredMode = Schema.RequiredMode.REQUIRED, example = "3")
+    @Schema(description = "主体类型:1供应商 2平台 3商家", requiredMode = Schema.RequiredMode.REQUIRED, example = "3")
     @NotNull(message = "主体类型不能为空")
     private Integer orgType;
 
-    @Schema(description = "上级主体 ID(0 代表顶级,B 端通常上级为 P 端)", example = "0")
+    @Schema(description = "上级主体编号(0 代表顶级,商家端通常上级为平台端)", example = "0")
     private Long parentId;
 
     @Schema(description = "层级路径(用于快速检索,如 0,2,10)", example = "0")

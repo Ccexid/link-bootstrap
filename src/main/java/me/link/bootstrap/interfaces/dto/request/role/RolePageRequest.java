@@ -20,15 +20,15 @@ public class RolePageRequest extends SortablePageRequest {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Schema(description = "name")
+    @Schema(description = "名称")
     private String name;
 
-    @Schema(description = "code")
+    @Schema(description = "编码")
     private String code;
 
-    @Schema(description = "status")
+    @Schema(description = "状态")
     private StatusEnum status;
 
-    @Schema(description = "type")
+    @Schema(description = "类型")
     private Integer type;
 }

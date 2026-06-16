@@ -17,30 +17,30 @@ public class MenuUpdateRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Schema(description = "name")
+    @Schema(description = "名称")
     private String name;
-    @Schema(description = "permission")
+    @Schema(description = "权限标识")
     private String permission;
-    @Schema(description = "type")
+    @Schema(description = "类型")
     private Integer type;
-    @Schema(description = "sort")
+    @Schema(description = "显示顺序")
     private Integer sort;
-    @Schema(description = "parentId")
+    @Schema(description = "父级编号")
     private Long parentId;
-    @Schema(description = "path")
+    @Schema(description = "路由路径")
     private String path;
-    @Schema(description = "icon")
+    @Schema(description = "图标")
     private String icon;
-    @Schema(description = "component")
+    @Schema(description = "组件路径")
     private String component;
-    @Schema(description = "componentName")
+    @Schema(description = "组件名称")
     private String componentName;
-    @Schema(description = "status")
+    @Schema(description = "状态")
     private StatusEnum status;
-    @Schema(description = "visible")
+    @Schema(description = "是否可见")
     private Boolean visible;
-    @Schema(description = "keepAlive")
+    @Schema(description = "是否缓存")
     private Boolean keepAlive;
-    @Schema(description = "alwaysShow")
+    @Schema(description = "是否总是显示")
     private Boolean alwaysShow;
 }

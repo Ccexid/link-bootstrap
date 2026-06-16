@@ -22,7 +22,7 @@ public class MenuCreateRequest implements Serializable {
     @NotBlank(message = "菜单名称不能为空")
     private String name;
 
-    @Schema(description = "权限标识(对应 @SaCheckPermission 注解,格式 system:{module}:{action})",
+    @Schema(description = "权限标识(对应权限校验注解,按系统模块动作三段式编码)",
             example = "system:user:create")
     private String permission;
 
@@ -33,7 +33,7 @@ public class MenuCreateRequest implements Serializable {
     @Schema(description = "显示顺序", example = "10")
     private Integer sort;
 
-    @Schema(description = "父菜单 ID(0 代表顶级)", example = "0")
+    @Schema(description = "父菜单编号(0 代表顶级)", example = "0")
     private Long parentId;
 
     @Schema(description = "前端路由路径", example = "/user")
