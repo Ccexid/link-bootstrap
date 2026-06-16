@@ -6,9 +6,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import me.link.bootstrap.application.command.LoginCommand;
 import me.link.bootstrap.application.service.AuthApplicationService;
+import me.link.bootstrap.infrastructure.crypto.ApiCryptoProperties;
 import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.auth.LoginRequest;
 import me.link.bootstrap.interfaces.dto.response.ResultResponse;
+import me.link.bootstrap.interfaces.dto.response.vo.ApiCryptoPublicKeyResponseVO;
 import me.link.bootstrap.interfaces.dto.response.vo.TokenResponseVO;
 import me.link.bootstrap.shared.kernel.constant.GlobalConstants;
 import org.springframework.validation.annotation.Validated;
@@ -31,6 +33,7 @@ public class AuthController {
 
     private final AuthApplicationService authApplicationService;
     private final ResponseVOConverter responseVOConverter;
+    private final ApiCryptoProperties apiCryptoProperties;
 
     @PostMapping("/login")
     @Operation(summary = "用户登录", description = "校验账号密码并签发 Token")
@@ -53,6 +56,12 @@ public class AuthController {
     @Operation(summary = "查询当前 Token", description = "返回当前 Token 名称、值、前缀及剩余有效期")
     public ResultResponse<TokenResponseVO> currentToken() {
         return ResultResponse.success(responseVOConverter.toResponse(authApplicationService.currentToken()));
+    }
+
+    @GetMapping("/public-key")
+    @Operation(summary = "获取接口加密公钥", description = "前端使用该公钥加密请求体 data 字段")
+    public ResultResponse<ApiCryptoPublicKeyResponseVO> publicKey() {
+        return ResultResponse.success(new ApiCryptoPublicKeyResponseVO(apiCryptoProperties.getPublicKey()));
     }
 
     @PostMapping("/logout")

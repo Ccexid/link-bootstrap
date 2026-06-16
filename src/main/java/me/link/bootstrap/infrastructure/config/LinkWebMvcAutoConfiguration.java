@@ -5,10 +5,16 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import me.link.bootstrap.infrastructure.crypto.ApiCryptoProperties;
+import me.link.bootstrap.infrastructure.crypto.ApiCryptoService;
+import me.link.bootstrap.interfaces.web.filter.ApiCryptoRequestFilter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
@@ -27,7 +33,26 @@ import java.util.Map;
 @AutoConfiguration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass(OncePerRequestFilter.class)
+@EnableConfigurationProperties(ApiCryptoProperties.class)
 public class LinkWebMvcAutoConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnProperty(prefix = "link.api-crypto", name = "enabled", havingValue = "true")
+    public ApiCryptoService apiCryptoService(ApiCryptoProperties properties) {
+        return new ApiCryptoService(properties);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "apiCryptoRequestFilter")
+    @ConditionalOnProperty(prefix = "link.api-crypto", name = "enabled", havingValue = "true")
+    public FilterRegistrationBean<ApiCryptoRequestFilter> apiCryptoRequestFilter(ApiCryptoService apiCryptoService,
+                                                                                 ObjectMapper objectMapper) {
+        FilterRegistrationBean<ApiCryptoRequestFilter> bean =
+                new FilterRegistrationBean<>(new ApiCryptoRequestFilter(apiCryptoService, objectMapper));
+        bean.setOrder(Ordered.HIGHEST_PRECEDENCE + 10);
+        return bean;
+    }
 
     @Bean
     @ConditionalOnMissingBean(name = "snakeCaseParameterBindingFilter")

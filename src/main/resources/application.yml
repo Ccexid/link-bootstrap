@@ -50,6 +50,22 @@ server:
 
 # 客户端 IP 解析安全配置
 link:
+  api-crypto:
+    # 开启后接口请求体使用 {"data":"RSA密文"} 传输,服务端解密后再进入 Controller;
+    # 响应体返回 {"data":"RSA密文"},密文内容为原统一响应 JSON。
+    enabled: true
+    request-field: data
+    response-field: data
+    private-key: MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC0uAkEhKjq1oDJVi51pLqE3vwIGPVL+rR2farf79keO9E9d3QnRUmlcbkfuK3bWHAjlv2IkGbi6wQGJbAH0FgB8jcPRRNPwSYB6V61XqhjHOs+MgQCnQKI6+6YtRrBb8KWF/VLTyX9qbsBu7MmaYe7y5h4Wy0LKl4YkPEpTaTz4vGQil9L+jQmgIlpty5ZZ3gFO5d0lV6nHJh9aoIMYrgecsJxtsu2u9TWkHKQh9SO2aIv16WKGeUvgXMwIMUKSV95enNGWgUytczxpZ+dAr8rq1KDaYTpNvm15I3PvWSWVCrl1nMsfEYzkFNAj6j+uuy2wO1YNpP2TAd8+msV4fzLAgMBAAECggEAConMz3xOPrDW07wjJhhpXq7YyD7EVx491ccK5tdytBui3lBlRUD6GXFh7Tf0vhy7H/2BuAFLrqHWcJFUDDCZtotXAJyePVazDlt7JV0UDquKCuzEZRlIzjk2hvsl80UUIMfcNacI58Y1Byst4uiL0hH+SHkbTae2faeTbegph/szsXqtvv5mngeiJpuRZ116+MHrK53d/+e8K7jemUV69DegDtGs4e7d3mOmtVF2vxPJk2kwGSS9Vz5/P8sJN2Dka5WZ13aacSDqbllWP0b5XRfa5h0NMFH+6ndVBiK7rPiCwB29XL3tUXNVb1doWgRJlueWO2iOvNsB7bcUdHe26QKBgQDvL/Gzxrt1HnT/FntmL8WWfMycuFSD8W7TIptuHrtN1pozdfiqeOsIGDhDwdhGd2dOig5f/XxSeL6J+bR7E66u3dmT09/QLBFaK4tCOyhI//16njm6SdLQBAnOqjxnzMlGLM+dzrTjKaDFY92UsEP6PvbMd0yLinBQfP/PpqYvbwKBgQDBa/tCToHe0jc/geW0F+7wAifBW+ycbXDDcs9HlnoYSYEORcfXLj807122v0/fJ1TPFySm28J+r6CDjWWiYUi79rTOZ+5BoypzZ1UpSugmoX5fbu/BJxI4+zuTh3+/6plb3z4+b5Pv7kV1+DzUMcBpvFPGyDXUWFwkc7sjIoAaZQKBgFo2TQUvOVitCheD1TrvXaiqnUmmxEmXb+M2NEVOVfq/rB0oq4cwYAUHjYEQxY+eTVpz+4P8yT0ZyVOk2ItrGwFdL0jwKoQLeuf1cGqkgUc3NdVfhApc+aP3QfOuhWXo+Sj8kbnFUrgy5S5Nwi7oZFsoEFGB1V7z8fSJkLoy8o8FAoGAYNSXF83HtG4W3INCJJOquZrKnkFPxcwAHMiYPmV1wDzkD+odLntnhy+iAb/q03OUQIx8e9AeoV95AwLBc7YyPG84evCK1W9C7D055A8tA1HruwkFm/PcaoxTefrmmIRwvA6Z0ZX4QLBPM8zPXwd9JTHz2tsWH7UQg+swL1mxOgUCgYBKVJ5M/QntHixASeEZY21hpe/8btD8npI8YHXVKvNNE43v3OijCY5qjLFCdbxxFoaUt8g3aLhhNChTxZ1ah7P3JTRzhzF/Drk7o+EM54llOI6+9JHDAWoHh499Wr8qWfl39XUM15BrM1v3wGOQC0Dqfpw3TzGKGLJ3yd0gLmSyOg==
+    public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtLgJBISo6taAyVYudaS6hN78CBj1S/q0dn2q3+/ZHjvRPXd0J0VJpXG5H7it21hwI5b9iJBm4usEBiWwB9BYAfI3D0UTT8EmAeletV6oYxzrPjIEAp0CiOvumLUawW/Clhf1S08l/am7AbuzJmmHu8uYeFstCypeGJDxKU2k8+LxkIpfS/o0JoCJabcuWWd4BTuXdJVepxyYfWqCDGK4HnLCcbbLtrvU1pBykIfUjtmiL9elihnlL4FzMCDFCklfeXpzRloFMrXM8aWfnQK/K6tSg2mE6Tb5teSNz71kllQq5dZzLHxGM5BTQI+o/rrstsDtWDaT9kwHfPprFeH8ywIDAQAB
+    include-paths:
+      - /api/v1/**
+    exclude-paths:
+      - /api/v1/auth/public-key
+      - /actuator/**
+      - /v3/api-docs/**
+      - /swagger-ui/**
+      - /swagger-ui.html
   security:
     client-ip:
       trust-forward-headers: false
