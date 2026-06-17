@@ -20,6 +20,7 @@ import me.link.bootstrap.interfaces.dto.response.ResultResponse;
 import me.link.bootstrap.interfaces.dto.response.ResultTableResponse;
 import me.link.bootstrap.interfaces.dto.response.vo.RoleResponseVO;
 import me.link.bootstrap.interfaces.validation.SortWhitelist;
+import me.link.bootstrap.shared.kernel.annotation.Idempotent;
 import me.link.bootstrap.shared.kernel.constant.GlobalConstants;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,6 +47,7 @@ public class RoleController {
 
     @PostMapping
     @SaCheckPermission("system:role:create")
+    @Idempotent
     @Operation(summary = "创建角色", description = "创建角色基础信息")
     public ResultResponse<RoleResponseVO> create(@Valid @RequestBody RoleCreateRequest request) {
         RoleEntity role = roleApplicationService.create(new CreateRoleCommand(
@@ -84,6 +86,7 @@ public class RoleController {
 
     @PutMapping("/{id}")
     @SaCheckPermission("system:role:update")
+    @Idempotent
     @Operation(summary = "更新角色", description = "更新角色基础信息")
     public ResultResponse<RoleResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
                                                   @Valid @RequestBody RoleUpdateRequest request) {

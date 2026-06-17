@@ -20,6 +20,7 @@ import me.link.bootstrap.interfaces.dto.response.ResultResponse;
 import me.link.bootstrap.interfaces.dto.response.ResultTableResponse;
 import me.link.bootstrap.interfaces.dto.response.vo.TenantPackageResponseVO;
 import me.link.bootstrap.interfaces.validation.SortWhitelist;
+import me.link.bootstrap.shared.kernel.annotation.Idempotent;
 import me.link.bootstrap.shared.kernel.constant.GlobalConstants;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -49,6 +50,7 @@ public class TenantPackageController {
      */
     @PostMapping
     @SaCheckPermission("system:tenant-package:create")
+    @Idempotent
     @Operation(summary = "创建租户套餐", description = "创建租户套餐基础信息")
     public ResultResponse<TenantPackageResponseVO> create(@Valid @RequestBody TenantPackageCreateRequest request) {
         TenantPackageEntity tenantPackage = tenantPackageApplicationService.create(new CreateTenantPackageCommand(
@@ -88,6 +90,7 @@ public class TenantPackageController {
      */
     @PutMapping("/{id}")
     @SaCheckPermission("system:tenant-package:update")
+    @Idempotent
     @Operation(summary = "更新租户套餐", description = "更新租户套餐基础信息")
     public ResultResponse<TenantPackageResponseVO> update(@PathVariable @NotNull(message = "租户套餐ID不能为空") Long id,
                                                           @Valid @RequestBody TenantPackageUpdateRequest request) {

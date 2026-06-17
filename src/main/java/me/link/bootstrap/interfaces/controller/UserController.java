@@ -20,6 +20,7 @@ import me.link.bootstrap.interfaces.dto.response.ResultResponse;
 import me.link.bootstrap.interfaces.dto.response.ResultTableResponse;
 import me.link.bootstrap.interfaces.dto.response.vo.UserResponseVO;
 import me.link.bootstrap.interfaces.validation.SortWhitelist;
+import me.link.bootstrap.shared.kernel.annotation.Idempotent;
 import me.link.bootstrap.shared.kernel.constant.GlobalConstants;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,6 +47,7 @@ public class UserController {
 
     @PostMapping
     @SaCheckPermission("system:user:create")
+    @Idempotent
     @Operation(summary = "创建用户", description = "创建用户基础信息")
     public ResultResponse<UserResponseVO> create(@Valid @RequestBody UserCreateRequest request) {
         UserEntity user = userApplicationService.create(new CreateUserCommand(
@@ -88,6 +90,7 @@ public class UserController {
 
     @PutMapping("/{id}")
     @SaCheckPermission("system:user:update")
+    @Idempotent
     @Operation(summary = "更新用户", description = "更新用户基础信息")
     public ResultResponse<UserResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
                                                   @Valid @RequestBody UserUpdateRequest request) {

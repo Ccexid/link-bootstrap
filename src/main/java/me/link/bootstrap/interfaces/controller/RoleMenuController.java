@@ -22,6 +22,7 @@ import me.link.bootstrap.interfaces.dto.response.ResultResponse;
 import me.link.bootstrap.interfaces.dto.response.ResultTableResponse;
 import me.link.bootstrap.interfaces.dto.response.vo.RoleMenuResponseVO;
 import me.link.bootstrap.interfaces.validation.SortWhitelist;
+import me.link.bootstrap.shared.kernel.annotation.Idempotent;
 import me.link.bootstrap.shared.kernel.constant.GlobalConstants;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -48,6 +49,7 @@ public class RoleMenuController {
 
     @PostMapping
     @SaCheckPermission("system:role-menu:create")
+    @Idempotent
     @Operation(summary = "创建角色菜单关联", description = "创建角色菜单关联基础信息")
     public ResultResponse<RoleMenuResponseVO> create(@Valid @RequestBody RoleMenuCreateRequest request) {
         RoleMenuEntity roleMenu = roleMenuApplicationService.create(new CreateRoleMenuCommand(
@@ -59,6 +61,7 @@ public class RoleMenuController {
 
     @PostMapping("/authorize")
     @SaCheckPermission("system:role-menu:authorize")
+    @Idempotent
     @Operation(summary = "批量授权角色菜单", description = "覆盖指定角色的菜单授权")
     public ResultResponse<Void> authorize(@Valid @RequestBody RoleMenuAuthorizeRequest request) {
         roleMenuApplicationService.authorize(new AuthorizeRoleMenuCommand(
@@ -89,6 +92,7 @@ public class RoleMenuController {
 
     @PutMapping("/{id}")
     @SaCheckPermission("system:role-menu:update")
+    @Idempotent
     @Operation(summary = "更新角色菜单关联", description = "更新角色菜单关联基础信息")
     public ResultResponse<RoleMenuResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
                                                   @Valid @RequestBody RoleMenuUpdateRequest request) {

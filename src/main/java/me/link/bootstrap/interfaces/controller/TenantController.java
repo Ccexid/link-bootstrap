@@ -20,6 +20,7 @@ import me.link.bootstrap.interfaces.dto.response.ResultResponse;
 import me.link.bootstrap.interfaces.dto.response.ResultTableResponse;
 import me.link.bootstrap.interfaces.dto.response.vo.TenantResponseVO;
 import me.link.bootstrap.interfaces.validation.SortWhitelist;
+import me.link.bootstrap.shared.kernel.annotation.Idempotent;
 import me.link.bootstrap.shared.kernel.constant.GlobalConstants;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -49,6 +50,7 @@ public class TenantController {
      */
     @PostMapping
     @SaCheckPermission("system:tenant:create")
+    @Idempotent
     @Operation(summary = "创建租户", description = "创建租户基础信息")
     public ResultResponse<TenantResponseVO> create(@Valid @RequestBody TenantCreateRequest request) {
         TenantEntity tenant = tenantApplicationService.create(new CreateTenantCommand(
@@ -93,6 +95,7 @@ public class TenantController {
      */
     @PutMapping("/{id}")
     @SaCheckPermission("system:tenant:update")
+    @Idempotent
     @Operation(summary = "更新租户", description = "更新租户基础信息")
     public ResultResponse<TenantResponseVO> update(@PathVariable @NotNull(message = "租户ID不能为空") Long id,
                                                    @Valid @RequestBody TenantUpdateRequest request) {

@@ -20,6 +20,7 @@ import me.link.bootstrap.interfaces.dto.response.ResultResponse;
 import me.link.bootstrap.interfaces.dto.response.ResultTableResponse;
 import me.link.bootstrap.interfaces.dto.response.vo.OrganizationResponseVO;
 import me.link.bootstrap.interfaces.validation.SortWhitelist;
+import me.link.bootstrap.shared.kernel.annotation.Idempotent;
 import me.link.bootstrap.shared.kernel.constant.GlobalConstants;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,6 +47,7 @@ public class OrganizationController {
 
     @PostMapping
     @SaCheckPermission("system:organization:create")
+    @Idempotent
     @Operation(summary = "创建组织", description = "创建组织基础信息")
     public ResultResponse<OrganizationResponseVO> create(@Valid @RequestBody OrganizationCreateRequest request) {
         OrganizationEntity organization = organizationApplicationService.create(new CreateOrganizationCommand(
@@ -84,6 +86,7 @@ public class OrganizationController {
 
     @PutMapping("/{id}")
     @SaCheckPermission("system:organization:update")
+    @Idempotent
     @Operation(summary = "更新组织", description = "更新组织基础信息")
     public ResultResponse<OrganizationResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
                                                   @Valid @RequestBody OrganizationUpdateRequest request) {

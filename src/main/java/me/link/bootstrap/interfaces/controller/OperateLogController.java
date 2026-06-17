@@ -20,6 +20,7 @@ import me.link.bootstrap.interfaces.dto.response.ResultResponse;
 import me.link.bootstrap.interfaces.dto.response.ResultTableResponse;
 import me.link.bootstrap.interfaces.dto.response.vo.OperateLogResponseVO;
 import me.link.bootstrap.interfaces.validation.SortWhitelist;
+import me.link.bootstrap.shared.kernel.annotation.Idempotent;
 import me.link.bootstrap.shared.kernel.constant.GlobalConstants;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,6 +47,7 @@ public class OperateLogController {
 
     @PostMapping
     @SaCheckPermission("system:operate-log:create")
+    @Idempotent
     @Operation(summary = "创建操作日志", description = "创建操作日志基础信息")
     public ResultResponse<OperateLogResponseVO> create(@Valid @RequestBody OperateLogCreateRequest request) {
         OperateLogEntity operateLog = operateLogApplicationService.create(new CreateOperateLogCommand(
@@ -92,6 +94,7 @@ public class OperateLogController {
 
     @PutMapping("/{id}")
     @SaCheckPermission("system:operate-log:update")
+    @Idempotent
     @Operation(summary = "更新操作日志", description = "更新操作日志基础信息")
     public ResultResponse<OperateLogResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
                                                   @Valid @RequestBody OperateLogUpdateRequest request) {

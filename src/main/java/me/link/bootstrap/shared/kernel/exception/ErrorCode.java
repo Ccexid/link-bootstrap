@@ -34,6 +34,8 @@ public enum ErrorCode {
     NOT_FOUND(404_000_001, "请求的资源不存在"),
     /** 客户端错误: HTTP请求方法不被允许 */
     METHOD_NOT_ALLOWED(405_000_001, "请求方法不支持"),
+    /** 客户端错误: 短时间内重复提交同一个写请求 */
+    IDEMPOTENT_REPEATED_REQUEST(429_000_001, "请勿重复提交"),
 
     /** 业务错误: 根据用户名或ID未查询到用户记录 */
     USER_NOT_FOUND(500_001_001, "用户不存在"),

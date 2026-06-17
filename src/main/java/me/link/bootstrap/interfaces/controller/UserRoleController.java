@@ -22,6 +22,7 @@ import me.link.bootstrap.interfaces.dto.response.ResultResponse;
 import me.link.bootstrap.interfaces.dto.response.ResultTableResponse;
 import me.link.bootstrap.interfaces.dto.response.vo.UserRoleResponseVO;
 import me.link.bootstrap.interfaces.validation.SortWhitelist;
+import me.link.bootstrap.shared.kernel.annotation.Idempotent;
 import me.link.bootstrap.shared.kernel.constant.GlobalConstants;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -48,6 +49,7 @@ public class UserRoleController {
 
     @PostMapping
     @SaCheckPermission("system:user-role:create")
+    @Idempotent
     @Operation(summary = "创建用户角色关联", description = "创建用户角色关联基础信息")
     public ResultResponse<UserRoleResponseVO> create(@Valid @RequestBody UserRoleCreateRequest request) {
         UserRoleEntity userRole = userRoleApplicationService.create(new CreateUserRoleCommand(
@@ -59,6 +61,7 @@ public class UserRoleController {
 
     @PostMapping("/assign")
     @SaCheckPermission("system:user-role:assign")
+    @Idempotent
     @Operation(summary = "批量分配用户角色", description = "覆盖指定用户的角色分配")
     public ResultResponse<Void> assign(@Valid @RequestBody UserRoleAssignRequest request) {
         userRoleApplicationService.assign(new AssignUserRoleCommand(
@@ -89,6 +92,7 @@ public class UserRoleController {
 
     @PutMapping("/{id}")
     @SaCheckPermission("system:user-role:update")
+    @Idempotent
     @Operation(summary = "更新用户角色关联", description = "更新用户角色关联基础信息")
     public ResultResponse<UserRoleResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
                                                   @Valid @RequestBody UserRoleUpdateRequest request) {

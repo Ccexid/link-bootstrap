@@ -20,6 +20,7 @@ import me.link.bootstrap.interfaces.dto.response.ResultResponse;
 import me.link.bootstrap.interfaces.dto.response.ResultTableResponse;
 import me.link.bootstrap.interfaces.dto.response.vo.MenuResponseVO;
 import me.link.bootstrap.interfaces.validation.SortWhitelist;
+import me.link.bootstrap.shared.kernel.annotation.Idempotent;
 import me.link.bootstrap.shared.kernel.constant.GlobalConstants;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,6 +47,7 @@ public class MenuController {
 
     @PostMapping
     @SaCheckPermission("system:menu:create")
+    @Idempotent
     @Operation(summary = "创建菜单", description = "创建菜单基础信息")
     public ResultResponse<MenuResponseVO> create(@Valid @RequestBody MenuCreateRequest request) {
         MenuEntity menu = menuApplicationService.create(new CreateMenuCommand(
@@ -90,6 +92,7 @@ public class MenuController {
 
     @PutMapping("/{id}")
     @SaCheckPermission("system:menu:update")
+    @Idempotent
     @Operation(summary = "更新菜单", description = "更新菜单基础信息")
     public ResultResponse<MenuResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
                                                   @Valid @RequestBody MenuUpdateRequest request) {
