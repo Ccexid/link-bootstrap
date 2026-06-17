@@ -5,6 +5,9 @@ import me.link.bootstrap.domain.valueobject.StatusEnum;
 
 /**
  * 菜单领域工厂，集中封装菜单创建和变更时的业务规则校验。
+ * <p>
+ * 菜单是全局权限资源，不携带租户编号；套餐、角色授权再按菜单编号建立租户内授权关系。
+ * </p>
  */
 public final class MenuFactory {
 
@@ -14,7 +17,7 @@ public final class MenuFactory {
 
     public static MenuEntity create(String name, String permission, Integer type, Integer sort, Long parentId, String path, String icon, String component, String componentName, StatusEnum status, Boolean visible, Boolean keepAlive, Boolean alwaysShow) {
         validate(name, permission, type, sort, parentId, path, icon, component, componentName, status, visible, keepAlive, alwaysShow);
-        return MenuEntity.create(name, permission, type, sort, parentId, path, icon, component, componentName, status, visible, keepAlive, alwaysShow);
+        return MenuEntity.create(name.trim(), permission, type, sort, parentId, path, icon, component, componentName, status, visible, keepAlive, alwaysShow);
     }
 
     public static void changeBasicInfo(MenuEntity menu, String name, String permission, Integer type, Integer sort, Long parentId, String path, String icon, String component, String componentName, StatusEnum status, Boolean visible, Boolean keepAlive, Boolean alwaysShow) {
@@ -22,7 +25,7 @@ public final class MenuFactory {
             throw new IllegalArgumentException("菜单不能为空");
         }
         validate(name, permission, type, sort, parentId, path, icon, component, componentName, status, visible, keepAlive, alwaysShow);
-        menu.changeBasicInfo(name, permission, type, sort, parentId, path, icon, component, componentName, status, visible, keepAlive, alwaysShow);
+        menu.changeBasicInfo(name.trim(), permission, type, sort, parentId, path, icon, component, componentName, status, visible, keepAlive, alwaysShow);
     }
 
     private static void validate(String name, String permission, Integer type, Integer sort, Long parentId, String path, String icon, String component, String componentName, StatusEnum status, Boolean visible, Boolean keepAlive, Boolean alwaysShow) {

@@ -8,6 +8,10 @@ import java.time.LocalDateTime;
 
 /**
  * 用户领域工厂，集中封装用户创建和变更校验，并负责密码加密。
+ * <p>
+ * 当前更新模型仍要求传入明文密码，因此 {@link #changeBasicInfo(UserEntity, String, String, String, Integer, String, String, StatusEnum, Long, Long, String, LocalDateTime, Long)}
+ * 会重新生成密码摘要。若后续支持“不改密码的资料更新”，建议拆分为资料变更和密码变更两个领域方法。
+ * </p>
  */
 public final class UserFactory {
 
@@ -21,7 +25,7 @@ public final class UserFactory {
     public static UserEntity create(String username, String password, String nickname, Integer userType, String mobile, String avatar, StatusEnum status, Long orgId, Long deptId, String loginIp, LocalDateTime loginDate, Long tenantId) {
         validate(username, password, nickname, userType, mobile, avatar, status, orgId, deptId, loginIp, loginDate, tenantId);
         String encryptedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-        return UserEntity.create(username, encryptedPassword, nickname, userType, mobile, avatar, status, orgId, deptId, loginIp, loginDate, tenantId);
+        return UserEntity.create(username.trim(), encryptedPassword, nickname.trim(), userType, mobile, avatar, status, orgId, deptId, loginIp, loginDate, tenantId);
     }
 
     public static void changeBasicInfo(UserEntity user, String username, String password, String nickname, Integer userType, String mobile, String avatar, StatusEnum status, Long orgId, Long deptId, String loginIp, LocalDateTime loginDate, Long tenantId) {
@@ -30,7 +34,7 @@ public final class UserFactory {
         }
         validate(username, password, nickname, userType, mobile, avatar, status, orgId, deptId, loginIp, loginDate, tenantId);
         String encryptedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-        user.changeBasicInfo(username, encryptedPassword, nickname, userType, mobile, avatar, status, orgId, deptId, loginIp, loginDate, tenantId);
+        user.changeBasicInfo(username.trim(), encryptedPassword, nickname.trim(), userType, mobile, avatar, status, orgId, deptId, loginIp, loginDate, tenantId);
     }
 
     private static void validate(String username, String password, String nickname, Integer userType, String mobile, String avatar, StatusEnum status, Long orgId, Long deptId, String loginIp, LocalDateTime loginDate, Long tenantId) {

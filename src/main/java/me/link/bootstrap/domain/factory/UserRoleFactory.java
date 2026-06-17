@@ -4,6 +4,10 @@ import me.link.bootstrap.domain.entity.UserRoleEntity;
 
 /**
  * 用户角色关联领域工厂，集中封装用户授权关系的创建和变更校验。
+ * <p>
+ * 用户角色是租户内授权数据，创建和变更时必须同时具备用户、角色和租户三个有效标识，
+ * 避免产生无法被多租户条件正确隔离的孤立授权记录。
+ * </p>
  */
 public final class UserRoleFactory {
 

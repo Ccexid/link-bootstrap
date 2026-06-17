@@ -5,6 +5,9 @@ import me.link.bootstrap.domain.valueobject.StatusEnum;
 
 /**
  * 角色领域工厂，集中封装角色创建和变更时的业务规则校验。
+ * <p>
+ * 角色编码在应用服务中按租户维度做唯一性校验；领域层负责确保基础字段和租户边界有效。
+ * </p>
  */
 public final class RoleFactory {
 
@@ -14,7 +17,7 @@ public final class RoleFactory {
 
     public static RoleEntity create(String name, String code, Integer sort, Integer dataScope, String dataScopeDeptIds, StatusEnum status, Integer type, String remark, Long tenantId) {
         validate(name, code, sort, dataScope, dataScopeDeptIds, status, type, remark, tenantId);
-        return RoleEntity.create(name, code, sort, dataScope, dataScopeDeptIds, status, type, remark, tenantId);
+        return RoleEntity.create(name.trim(), code.trim(), sort, dataScope, dataScopeDeptIds, status, type, remark, tenantId);
     }
 
     public static void changeBasicInfo(RoleEntity role, String name, String code, Integer sort, Integer dataScope, String dataScopeDeptIds, StatusEnum status, Integer type, String remark, Long tenantId) {
@@ -22,7 +25,7 @@ public final class RoleFactory {
             throw new IllegalArgumentException("角色不能为空");
         }
         validate(name, code, sort, dataScope, dataScopeDeptIds, status, type, remark, tenantId);
-        role.changeBasicInfo(name, code, sort, dataScope, dataScopeDeptIds, status, type, remark, tenantId);
+        role.changeBasicInfo(name.trim(), code.trim(), sort, dataScope, dataScopeDeptIds, status, type, remark, tenantId);
     }
 
     private static void validate(String name, String code, Integer sort, Integer dataScope, String dataScopeDeptIds, StatusEnum status, Integer type, String remark, Long tenantId) {

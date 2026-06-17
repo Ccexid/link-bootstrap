@@ -4,6 +4,10 @@ import me.link.bootstrap.domain.entity.RoleMenuEntity;
 
 /**
  * 角色菜单关联领域工厂，集中封装角色授权关系的创建和变更校验。
+ * <p>
+ * 角色菜单授权隶属于当前租户，租户编号是授权边界的一部分；这里做最后一道参数校验，
+ * 防止绕过应用服务时写入无租户归属的授权记录。
+ * </p>
  */
 public final class RoleMenuFactory {
 
