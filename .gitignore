@@ -50,3 +50,4 @@ maven-status/
 graphify-out/*
 .history/*
 ./src/graphify-out/*
+.codegraph/*
