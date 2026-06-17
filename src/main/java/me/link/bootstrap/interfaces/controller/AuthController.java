@@ -36,7 +36,7 @@ public class AuthController {
     private final ApiCryptoProperties apiCryptoProperties;
 
     @PostMapping("/login")
-    @Operation(summary = "用户登录", description = "校验账号密码并签发 Token")
+    @Operation(summary = "用户登录(账号密码登录)", description = "校验账号密码并签发 Token")
     public ResultResponse<TokenResponseVO> login(@Valid @RequestBody LoginRequest request) {
         authApplicationService.login(new LoginCommand(
                 request.getUsername(),

@@ -54,9 +54,8 @@ public class AuthApplicationService {
      * 不再覆盖整个 login 方法,避免后续查询角色码时也被绕过(角色码必须按当前租户查)。
      * </p>
      *
-     * @return Sa-Token token 值(不含 token 名前缀)
      */
-    public String login(LoginCommand command) {
+    public void login(LoginCommand command) {
         // 锁定前置检查:防止已锁定账号被持续尝试
         if (loginAttemptService.isLocked(command.username(), command.tenantId())) {
             log.warn("登录失败 - 账号已锁定: username={}, tenantId={}", command.username(), command.tenantId());
@@ -88,7 +87,6 @@ public class AuthApplicationService {
         StpUtil.getSession().set(SecurityConstants.SESSION_KEY_SUPER_ADMIN, isSuperAdmin);
 
         log.info("登录成功: userId={}, tenantId={}, isSuperAdmin={}", user.getId(), user.getTenantId(), isSuperAdmin);
-        return StpUtil.getTokenValue();
     }
 
     public TokenRefreshResult refreshToken() {
