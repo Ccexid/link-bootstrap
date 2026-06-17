@@ -38,7 +38,7 @@ public class OrganizationCreateRequest implements Serializable {
     @Schema(description = "负责人姓名")
     private String contactName;
 
-    @Schema(description = "联系电话")
+    @Schema(description = "完整联系电话(服务端加密、哈希并脱敏后落库)")
     private String contactMobile;
 
     @Schema(description = "组织状态(0正常 1停用)")

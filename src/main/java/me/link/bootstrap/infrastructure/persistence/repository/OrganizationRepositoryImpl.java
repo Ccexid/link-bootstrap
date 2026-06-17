@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import me.link.bootstrap.domain.entity.OrganizationEntity;
 import me.link.bootstrap.domain.repository.OrganizationRepository;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.infrastructure.crypto.MobileCryptoService;
+import me.link.bootstrap.infrastructure.crypto.ProtectedMobile;
 import me.link.bootstrap.infrastructure.persistence.converter.OrganizationConverter;
 import me.link.bootstrap.infrastructure.persistence.internal.OrganizationInternalService;
 import me.link.bootstrap.infrastructure.persistence.po.OrganizationPO;
@@ -38,10 +40,12 @@ public class OrganizationRepositoryImpl implements OrganizationRepository {
 
     private final OrganizationInternalService organizationInternalService;
     private final OrganizationConverter organizationConverter;
+    private final MobileCryptoService mobileCryptoService;
 
     @Override
     public OrganizationEntity save(OrganizationEntity organization) {
         OrganizationPO organizationPO = organizationConverter.convert(organization);
+        applyContactMobileProtection(organizationPO, organization.getContactMobile());
         organizationInternalService.save(organizationPO);
         return organizationConverter.reverseConvert(organizationPO);
     }
@@ -49,6 +53,7 @@ public class OrganizationRepositoryImpl implements OrganizationRepository {
     @Override
     public boolean update(OrganizationEntity organization) {
         OrganizationPO organizationPO = organizationConverter.convert(organization);
+        applyContactMobileProtection(organizationPO, organization.getContactMobile());
         return organizationInternalService.updateById(organizationPO);
     }
 
@@ -76,6 +81,14 @@ public class OrganizationRepositoryImpl implements OrganizationRepository {
     @Override
     public boolean deleteById(Long id) {
         return organizationInternalService.removeById(id);
+    }
+
+    private void applyContactMobileProtection(OrganizationPO organizationPO, String contactMobile) {
+        ProtectedMobile protectedMobile = mobileCryptoService.protect(contactMobile);
+        organizationPO.setContactMobileCipher(protectedMobile.cipher());
+        organizationPO.setContactMobileHash(protectedMobile.hash());
+        organizationPO.setContactMobileMask(protectedMobile.mask());
+        organizationPO.setContactMobileKeyVersion(protectedMobile.keyVersion());
     }
 
 }

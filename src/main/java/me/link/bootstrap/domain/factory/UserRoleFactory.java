@@ -35,5 +35,8 @@ public final class UserRoleFactory {
         if (roleId == null || roleId <= 0) {
             throw new IllegalArgumentException("用户角色关联roleId必须大于0");
         }
+        if (tenantId == null || tenantId <= 0) {
+            throw new IllegalArgumentException("用户角色关联tenantId必须大于0");
+        }
     }
 }

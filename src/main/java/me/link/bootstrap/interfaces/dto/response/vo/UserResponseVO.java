@@ -29,7 +29,7 @@ public class UserResponseVO implements Serializable {
     private String nickname;
     @Schema(description = "用户类型")
     private Integer userType;
-    @Schema(description = "手机号码")
+    @Schema(description = "脱敏手机号码")
     private String mobile;
     @Schema(description = "头像地址")
     private String avatar;

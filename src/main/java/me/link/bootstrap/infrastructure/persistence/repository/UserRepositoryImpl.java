@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import me.link.bootstrap.domain.entity.UserEntity;
 import me.link.bootstrap.domain.repository.UserRepository;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.infrastructure.crypto.MobileCryptoService;
+import me.link.bootstrap.infrastructure.crypto.ProtectedMobile;
 import me.link.bootstrap.infrastructure.persistence.converter.UserConverter;
 import me.link.bootstrap.infrastructure.persistence.internal.UserInternalService;
 import me.link.bootstrap.infrastructure.persistence.po.UserPO;
@@ -33,16 +35,18 @@ public class UserRepositoryImpl implements UserRepository {
             "created_at", "create_time",
             "updated_at", "update_time",
             "username", "username",
-            "mobile", "mobile",
+            "mobile", "mobile_mask",
             "tenant_id", "tenant_id"
     );
 
     private final UserInternalService userInternalService;
     private final UserConverter userConverter;
+    private final MobileCryptoService mobileCryptoService;
 
     @Override
     public UserEntity save(UserEntity user) {
         UserPO userPO = userConverter.convert(user);
+        applyMobileProtection(userPO, user.getMobile());
         userInternalService.save(userPO);
         return userConverter.reverseConvert(userPO);
     }
@@ -50,6 +54,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public boolean update(UserEntity user) {
         UserPO userPO = userConverter.convert(user);
+        applyMobileProtection(userPO, user.getMobile());
         return userInternalService.updateById(userPO);
     }
 
@@ -81,7 +86,7 @@ public class UserRepositoryImpl implements UserRepository {
         LambdaQueryWrapper<UserPO> wrapper = new LambdaQueryWrapper<UserPO>()
                 .like(StrUtil.isNotBlank(username), UserPO::getUsername, username)
                 .like(StrUtil.isNotBlank(nickname), UserPO::getNickname, nickname)
-                .like(StrUtil.isNotBlank(mobile), UserPO::getMobile, mobile)
+                .eq(StrUtil.isNotBlank(mobile), UserPO::getMobileHash, mobileCryptoService.hashForLookup(mobile))
                 .eq(userType != null, UserPO::getUserType, userType)
                 .eq(status != null, UserPO::getStatus, status)
                 .eq(tenantId != null, UserPO::getTenantId, tenantId)
@@ -93,6 +98,14 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public boolean deleteById(Long id) {
         return userInternalService.removeById(id);
+    }
+
+    private void applyMobileProtection(UserPO userPO, String mobile) {
+        ProtectedMobile protectedMobile = mobileCryptoService.protect(mobile);
+        userPO.setMobileCipher(protectedMobile.cipher());
+        userPO.setMobileHash(protectedMobile.hash());
+        userPO.setMobileMask(protectedMobile.mask());
+        userPO.setMobileKeyVersion(protectedMobile.keyVersion());
     }
 
 }

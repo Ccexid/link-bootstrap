@@ -19,6 +19,10 @@ public interface UserConverter extends BaseConverter {
     @Mapping(target = "creator", ignore = true)
     @Mapping(target = "createTime", ignore = true)
     @Mapping(target = "deleted", ignore = true)
+    @Mapping(target = "mobileCipher", ignore = true)
+    @Mapping(target = "mobileHash", ignore = true)
+    @Mapping(target = "mobileMask", ignore = true)
+    @Mapping(target = "mobileKeyVersion", ignore = true)
     UserPO convert(UserEntity userEntity);
 
     default UserEntity reverseConvert(UserPO userPO) {
@@ -31,7 +35,7 @@ public interface UserConverter extends BaseConverter {
                         userPO.getPassword(),
                         userPO.getNickname(),
                         userPO.getUserType(),
-                        userPO.getMobile(),
+                        userPO.getMobileMask(),
                         userPO.getAvatar(),
                         userPO.getStatus(),
                         userPO.getOrgId(),

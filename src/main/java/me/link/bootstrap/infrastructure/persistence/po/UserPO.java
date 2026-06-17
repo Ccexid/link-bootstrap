@@ -28,8 +28,14 @@ public class UserPO extends TenantBaseDO {
     private String nickname;
     @TableField(value = "user_type")
     private Integer userType;
-    @TableField(value = "mobile")
-    private String mobile;
+    @TableField(value = "mobile_cipher")
+    private String mobileCipher;
+    @TableField(value = "mobile_hash")
+    private String mobileHash;
+    @TableField(value = "mobile_mask")
+    private String mobileMask;
+    @TableField(value = "mobile_key_version")
+    private Integer mobileKeyVersion;
     @TableField(value = "avatar")
     private String avatar;
     @TableField(value = "`status`")

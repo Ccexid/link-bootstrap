@@ -34,7 +34,7 @@ public class TenantResponseVO implements Serializable {
     @Schema(description = "联系人姓名")
     private String contactName;
 
-    @Schema(description = "联系手机")
+    @Schema(description = "脱敏联系手机")
     private String contactMobile;
 
     @Schema(description = "租户状态")

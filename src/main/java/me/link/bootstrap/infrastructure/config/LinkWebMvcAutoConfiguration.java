@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.link.bootstrap.infrastructure.crypto.ApiCryptoProperties;
 import me.link.bootstrap.infrastructure.crypto.ApiCryptoService;
+import me.link.bootstrap.infrastructure.crypto.MobileCryptoProperties;
+import me.link.bootstrap.infrastructure.crypto.MobileCryptoService;
 import me.link.bootstrap.interfaces.web.filter.ApiCryptoRequestFilter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -33,7 +35,7 @@ import java.util.Map;
 @AutoConfiguration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass(OncePerRequestFilter.class)
-@EnableConfigurationProperties(ApiCryptoProperties.class)
+@EnableConfigurationProperties({ApiCryptoProperties.class, MobileCryptoProperties.class})
 public class LinkWebMvcAutoConfiguration {
 
     @Bean
@@ -41,6 +43,12 @@ public class LinkWebMvcAutoConfiguration {
     @ConditionalOnProperty(prefix = "link.api-crypto", name = "enabled", havingValue = "true")
     public ApiCryptoService apiCryptoService(ApiCryptoProperties properties) {
         return new ApiCryptoService(properties);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public MobileCryptoService mobileCryptoService(MobileCryptoProperties properties) {
+        return new MobileCryptoService(properties);
     }
 
     @Bean

@@ -35,7 +35,7 @@ public class OrganizationResponseVO implements Serializable {
     private Integer level;
     @Schema(description = "负责人姓名")
     private String contactName;
-    @Schema(description = "联系电话")
+    @Schema(description = "脱敏联系电话")
     private String contactMobile;
     @Schema(description = "状态")
     private StatusEnum status;

@@ -26,7 +26,10 @@ CREATE TABLE `system_tenant`
     `name`            varchar(64) NOT NULL COMMENT '租户名',
     `contact_user_id` bigint               DEFAULT NULL COMMENT '联系人的用户编号',
     `contact_name`    varchar(32) NOT NULL COMMENT '联系人',
-    `contact_mobile`  varchar(128)         DEFAULT NULL COMMENT '联系手机(加密存储)',
+    `contact_mobile_cipher`      varchar(512)         DEFAULT NULL COMMENT '联系手机密文，用于解密后发送短信或业务通知',
+    `contact_mobile_hash`        char(64)             DEFAULT NULL COMMENT '联系手机HMAC-SHA256哈希，用于等值检索和去重',
+    `contact_mobile_mask`        varchar(20)          DEFAULT NULL COMMENT '联系手机脱敏展示值',
+    `contact_mobile_key_version` int         NOT NULL DEFAULT 1 COMMENT '联系手机加密密钥版本',
     `status`          tinyint     NOT NULL DEFAULT 0 COMMENT '状态',
     `websites`        json                 DEFAULT NULL COMMENT '绑定域名数组',
     `package_id`      bigint      NOT NULL COMMENT '套餐编号',
@@ -40,6 +43,7 @@ CREATE TABLE `system_tenant`
     PRIMARY KEY (`id`),
     -- 增加索引提高查询效率
     KEY `idx_package_id` (`package_id`),
+    KEY `idx_contact_mobile_hash` (`contact_mobile_hash`),
     KEY `idx_expire_time` (`expire_time`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
@@ -55,7 +59,10 @@ CREATE TABLE `system_users`
     `password`    varchar(100) NOT NULL DEFAULT '' COMMENT '密码',
     `nickname`    varchar(30)  NOT NULL COMMENT '用户昵称',
     `user_type`   tinyint      NOT NULL DEFAULT 2 COMMENT '身份类型（1:供应商S, 2:平台P, 3:商家B, 4:用户C）',
-    `mobile`      varchar(20)  NOT NULL COMMENT '手机号码',
+    `mobile_cipher`      varchar(512)          DEFAULT NULL COMMENT '手机号码密文，用于解密后发送短信或业务通知',
+    `mobile_hash`        char(64)              DEFAULT NULL COMMENT '手机号码HMAC-SHA256哈希，用于等值检索和去重',
+    `mobile_mask`        varchar(20)           DEFAULT NULL COMMENT '手机号码脱敏展示值',
+    `mobile_key_version` int          NOT NULL DEFAULT 1 COMMENT '手机号码加密密钥版本',
     `avatar`      varchar(512)          DEFAULT '' COMMENT '头像',
     `status`      tinyint      NOT NULL DEFAULT 0 COMMENT '状态（0正常 1停用）',
     `org_id`      bigint                DEFAULT NULL COMMENT '所属组织ID（对应供应商ID或商家ID）',
@@ -70,7 +77,7 @@ CREATE TABLE `system_users`
     `tenant_id`   bigint       NOT NULL DEFAULT 0 COMMENT '租户编号',
     PRIMARY KEY (`id`),
     UNIQUE INDEX `uk_username_tenant` (`username`, `tenant_id`),
-    UNIQUE INDEX `uk_mobile_type` (`mobile`, `user_type`),
+    UNIQUE INDEX `uk_mobile_hash_type` (`mobile_hash`, `user_type`),
     INDEX `idx_org_id` (`org_id`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
@@ -88,7 +95,10 @@ CREATE TABLE `system_organization`
     `ancestors`      varchar(512)          DEFAULT '' COMMENT '层级路径 (用于快速检索，如 0,2,10)',
     `level`          tinyint               DEFAULT 1 COMMENT '层级深度',
     `contact_name`   varchar(30)           DEFAULT '' COMMENT '负责人',
-    `contact_mobile` varchar(20)           DEFAULT '' COMMENT '联系电话',
+    `contact_mobile_cipher`      varchar(512)          DEFAULT NULL COMMENT '联系电话密文，用于解密后发送短信或业务通知',
+    `contact_mobile_hash`        char(64)              DEFAULT NULL COMMENT '联系电话HMAC-SHA256哈希，用于等值检索和去重',
+    `contact_mobile_mask`        varchar(20)           DEFAULT NULL COMMENT '联系电话脱敏展示值',
+    `contact_mobile_key_version` int          NOT NULL DEFAULT 1 COMMENT '联系电话加密密钥版本',
     `status`         tinyint      NOT NULL DEFAULT 0 COMMENT '状态',
     `creator`        bigint                DEFAULT NULL COMMENT '创建者ID',
     `create_time`    datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -97,7 +107,8 @@ CREATE TABLE `system_organization`
     `deleted`        tinyint(1)   NOT NULL DEFAULT 0 COMMENT '逻辑删除',
     `tenant_id`      bigint       NOT NULL DEFAULT 0 COMMENT '租户编号',
     PRIMARY KEY (`id`),
-    INDEX `idx_parent_id` (`parent_id`)
+    INDEX `idx_parent_id` (`parent_id`),
+    INDEX `idx_contact_mobile_hash` (`contact_mobile_hash`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   CHARSET = utf8mb4

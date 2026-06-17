@@ -50,6 +50,11 @@ server:
 
 # 客户端 IP 解析安全配置
 link:
+  mobile-crypto:
+    # 开发默认值仅用于本地联调。生产环境请通过环境变量覆盖，并将 encryption-key 与 hash-key 分开保管。
+    encryption-key: ${LINK_MOBILE_CRYPTO_ENCRYPTION_KEY:link-bootstrap-dev-mobile-encryption-key}
+    hash-key: ${LINK_MOBILE_CRYPTO_HASH_KEY:link-bootstrap-dev-mobile-hash-key}
+    key-version: ${LINK_MOBILE_CRYPTO_KEY_VERSION:1}
   api-crypto:
     # 开启后接口请求体使用 {"data":"RSA密文"} 传输,服务端解密后再进入 Controller;
     # 响应体返回 {"data":"RSA密文"},密文内容为原统一响应 JSON。

@@ -16,6 +16,10 @@
 --     $2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC
 -- (满足 UserFactory.validate 的 8-64 字符规则,兼容 hutool 内置 jBCrypt 实现)
 --
+-- 手机号说明:
+-- system_users/system_tenant/system_organization 不再保存明文手机号。
+-- 种子数据只预置脱敏展示值,密文和检索哈希由应用服务在用户录入真实手机号时生成。
+--
 -- 如要修改默认密码,重新生成哈希:
 --   macOS / Linux:
 --     htpasswd -bnBC 10 "" "新密码" | tr -d ':\n' | sed 's/\$2y\$/\$2a\$/'
@@ -56,10 +60,10 @@ VALUES
 -- 2. 租户 system_tenant
 -- ====================================================================
 -- 注:平台租户(tenant_id=0)不在本表中,它仅作为默认值代表"平台自身"。
-INSERT INTO `system_tenant` (`id`, `name`, `contact_user_id`, `contact_name`, `contact_mobile`, `status`, `websites`, `package_id`, `expire_time`, `account_count`, `creator`, `updater`)
+INSERT INTO `system_tenant` (`id`, `name`, `contact_user_id`, `contact_name`, `contact_mobile_cipher`, `contact_mobile_hash`, `contact_mobile_mask`, `contact_mobile_key_version`, `status`, `websites`, `package_id`, `expire_time`, `account_count`, `creator`, `updater`)
 VALUES
-    (1, '示例租户A', 3, '示例租户A联系人', NULL, 0, JSON_ARRAY('demo-a.link.local'),  1, '2099-12-31 23:59:59', 100, 1, 1),
-    (2, '示例租户B', 5, '示例租户B联系人', NULL, 0, JSON_ARRAY('demo-b.link.local'),  2, '2099-12-31 23:59:59', 100, 1, 1);
+    (1, '示例租户A', 3, '示例租户A联系人', NULL, NULL, NULL, 1, 0, JSON_ARRAY('demo-a.link.local'),  1, '2099-12-31 23:59:59', 100, 1, 1),
+    (2, '示例租户B', 5, '示例租户B联系人', NULL, NULL, NULL, 1, 0, JSON_ARRAY('demo-b.link.local'),  2, '2099-12-31 23:59:59', 100, 1, 1);
 
 -- ====================================================================
 -- 3. 菜单 system_menu (全局表,无 tenant_id)
@@ -184,13 +188,13 @@ VALUES
 -- 5. 用户 system_users
 -- ====================================================================
 -- 所有用户的 password 字段统一为 BCrypt 哈希,明文密码 Admin@123456(见文件头部说明)
-INSERT INTO `system_users` (`id`, `username`, `password`, `nickname`, `user_type`, `mobile`, `avatar`, `status`, `org_id`, `dept_id`, `login_ip`, `login_date`, `tenant_id`, `creator`, `updater`)
+INSERT INTO `system_users` (`id`, `username`, `password`, `nickname`, `user_type`, `mobile_cipher`, `mobile_hash`, `mobile_mask`, `mobile_key_version`, `avatar`, `status`, `org_id`, `dept_id`, `login_ip`, `login_date`, `tenant_id`, `creator`, `updater`)
 VALUES
-    (1, 'root',     '$2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC', '系统超管',     2, '13800000001', '', 0, NULL, NULL, '', NULL, 0, 1, 1),
-    (2, 'platform', '$2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC', '平台运营',     2, '13800000002', '', 0, NULL, NULL, '', NULL, 0, 1, 1),
-    (3, 'admin',    '$2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC', '租户A管理员',  3, '13800000003', '', 0, NULL, NULL, '', NULL, 1, 1, 1),
-    (4, 'user1',    '$2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC', '租户A用户',    4, '13800000004', '', 0, NULL, NULL, '', NULL, 1, 1, 1),
-    (5, 'admin',    '$2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC', '租户B管理员',  3, '13800000005', '', 0, NULL, NULL, '', NULL, 2, 1, 1);
+    (1, 'root',     '$2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC', '系统超管',     2, NULL, NULL, '138****0001', 1, '', 0, NULL, NULL, '', NULL, 0, 1, 1),
+    (2, 'platform', '$2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC', '平台运营',     2, NULL, NULL, '138****0002', 1, '', 0, NULL, NULL, '', NULL, 0, 1, 1),
+    (3, 'admin',    '$2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC', '租户A管理员',  3, NULL, NULL, '138****0003', 1, '', 0, NULL, NULL, '', NULL, 1, 1, 1),
+    (4, 'user1',    '$2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC', '租户A用户',    4, NULL, NULL, '138****0004', 1, '', 0, NULL, NULL, '', NULL, 1, 1, 1),
+    (5, 'admin',    '$2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC', '租户B管理员',  3, NULL, NULL, '138****0005', 1, '', 0, NULL, NULL, '', NULL, 2, 1, 1);
 
 -- ====================================================================
 -- 6. 用户-角色 system_user_role
@@ -264,11 +268,11 @@ WHERE m.`deleted` = 0
 -- ====================================================================
 -- 8. 组织 system_organization (示例)
 -- ====================================================================
-INSERT INTO `system_organization` (`id`, `name`, `org_type`, `parent_id`, `ancestors`, `level`, `contact_name`, `contact_mobile`, `status`, `tenant_id`, `creator`, `updater`)
+INSERT INTO `system_organization` (`id`, `name`, `org_type`, `parent_id`, `ancestors`, `level`, `contact_name`, `contact_mobile_cipher`, `contact_mobile_hash`, `contact_mobile_mask`, `contact_mobile_key_version`, `status`, `tenant_id`, `creator`, `updater`)
 VALUES
-    (1, '示例集团A',  3, 0, '0',   1, '示例联系人',    '13800001000', 0, 1, 1, 1),
-    (2, '研发部',     3, 1, '0,1', 2, '研发负责人',    '13800001001', 0, 1, 3, 3),
-    (3, '示例集团B',  3, 0, '0',   1, '示例B联系人',   '13800002000', 0, 2, 1, 1);
+    (1, '示例集团A',  3, 0, '0',   1, '示例联系人',    NULL, NULL, '138****1000', 1, 0, 1, 1, 1),
+    (2, '研发部',     3, 1, '0,1', 2, '研发负责人',    NULL, NULL, '138****1001', 1, 0, 1, 3, 3),
+    (3, '示例集团B',  3, 0, '0',   1, '示例B联系人',   NULL, NULL, '138****2000', 1, 0, 2, 1, 1);
 
 SET FOREIGN_KEY_CHECKS = 1;
 

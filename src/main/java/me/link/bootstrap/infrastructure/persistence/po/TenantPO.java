@@ -1,5 +1,6 @@
 package me.link.bootstrap.infrastructure.persistence.po;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -45,10 +46,28 @@ public class TenantPO extends BaseDO {
     private String contactName;
 
     /**
-     * 联系手机
+     * 联系手机密文。
      */
-    @TableField(value = "contact_mobile")
-    private String contactMobile;
+    @TableField(value = "contact_mobile_cipher", updateStrategy = FieldStrategy.ALWAYS)
+    private String contactMobileCipher;
+
+    /**
+     * 联系手机检索哈希。
+     */
+    @TableField(value = "contact_mobile_hash", updateStrategy = FieldStrategy.ALWAYS)
+    private String contactMobileHash;
+
+    /**
+     * 联系手机脱敏展示值。
+     */
+    @TableField(value = "contact_mobile_mask", updateStrategy = FieldStrategy.ALWAYS)
+    private String contactMobileMask;
+
+    /**
+     * 联系手机密钥版本。
+     */
+    @TableField(value = "contact_mobile_key_version")
+    private Integer contactMobileKeyVersion;
 
     /**
      * 租户状态 (0正常 1停用)

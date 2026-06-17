@@ -19,6 +19,10 @@ public interface OrganizationConverter extends BaseConverter {
     @Mapping(target = "creator", ignore = true)
     @Mapping(target = "createTime", ignore = true)
     @Mapping(target = "deleted", ignore = true)
+    @Mapping(target = "contactMobileCipher", ignore = true)
+    @Mapping(target = "contactMobileHash", ignore = true)
+    @Mapping(target = "contactMobileMask", ignore = true)
+    @Mapping(target = "contactMobileKeyVersion", ignore = true)
     OrganizationPO convert(OrganizationEntity organizationEntity);
 
     default OrganizationEntity reverseConvert(OrganizationPO organizationPO) {
@@ -33,7 +37,7 @@ public interface OrganizationConverter extends BaseConverter {
                         organizationPO.getAncestors(),
                         organizationPO.getLevel(),
                         organizationPO.getContactName(),
-                        organizationPO.getContactMobile(),
+                        organizationPO.getContactMobileMask(),
                         organizationPO.getStatus(),
                         organizationPO.getTenantId(),
                         organizationPO.getCreateTime(),

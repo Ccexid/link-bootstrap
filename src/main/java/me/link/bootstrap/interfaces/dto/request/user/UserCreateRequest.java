@@ -38,7 +38,7 @@ public class UserCreateRequest implements Serializable {
     @NotNull(message = "身份类型不能为空")
     private Integer userType;
 
-    @Schema(description = "手机号码", requiredMode = Schema.RequiredMode.REQUIRED, example = "13800000001")
+    @Schema(description = "完整手机号码(服务端加密、哈希并脱敏后落库)", requiredMode = Schema.RequiredMode.REQUIRED, example = "13800000001")
     @NotBlank(message = "手机号码不能为空")
     private String mobile;
 

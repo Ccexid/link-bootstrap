@@ -35,5 +35,8 @@ public final class RoleMenuFactory {
         if (menuId == null || menuId <= 0) {
             throw new IllegalArgumentException("角色菜单关联menuId必须大于0");
         }
+        if (tenantId == null || tenantId <= 0) {
+            throw new IllegalArgumentException("角色菜单关联tenantId必须大于0");
+        }
     }
 }

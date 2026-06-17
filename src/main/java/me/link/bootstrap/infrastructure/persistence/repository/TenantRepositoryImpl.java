@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import me.link.bootstrap.domain.entity.TenantEntity;
 import me.link.bootstrap.domain.repository.TenantRepository;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.infrastructure.crypto.MobileCryptoService;
+import me.link.bootstrap.infrastructure.crypto.ProtectedMobile;
 import me.link.bootstrap.infrastructure.persistence.converter.TenantConverter;
 import me.link.bootstrap.infrastructure.persistence.internal.TenantInternalService;
 import me.link.bootstrap.infrastructure.persistence.po.TenantPO;
@@ -34,6 +36,7 @@ public class TenantRepositoryImpl implements TenantRepository {
 
     private final TenantInternalService tenantInternalService;
     private final TenantConverter tenantConverter;
+    private final MobileCryptoService mobileCryptoService;
 
     /**
      * 保存领域对象并返回持久化后的领域对象。
@@ -41,6 +44,7 @@ public class TenantRepositoryImpl implements TenantRepository {
     @Override
     public TenantEntity save(TenantEntity tenant) {
         TenantPO tenantPO = tenantConverter.convert(tenant);
+        applyContactMobileProtection(tenantPO, tenant.getContactMobile());
         tenantInternalService.save(tenantPO);
         return tenantConverter.reverseConvert(tenantPO);
     }
@@ -51,6 +55,7 @@ public class TenantRepositoryImpl implements TenantRepository {
     @Override
     public boolean update(TenantEntity tenant) {
         TenantPO tenantPO = tenantConverter.convert(tenant);
+        applyContactMobileProtection(tenantPO, tenant.getContactMobile());
         return tenantInternalService.updateById(tenantPO);
     }
 
@@ -83,6 +88,14 @@ public class TenantRepositoryImpl implements TenantRepository {
     @Override
     public boolean deleteById(Long id) {
         return tenantInternalService.removeById(id);
+    }
+
+    private void applyContactMobileProtection(TenantPO tenantPO, String contactMobile) {
+        ProtectedMobile protectedMobile = mobileCryptoService.protect(contactMobile);
+        tenantPO.setContactMobileCipher(protectedMobile.cipher());
+        tenantPO.setContactMobileHash(protectedMobile.hash());
+        tenantPO.setContactMobileMask(protectedMobile.mask());
+        tenantPO.setContactMobileKeyVersion(protectedMobile.keyVersion());
     }
 
 }

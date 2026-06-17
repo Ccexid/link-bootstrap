@@ -1,5 +1,6 @@
 package me.link.bootstrap.infrastructure.persistence.po;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -30,8 +31,14 @@ public class OrganizationPO extends TenantBaseDO {
     private Integer level;
     @TableField(value = "contact_name")
     private String contactName;
-    @TableField(value = "contact_mobile")
-    private String contactMobile;
+    @TableField(value = "contact_mobile_cipher", updateStrategy = FieldStrategy.ALWAYS)
+    private String contactMobileCipher;
+    @TableField(value = "contact_mobile_hash", updateStrategy = FieldStrategy.ALWAYS)
+    private String contactMobileHash;
+    @TableField(value = "contact_mobile_mask", updateStrategy = FieldStrategy.ALWAYS)
+    private String contactMobileMask;
+    @TableField(value = "contact_mobile_key_version")
+    private Integer contactMobileKeyVersion;
     @TableField(value = "`status`")
     private StatusEnum status;
 }

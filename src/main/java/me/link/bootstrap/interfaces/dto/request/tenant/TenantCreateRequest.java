@@ -33,7 +33,7 @@ public class TenantCreateRequest implements Serializable {
     @NotBlank(message = "联系人姓名不能为空")
     private String contactName;
 
-    @Schema(description = "联系手机")
+    @Schema(description = "完整联系手机(服务端加密、哈希并脱敏后落库)")
     private String contactMobile;
 
     @Schema(description = "绑定域名数组")

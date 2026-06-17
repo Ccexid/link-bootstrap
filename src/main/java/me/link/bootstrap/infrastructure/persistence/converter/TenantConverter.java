@@ -26,6 +26,10 @@ public interface TenantConverter extends BaseConverter {
     @Mapping(target = "creator", ignore = true)
     @Mapping(target = "createTime", ignore = true)
     @Mapping(target = "deleted", ignore = true)
+    @Mapping(target = "contactMobileCipher", ignore = true)
+    @Mapping(target = "contactMobileHash", ignore = true)
+    @Mapping(target = "contactMobileMask", ignore = true)
+    @Mapping(target = "contactMobileKeyVersion", ignore = true)
     TenantPO convert(TenantEntity tenantEntity);
 
     default TenantEntity reverseConvert(TenantPO tenantPO) {
@@ -37,7 +41,7 @@ public interface TenantConverter extends BaseConverter {
                 tenantPO.getName(),
                 tenantPO.getContactUserId(),
                 tenantPO.getContactName(),
-                tenantPO.getContactMobile(),
+                tenantPO.getContactMobileMask(),
                 tenantPO.getStatus(),
                 tenantPO.getWebsites(),
                 tenantPO.getPackageId(),
