@@ -85,7 +85,7 @@ public class OperateLogAspect {
 
         long startTime = System.currentTimeMillis();
         Throwable thrown = null;
-        Object result = null;
+        Object result;
         try {
             result = joinPoint.proceed();
             return result;

@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * 将统一响应对象序列化后进行 RSA 加密。
  */
-@Order(Ordered.LOWEST_PRECEDENCE)
+@Order()
 @ConditionalOnProperty(prefix = "link.api-crypto", name = "enabled", havingValue = "true")
 @RestControllerAdvice(basePackages = "me.link.bootstrap.interfaces.controller")
 public class ApiCryptoResponseBodyAdvice implements ResponseBodyAdvice<Object> {

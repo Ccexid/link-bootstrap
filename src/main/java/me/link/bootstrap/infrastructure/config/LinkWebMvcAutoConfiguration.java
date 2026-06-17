@@ -120,7 +120,7 @@ public class LinkWebMvcAutoConfiguration {
             for (int i = 0; i < name.length(); i++) {
                 char current = name.charAt(i);
                 if (current == '_') {
-                    upperCaseNext = builder.length() > 0;
+                    upperCaseNext = !builder.isEmpty();
                     continue;
                 }
                 if (upperCaseNext) {

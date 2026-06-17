@@ -39,6 +39,6 @@ public final class SortableFieldUtils {
             return Collections.emptyList();
         }
 
-        return Collections.unmodifiableList(new ArrayList<>(fieldsSet));
+        return List.copyOf(fieldsSet);
     }
 }
