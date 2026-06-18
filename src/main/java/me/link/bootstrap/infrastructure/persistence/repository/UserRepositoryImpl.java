@@ -64,19 +64,20 @@ public class UserRepositoryImpl implements UserRepository {
                 .map(userConverter::reverseConvert);
     }
 
-    /**
-     * 登录场景调用:此时 Sa-Token 会话尚未建立,LinkTenantLineHandler 无法取到 tenantId,
-     * 会让查询退化为 {@code tenant_id IS NULL}。
-     * <p>方法标 {@link TenantIgnore} 显式绕过租户拦截器,改由手工传入的 tenantId 作为业务条件。</p>
-     */
     @Override
     @TenantIgnore
-    public Optional<UserEntity> findByUsernameAndTenantId(String username, Long tenantId) {
+    public List<UserEntity> findByUsername(String username) {
         LambdaQueryWrapper<UserPO> wrapper = new LambdaQueryWrapper<UserPO>()
-                .eq(UserPO::getUsername, username)
-                .eq(UserPO::getTenantId, tenantId);
-        return Optional.ofNullable(userInternalService.getOne(wrapper))
-                .map(userConverter::reverseConvert);
+                .eq(UserPO::getUsername, username);
+        return userConverter.reverseConvertList(userInternalService.list(wrapper));
+    }
+
+    @Override
+    @TenantIgnore
+    public List<UserEntity> findByMobile(String mobile) {
+        LambdaQueryWrapper<UserPO> wrapper = new LambdaQueryWrapper<UserPO>()
+                .eq(UserPO::getMobileHash, mobileCryptoService.hashForLookup(mobile));
+        return userConverter.reverseConvertList(userInternalService.list(wrapper));
     }
 
     @Override

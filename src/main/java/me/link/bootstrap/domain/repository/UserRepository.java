@@ -21,11 +21,18 @@ public interface UserRepository {
     Optional<UserEntity> findById(Long id);
 
     /**
-     * 按用户名 + 租户 ID 精确查询。
+     * 按用户名跨租户查询。
      * <p>登录场景使用:登录时尚无 Sa-Token 会话,LinkTenantLineHandler 无法自动注入 tenant_id,
-     * 调用方需用 @TenantIgnore 绕过租户拦截器,并手工传入 tenantId 作为查询条件。</p>
+     * 调用方需用 @TenantIgnore 绕过租户拦截器,由应用层处理多租户重名。</p>
      */
-    Optional<UserEntity> findByUsernameAndTenantId(String username, Long tenantId);
+    List<UserEntity> findByUsername(String username);
+
+    /**
+     * 按手机号跨租户查询。
+     * <p>登录场景使用:登录时尚无 Sa-Token 会话,LinkTenantLineHandler 无法自动注入 tenant_id,
+     * 调用方需用 @TenantIgnore 绕过租户拦截器,由应用层处理多租户手机号重复。</p>
+     */
+    List<UserEntity> findByMobile(String mobile);
 
     PageResult<UserEntity> page(Integer pageNo, Integer pageSize, String username, String nickname, String mobile, Integer userType, StatusEnum status, Long tenantId, List<SortingField> sortingFields);
 

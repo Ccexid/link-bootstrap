@@ -5,13 +5,18 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import me.link.bootstrap.application.command.LoginCommand;
+import me.link.bootstrap.application.command.MobileLoginCommand;
+import me.link.bootstrap.application.command.SendMobileCodeCommand;
 import me.link.bootstrap.application.service.AuthApplicationService;
 import me.link.bootstrap.infrastructure.crypto.ApiCryptoProperties;
 import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.auth.LoginRequest;
+import me.link.bootstrap.interfaces.dto.request.auth.MobileLoginRequest;
+import me.link.bootstrap.interfaces.dto.request.auth.SendMobileCodeRequest;
 import me.link.bootstrap.interfaces.dto.response.ResultResponse;
 import me.link.bootstrap.interfaces.dto.response.vo.ApiCryptoPublicKeyResponseVO;
 import me.link.bootstrap.interfaces.dto.response.vo.TokenResponseVO;
+import me.link.bootstrap.shared.kernel.annotation.RateLimit;
 import me.link.bootstrap.shared.kernel.constant.GlobalConstants;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,10 +45,27 @@ public class AuthController {
     public ResultResponse<TokenResponseVO> login(@Valid @RequestBody LoginRequest request) {
         authApplicationService.login(new LoginCommand(
                 request.getUsername(),
-                request.getPassword(),
-                request.getTenantId()
+                request.getPassword()
         ));
         return ResultResponse.success(responseVOConverter.toResponse(authApplicationService.currentToken()));
+    }
+
+    @PostMapping("/mobile-login")
+    @Operation(summary = "用户登录(手机验证码登录)", description = "校验手机验证码并签发 Token")
+    public ResultResponse<TokenResponseVO> mobileLogin(@Valid @RequestBody MobileLoginRequest request) {
+        authApplicationService.mobileLogin(new MobileLoginCommand(
+                request.getMobile(),
+                request.getCode()
+        ));
+        return ResultResponse.success(responseVOConverter.toResponse(authApplicationService.currentToken()));
+    }
+
+    @PostMapping("/mobile-code")
+    @RateLimit(key = "#args[0].mobile", windowSeconds = 60L, maxRequests = 1L, message = "验证码发送过于频繁,请稍后再试")
+    @Operation(summary = "发送手机验证码", description = "向指定手机号发送登录验证码")
+    public ResultResponse<Void> sendMobileCode(@Valid @RequestBody SendMobileCodeRequest request) {
+        authApplicationService.sendMobileCode(new SendMobileCodeCommand(request.getMobile()));
+        return ResultResponse.success();
     }
 
     @PostMapping("/refresh-token")

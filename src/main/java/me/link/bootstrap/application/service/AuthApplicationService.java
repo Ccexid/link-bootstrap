@@ -5,8 +5,9 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.crypto.digest.BCrypt;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import me.link.bootstrap.application.support.ApplicationAssert;
 import me.link.bootstrap.application.command.LoginCommand;
+import me.link.bootstrap.application.command.MobileLoginCommand;
+import me.link.bootstrap.application.command.SendMobileCodeCommand;
 import me.link.bootstrap.application.command.TokenRefreshResult;
 import me.link.bootstrap.domain.entity.UserEntity;
 import me.link.bootstrap.domain.repository.UserRepository;
@@ -23,14 +24,14 @@ import java.util.List;
 /**
  * 认证应用服务,负责登录、登出的业务编排。
  * <p>
- * 登录流程:按 (username, tenantId) 双条件查询用户 → BCrypt 校验密码 → 校验账号状态 →
+ * 账号密码登录流程:按 username 跨租户查询唯一用户 → BCrypt 校验密码 → 校验账号状态 →
  * 调用 Sa-Token 创建会话 → 在 Session 注入 tenantId / userType,供后续多租户隔离与权限判断使用。
  * </p>
  * <p>
  * <b>@TenantIgnore</b>:登录时尚未建立 Sa-Token 会话,
  * {@link me.link.bootstrap.shared.kernel.database.mybatis.LinkTenantLineHandler} 取不到 tenantId,
  * 默认行为会让查询 SQL 退化为 {@code tenant_id IS NULL} 而查不到数据。
- * 此处显式标注绕过租户拦截,改由方法参数中的 tenantId 作为业务条件参与查询。
+ * 登录查询由仓储方法显式标注绕过租户拦截,认证成功后再将用户所属 tenantId 写入 Session。
  * </p>
  */
 @Slf4j
@@ -43,40 +44,77 @@ public class AuthApplicationService {
     private final LoginAttemptService loginAttemptService;
 
     /**
-     * 登录并返回 Sa-Token 颁发的 token。
+     * 账号密码登录。
      * <p>
      * 错误响应均统一为业务异常,HTTP 状态码由 GlobalExceptionHandler 处理。
      * 登录成功后会将 tenantId、userType、isSuperAdmin 写入 Sa-Token Session,
      * 供 SecurityHelper / LinkTenantLineHandler 在后续请求中使用。
      * </p>
      * <p>
-     * <b>@TenantIgnore 位置</b>:仅作用于 {@code UserRepositoryImpl.findByUsernameAndTenantId},
+     * <b>@TenantIgnore 位置</b>:仅作用于 {@code UserRepositoryImpl.findByUsername},
      * 不再覆盖整个 login 方法,避免后续查询角色码时也被绕过(角色码必须按当前租户查)。
      * </p>
-     *
      */
     public void login(LoginCommand command) {
+        UserEntity user = resolveSingleUser(userRepository.findByUsername(command.username()), ErrorCode.USER_NOT_FOUND);
+
         // 锁定前置检查:防止已锁定账号被持续尝试
-        if (loginAttemptService.isLocked(command.username(), command.tenantId())) {
-            log.warn("登录失败 - 账号已锁定: username={}, tenantId={}", command.username(), command.tenantId());
+        if (loginAttemptService.isLocked(command.username(), user.getTenantId())) {
+            log.warn("登录失败 - 账号已锁定: username={}, tenantId={}", command.username(), user.getTenantId());
             throw new BusinessException(ErrorCode.USER_LOCKED);
         }
 
-        UserEntity user = ApplicationAssert.requireFound(userRepository.findByUsernameAndTenantId(command.username(), command.tenantId()), ErrorCode.USER_NOT_FOUND);
-
         if (!BCrypt.checkpw(command.password(), user.getPassword())) {
-            long failures = loginAttemptService.recordFailure(command.username(), command.tenantId());
+            long failures = loginAttemptService.recordFailure(command.username(), user.getTenantId());
             log.warn("登录失败 - 密码错误: userId={}, tenantId={}, 累计失败次数={}", user.getId(), user.getTenantId(), failures);
             throw new BusinessException(ErrorCode.USER_PASSWORD_ERROR);
         }
 
+        // 密码校验通过,重置失败计数防御窗口
+        loginAttemptService.reset(command.username(), user.getTenantId());
+        loginResolvedUser(user);
+    }
+
+    /**
+     * 手机验证码登录。
+     * <p>
+     * <b>@TenantIgnore 位置</b>:仅作用于 {@code UserRepositoryImpl.findByMobile},
+     * 不覆盖后续角色码查询。
+     * </p>
+     */
+    public void mobileLogin(MobileLoginCommand command) {
+        verifyMobileCode(command);
+        UserEntity user = resolveSingleUser(userRepository.findByMobile(command.mobile()), ErrorCode.USER_NOT_FOUND);
+        loginResolvedUser(user);
+    }
+
+    /**
+     * 发送手机验证码。
+     */
+    public void sendMobileCode(SendMobileCodeCommand command) {
+        // TODO: 接入短信验证码服务,生成验证码并发送到 command.mobile()。
+    }
+
+    private UserEntity resolveSingleUser(List<UserEntity> users, ErrorCode notFoundErrorCode) {
+        if (users == null || users.isEmpty()) {
+            throw new BusinessException(notFoundErrorCode);
+        }
+        if (users.size() > 1) {
+            throw new BusinessException(ErrorCode.USER_TENANT_AMBIGUOUS);
+        }
+        return users.get(0);
+    }
+
+    private void verifyMobileCode(MobileLoginCommand command) {
+        // TODO: 接入短信验证码服务,校验 command.mobile() 与 command.code() 是否匹配且未过期。
+    }
+
+    private void loginResolvedUser(UserEntity user) {
         if (user.getStatus() == StatusEnum.DISABLE) {
             log.warn("登录失败 - 账号已禁用: userId={}, tenantId={}", user.getId(), user.getTenantId());
             throw new BusinessException(ErrorCode.USER_DISABLED);
         }
 
-        // 密码校验通过,重置失败计数防御窗口
-        loginAttemptService.reset(command.username(), command.tenantId());
         StpUtil.login(user.getId());
         StpUtil.getSession().set(SecurityConstants.SESSION_KEY_TENANT_ID, user.getTenantId());
         StpUtil.getSession().set(SecurityConstants.SESSION_KEY_USER_TYPE, user.getUserType());

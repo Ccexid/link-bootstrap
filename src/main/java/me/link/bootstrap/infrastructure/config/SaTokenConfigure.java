@@ -31,6 +31,8 @@ public class SaTokenConfigure implements WebMvcConfigurer {
      * 白名单:未登录即可访问。
      * <ul>
      *   <li>{@code /api/v1/auth/login} - 登录入口本身必须放行,否则前端无法首次取得 Token</li>
+     *   <li>{@code /api/v1/auth/mobile-login} - 手机验证码登录入口必须放行</li>
+     *   <li>{@code /api/v1/auth/mobile-code} - 发送手机验证码入口必须放行</li>
      *   <li>{@code /actuator/**} - 健康检查与监控端点(prod 已限制只暴露 health/info)</li>
      *   <li>{@code /error} - Spring Boot 默认错误页转发路径</li>
      *   <li>Swagger/SpringDoc - dev/test 环境调试,prod 已通过 enabled=false 关闭暴露</li>
@@ -38,6 +40,8 @@ public class SaTokenConfigure implements WebMvcConfigurer {
      */
     private static final List<String> WHITELIST = List.of(
             GlobalConstants.API_PREFIX + "/auth/login",
+            GlobalConstants.API_PREFIX + "/auth/mobile-login",
+            GlobalConstants.API_PREFIX + "/auth/mobile-code",
             "/actuator/**",
             "/error",
             "/swagger-ui/**",
