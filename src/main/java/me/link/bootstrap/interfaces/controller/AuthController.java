@@ -4,15 +4,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import me.link.bootstrap.application.command.EmailLoginCommand;
 import me.link.bootstrap.application.command.LoginCommand;
-import me.link.bootstrap.application.command.MobileLoginCommand;
-import me.link.bootstrap.application.command.SendMobileCodeCommand;
+import me.link.bootstrap.application.command.SendEmailCodeCommand;
 import me.link.bootstrap.application.service.AuthApplicationService;
 import me.link.bootstrap.infrastructure.crypto.ApiCryptoProperties;
 import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
+import me.link.bootstrap.interfaces.dto.request.auth.EmailLoginRequest;
 import me.link.bootstrap.interfaces.dto.request.auth.LoginRequest;
-import me.link.bootstrap.interfaces.dto.request.auth.MobileLoginRequest;
-import me.link.bootstrap.interfaces.dto.request.auth.SendMobileCodeRequest;
+import me.link.bootstrap.interfaces.dto.request.auth.SendEmailCodeRequest;
 import me.link.bootstrap.interfaces.dto.response.ResultResponse;
 import me.link.bootstrap.interfaces.dto.response.vo.ApiCryptoPublicKeyResponseVO;
 import me.link.bootstrap.interfaces.dto.response.vo.TokenResponseVO;
@@ -50,21 +50,21 @@ public class AuthController {
         return ResultResponse.success(responseVOConverter.toResponse(authApplicationService.currentToken()));
     }
 
-    @PostMapping("/mobile-login")
-    @Operation(summary = "用户登录(手机验证码登录)", description = "校验手机验证码并签发 Token")
-    public ResultResponse<TokenResponseVO> mobileLogin(@Valid @RequestBody MobileLoginRequest request) {
-        authApplicationService.mobileLogin(new MobileLoginCommand(
-                request.getMobile(),
+    @PostMapping("/email-login")
+    @Operation(summary = "用户登录(邮箱验证码登录)", description = "校验邮箱验证码并签发 Token")
+    public ResultResponse<TokenResponseVO> emailLogin(@Valid @RequestBody EmailLoginRequest request) {
+        authApplicationService.emailLogin(new EmailLoginCommand(
+                request.getEmail(),
                 request.getCode()
         ));
         return ResultResponse.success(responseVOConverter.toResponse(authApplicationService.currentToken()));
     }
 
-    @PostMapping("/mobile-code")
-    @RateLimit(key = "#args[0].mobile", windowSeconds = 60L, maxRequests = 1L, message = "验证码发送过于频繁,请稍后再试")
-    @Operation(summary = "发送手机验证码", description = "向指定手机号发送登录验证码")
-    public ResultResponse<Void> sendMobileCode(@Valid @RequestBody SendMobileCodeRequest request) {
-        authApplicationService.sendMobileCode(new SendMobileCodeCommand(request.getMobile()));
+    @PostMapping("/email-code")
+    @RateLimit(key = "#args[0].email", windowSeconds = 60L, maxRequests = 1L, message = "验证码发送过于频繁,请稍后再试")
+    @Operation(summary = "发送邮箱验证码", description = "向指定邮箱发送登录验证码")
+    public ResultResponse<Void> sendEmailCode(@Valid @RequestBody SendEmailCodeRequest request) {
+        authApplicationService.sendEmailCode(new SendEmailCodeCommand(request.getEmail()));
         return ResultResponse.success();
     }
 

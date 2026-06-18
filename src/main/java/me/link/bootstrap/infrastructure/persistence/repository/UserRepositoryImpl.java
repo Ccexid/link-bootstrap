@@ -82,6 +82,14 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    @TenantIgnore
+    public List<UserEntity> findByEmail(String email) {
+        LambdaQueryWrapper<UserPO> wrapper = new LambdaQueryWrapper<UserPO>()
+                .eq(UserPO::getEmail, StrUtil.trim(email));
+        return userConverter.reverseConvertList(userInternalService.list(wrapper));
+    }
+
+    @Override
     public PageResult<UserEntity> page(Integer pageNo, Integer pageSize, String username, String nickname, String mobile, String email, Integer userType, StatusEnum status, Long tenantId, List<SortingField> sortingFields) {
         Page<UserPO> page = Page.of(pageNo, pageSize);
         PageOrderHelper.applyOrders(page, sortingFields, SORT_FIELD_MAPPING);

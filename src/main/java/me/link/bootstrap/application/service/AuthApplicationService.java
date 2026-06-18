@@ -5,9 +5,9 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.crypto.digest.BCrypt;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.link.bootstrap.application.command.EmailLoginCommand;
 import me.link.bootstrap.application.command.LoginCommand;
-import me.link.bootstrap.application.command.MobileLoginCommand;
-import me.link.bootstrap.application.command.SendMobileCodeCommand;
+import me.link.bootstrap.application.command.SendEmailCodeCommand;
 import me.link.bootstrap.application.command.TokenRefreshResult;
 import me.link.bootstrap.domain.entity.UserEntity;
 import me.link.bootstrap.domain.repository.UserRepository;
@@ -76,23 +76,23 @@ public class AuthApplicationService {
     }
 
     /**
-     * 手机验证码登录。
+     * 邮箱验证码登录。
      * <p>
-     * <b>@TenantIgnore 位置</b>:仅作用于 {@code UserRepositoryImpl.findByMobile},
+     * <b>@TenantIgnore 位置</b>:仅作用于 {@code UserRepositoryImpl.findByEmail},
      * 不覆盖后续角色码查询。
      * </p>
      */
-    public void mobileLogin(MobileLoginCommand command) {
-        verifyMobileCode(command);
-        UserEntity user = resolveSingleUser(userRepository.findByMobile(command.mobile()), ErrorCode.USER_NOT_FOUND);
+    public void emailLogin(EmailLoginCommand command) {
+        verifyEmailCode(command);
+        UserEntity user = resolveSingleUser(userRepository.findByEmail(command.email()), ErrorCode.USER_NOT_FOUND);
         loginResolvedUser(user);
     }
 
     /**
-     * 发送手机验证码。
+     * 发送邮箱验证码。
      */
-    public void sendMobileCode(SendMobileCodeCommand command) {
-        // TODO: 接入短信验证码服务,生成验证码并发送到 command.mobile()。
+    public void sendEmailCode(SendEmailCodeCommand command) {
+        // TODO: 接入邮箱验证码服务,生成验证码并发送到 command.email()。
     }
 
     private UserEntity resolveSingleUser(List<UserEntity> users, ErrorCode notFoundErrorCode) {
@@ -105,8 +105,8 @@ public class AuthApplicationService {
         return users.get(0);
     }
 
-    private void verifyMobileCode(MobileLoginCommand command) {
-        // TODO: 接入短信验证码服务,校验 command.mobile() 与 command.code() 是否匹配且未过期。
+    private void verifyEmailCode(EmailLoginCommand command) {
+        // TODO: 接入邮箱验证码服务,校验 command.email() 与 command.code() 是否匹配且未过期。
     }
 
     private void loginResolvedUser(UserEntity user) {

@@ -34,6 +34,13 @@ public interface UserRepository {
      */
     List<UserEntity> findByMobile(String mobile);
 
+    /**
+     * 按邮箱跨租户查询。
+     * <p>登录场景使用:登录时尚无 Sa-Token 会话,LinkTenantLineHandler 无法自动注入 tenant_id,
+     * 调用方需用 @TenantIgnore 绕过租户拦截器,由应用层处理多租户邮箱重复。</p>
+     */
+    List<UserEntity> findByEmail(String email);
+
     PageResult<UserEntity> page(Integer pageNo, Integer pageSize, String username, String nickname, String mobile, String email, Integer userType, StatusEnum status, Long tenantId, List<SortingField> sortingFields);
 
     boolean deleteById(Long id);
