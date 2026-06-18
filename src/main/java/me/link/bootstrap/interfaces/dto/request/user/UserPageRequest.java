@@ -29,6 +29,9 @@ public class UserPageRequest extends SortablePageRequest {
     @Schema(description = "完整手机号码(按哈希等值匹配,不支持模糊匹配)")
     private String mobile;
 
+    @Schema(description = "邮箱(模糊匹配)")
+    private String email;
+
     @Schema(description = "身份类型:1供应商 2平台 3商家 4用户")
     private Integer userType;
 

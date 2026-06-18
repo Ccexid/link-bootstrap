@@ -21,6 +21,8 @@ public class UserEntity {
 
     private String mobile;
 
+    private String email;
+
     private String avatar;
 
     private StatusEnum status;
@@ -39,13 +41,14 @@ public class UserEntity {
 
     private LocalDateTime updatedAt;
 
-    private UserEntity(Long id, String username, String password, String nickname, Integer userType, String mobile, String avatar, StatusEnum status, Long orgId, Long deptId, String loginIp, LocalDateTime loginDate, Long tenantId, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    private UserEntity(Long id, String username, String password, String nickname, Integer userType, String mobile, String email, String avatar, StatusEnum status, Long orgId, Long deptId, String loginIp, LocalDateTime loginDate, Long tenantId, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.nickname = nickname;
         this.userType = userType;
         this.mobile = mobile;
+        this.email = email;
         this.avatar = avatar;
         this.status = status;
         this.orgId = orgId;
@@ -57,20 +60,21 @@ public class UserEntity {
         this.updatedAt = updatedAt;
     }
 
-    public static UserEntity create(String username, String password, String nickname, Integer userType, String mobile, String avatar, StatusEnum status, Long orgId, Long deptId, String loginIp, LocalDateTime loginDate, Long tenantId) {
-        return new UserEntity(null, username, password, nickname, userType, mobile, avatar, status, orgId, deptId, loginIp, loginDate, tenantId, null, null);
+    public static UserEntity create(String username, String password, String nickname, Integer userType, String mobile, String email, String avatar, StatusEnum status, Long orgId, Long deptId, String loginIp, LocalDateTime loginDate, Long tenantId) {
+        return new UserEntity(null, username, password, nickname, userType, mobile, email, avatar, status, orgId, deptId, loginIp, loginDate, tenantId, null, null);
     }
 
-    public static UserEntity restore(Long id, String username, String password, String nickname, Integer userType, String mobile, String avatar, StatusEnum status, Long orgId, Long deptId, String loginIp, LocalDateTime loginDate, Long tenantId, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        return new UserEntity(id, username, password, nickname, userType, mobile, avatar, status, orgId, deptId, loginIp, loginDate, tenantId, createdAt, updatedAt);
+    public static UserEntity restore(Long id, String username, String password, String nickname, Integer userType, String mobile, String email, String avatar, StatusEnum status, Long orgId, Long deptId, String loginIp, LocalDateTime loginDate, Long tenantId, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        return new UserEntity(id, username, password, nickname, userType, mobile, email, avatar, status, orgId, deptId, loginIp, loginDate, tenantId, createdAt, updatedAt);
     }
 
-    public void changeBasicInfo(String username, String password, String nickname, Integer userType, String mobile, String avatar, StatusEnum status, Long orgId, Long deptId, String loginIp, LocalDateTime loginDate, Long tenantId) {
+    public void changeBasicInfo(String username, String password, String nickname, Integer userType, String mobile, String email, String avatar, StatusEnum status, Long orgId, Long deptId, String loginIp, LocalDateTime loginDate, Long tenantId) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
         this.userType = userType;
         this.mobile = mobile;
+        this.email = email;
         this.avatar = avatar;
         this.status = status;
         this.orgId = orgId;
@@ -110,6 +114,10 @@ public class UserEntity {
 
     public String getMobile() {
         return mobile;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public String getAvatar() {

@@ -63,6 +63,7 @@ CREATE TABLE `system_users`
     `mobile_hash`        char(64)              DEFAULT NULL COMMENT '手机号码HMAC-SHA256哈希，用于等值检索和去重',
     `mobile_mask`        varchar(20)           DEFAULT NULL COMMENT '手机号码脱敏展示值',
     `mobile_key_version` int          NOT NULL DEFAULT 1 COMMENT '手机号码加密密钥版本',
+    `email`       varchar(128)          DEFAULT NULL COMMENT '邮箱',
     `avatar`      varchar(512)          DEFAULT '' COMMENT '头像',
     `status`      tinyint      NOT NULL DEFAULT 0 COMMENT '状态（0正常 1停用）',
     `org_id`      bigint                DEFAULT NULL COMMENT '所属组织ID（对应供应商ID或商家ID）',

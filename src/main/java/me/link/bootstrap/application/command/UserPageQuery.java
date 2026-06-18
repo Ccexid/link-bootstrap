@@ -17,6 +17,7 @@ public record UserPageQuery(
         String username,
         String nickname,
         String mobile,
+        String email,
         Integer userType,
         StatusEnum status,
         List<SortingField> sortingFields

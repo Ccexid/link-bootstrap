@@ -34,7 +34,7 @@ public interface UserRepository {
      */
     List<UserEntity> findByMobile(String mobile);
 
-    PageResult<UserEntity> page(Integer pageNo, Integer pageSize, String username, String nickname, String mobile, Integer userType, StatusEnum status, Long tenantId, List<SortingField> sortingFields);
+    PageResult<UserEntity> page(Integer pageNo, Integer pageSize, String username, String nickname, String mobile, String email, Integer userType, StatusEnum status, Long tenantId, List<SortingField> sortingFields);
 
     boolean deleteById(Long id);
 }

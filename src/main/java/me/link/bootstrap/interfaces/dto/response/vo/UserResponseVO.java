@@ -31,6 +31,9 @@ public class UserResponseVO implements Serializable {
     private Integer userType;
     @Schema(description = "脱敏手机号码")
     private String mobile;
+    @Schema(description = "邮箱")
+    @Sortable(description = "email")
+    private String email;
     @Schema(description = "头像地址")
     private String avatar;
     @Schema(description = "状态")

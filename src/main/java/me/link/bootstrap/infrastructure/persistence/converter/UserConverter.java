@@ -36,6 +36,7 @@ public interface UserConverter extends BaseConverter {
                         userPO.getNickname(),
                         userPO.getUserType(),
                         userPO.getMobileMask(),
+                        userPO.getEmail(),
                         userPO.getAvatar(),
                         userPO.getStatus(),
                         userPO.getOrgId(),

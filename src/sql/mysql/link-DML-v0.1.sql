@@ -188,13 +188,13 @@ VALUES
 -- 5. 用户 system_users
 -- ====================================================================
 -- 所有用户的 password 字段统一为 BCrypt 哈希,明文密码 Admin@123456(见文件头部说明)
-INSERT INTO `system_users` (`id`, `username`, `password`, `nickname`, `user_type`, `mobile_cipher`, `mobile_hash`, `mobile_mask`, `mobile_key_version`, `avatar`, `status`, `org_id`, `dept_id`, `login_ip`, `login_date`, `tenant_id`, `creator`, `updater`)
+INSERT INTO `system_users` (`id`, `username`, `password`, `nickname`, `user_type`, `mobile_cipher`, `mobile_hash`, `mobile_mask`, `mobile_key_version`, `email`, `avatar`, `status`, `org_id`, `dept_id`, `login_ip`, `login_date`, `tenant_id`, `creator`, `updater`)
 VALUES
-    (1, 'root',     '$2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC', '系统超管',     2, NULL, NULL, '138****0001', 1, '', 0, NULL, NULL, '', NULL, 0, 1, 1),
-    (2, 'platform', '$2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC', '平台运营',     2, NULL, NULL, '138****0002', 1, '', 0, NULL, NULL, '', NULL, 0, 1, 1),
-    (3, 'admin',    '$2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC', '租户A管理员',  3, NULL, NULL, '138****0003', 1, '', 0, NULL, NULL, '', NULL, 1, 1, 1),
-    (4, 'user1',    '$2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC', '租户A用户',    4, NULL, NULL, '138****0004', 1, '', 0, NULL, NULL, '', NULL, 1, 1, 1),
-    (5, 'admin',    '$2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC', '租户B管理员',  3, NULL, NULL, '138****0005', 1, '', 0, NULL, NULL, '', NULL, 2, 1, 1);
+    (1, 'root',     '$2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC', '系统超管',     2, NULL, NULL, '138****0001', 1, 'root@link.local',       '', 0, NULL, NULL, '', NULL, 0, 1, 1),
+    (2, 'platform', '$2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC', '平台运营',     2, NULL, NULL, '138****0002', 1, 'platform@link.local',   '', 0, NULL, NULL, '', NULL, 0, 1, 1),
+    (3, 'admin',    '$2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC', '租户A管理员',  3, NULL, NULL, '138****0003', 1, 'admin@demo-a.link.local', '', 0, NULL, NULL, '', NULL, 1, 1, 1),
+    (4, 'user1',    '$2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC', '租户A用户',    4, NULL, NULL, '138****0004', 1, 'user1@demo-a.link.local', '', 0, NULL, NULL, '', NULL, 1, 1, 1),
+    (5, 'admin',    '$2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC', '租户B管理员',  3, NULL, NULL, '138****0005', 1, 'admin@demo-b.link.local', '', 0, NULL, NULL, '', NULL, 2, 1, 1);
 
 -- ====================================================================
 -- 6. 用户-角色 system_user_role

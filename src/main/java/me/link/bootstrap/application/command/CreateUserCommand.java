@@ -11,6 +11,6 @@ import java.time.LocalDateTime;
  * </p>
  */
 public record CreateUserCommand(String username, String password, String nickname, Integer userType, String mobile,
-                                String avatar, StatusEnum status, Long orgId, Long deptId, String loginIp,
+                                String email, String avatar, StatusEnum status, Long orgId, Long deptId, String loginIp,
                                 LocalDateTime loginDate) {
 }

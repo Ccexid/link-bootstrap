@@ -36,6 +36,8 @@ public class UserPO extends TenantBaseDO {
     private String mobileMask;
     @TableField(value = "mobile_key_version")
     private Integer mobileKeyVersion;
+    @TableField(value = "email")
+    private String email;
     @TableField(value = "avatar")
     private String avatar;
     @TableField(value = "`status`")

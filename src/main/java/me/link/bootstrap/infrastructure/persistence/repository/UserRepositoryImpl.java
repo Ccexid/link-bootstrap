@@ -36,6 +36,7 @@ public class UserRepositoryImpl implements UserRepository {
             "updated_at", "update_time",
             "username", "username",
             "mobile", "mobile_mask",
+            "email", "email",
             "tenant_id", "tenant_id"
     );
 
@@ -81,13 +82,14 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public PageResult<UserEntity> page(Integer pageNo, Integer pageSize, String username, String nickname, String mobile, Integer userType, StatusEnum status, Long tenantId, List<SortingField> sortingFields) {
+    public PageResult<UserEntity> page(Integer pageNo, Integer pageSize, String username, String nickname, String mobile, String email, Integer userType, StatusEnum status, Long tenantId, List<SortingField> sortingFields) {
         Page<UserPO> page = Page.of(pageNo, pageSize);
         PageOrderHelper.applyOrders(page, sortingFields, SORT_FIELD_MAPPING);
         LambdaQueryWrapper<UserPO> wrapper = new LambdaQueryWrapper<UserPO>()
                 .like(StrUtil.isNotBlank(username), UserPO::getUsername, username)
                 .like(StrUtil.isNotBlank(nickname), UserPO::getNickname, nickname)
                 .eq(StrUtil.isNotBlank(mobile), UserPO::getMobileHash, mobileCryptoService.hashForLookup(mobile))
+                .like(StrUtil.isNotBlank(email), UserPO::getEmail, email)
                 .eq(userType != null, UserPO::getUserType, userType)
                 .eq(status != null, UserPO::getStatus, status)
                 .eq(tenantId != null, UserPO::getTenantId, tenantId)

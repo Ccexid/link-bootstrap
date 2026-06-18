@@ -36,7 +36,7 @@ public class UserApplicationService {
     @Transactional
     public UserEntity create(CreateUserCommand command) {
         Long tenantId = SecurityHelper.getRequiredTenantId();
-        UserEntity user = UserFactory.create(command.username(), command.password(), command.nickname(), command.userType(), command.mobile(), command.avatar(), command.status(), command.orgId(), command.deptId(), command.loginIp(), command.loginDate(), tenantId);
+        UserEntity user = UserFactory.create(command.username(), command.password(), command.nickname(), command.userType(), command.mobile(), command.email(), command.avatar(), command.status(), command.orgId(), command.deptId(), command.loginIp(), command.loginDate(), tenantId);
         return userRepository.save(user);
     }
 
@@ -51,7 +51,7 @@ public class UserApplicationService {
      * 分页查询用户列表。
      */
     public PageResult<UserEntity> page(UserPageQuery query) {
-        return userRepository.page(query.pageNo(), query.pageSize(), query.username(), query.nickname(), query.mobile(), query.userType(), query.status(), null, query.sortingFields());
+        return userRepository.page(query.pageNo(), query.pageSize(), query.username(), query.nickname(), query.mobile(), query.email(), query.userType(), query.status(), null, query.sortingFields());
     }
 
     /**
@@ -61,7 +61,7 @@ public class UserApplicationService {
     public UserEntity update(UpdateUserCommand command) {
         UserEntity user = get(command.id());
         Long tenantId = SecurityHelper.getRequiredTenantId();
-        UserFactory.changeBasicInfo(user, command.username(), command.password(), command.nickname(), command.userType(), command.mobile(), command.avatar(), command.status(), command.orgId(), command.deptId(), command.loginIp(), command.loginDate(), tenantId);
+        UserFactory.changeBasicInfo(user, command.username(), command.password(), command.nickname(), command.userType(), command.mobile(), command.email(), command.avatar(), command.status(), command.orgId(), command.deptId(), command.loginIp(), command.loginDate(), tenantId);
         ApplicationAssert.requireSuccess(userRepository.update(user), ErrorCode.USER_NOT_FOUND);
         return get(command.id());
     }

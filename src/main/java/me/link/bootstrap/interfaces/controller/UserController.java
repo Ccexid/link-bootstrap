@@ -56,6 +56,7 @@ public class UserController {
                 request.getNickname(),
                 request.getUserType(),
                 request.getMobile(),
+                request.getEmail(),
                 request.getAvatar(),
                 request.getStatus(),
                 request.getOrgId(),
@@ -81,6 +82,7 @@ public class UserController {
                 request.getUsername(),
                 request.getNickname(),
                 request.getMobile(),
+                request.getEmail(),
                 request.getUserType(),
                 request.getStatus(),
                 request.getSortingFields()
@@ -101,6 +103,7 @@ public class UserController {
                 request.getNickname(),
                 request.getUserType(),
                 request.getMobile(),
+                request.getEmail(),
                 request.getAvatar(),
                 request.getStatus(),
                 request.getOrgId(),

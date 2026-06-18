@@ -10,5 +10,5 @@ import java.time.LocalDateTime;
  * 租户ID将从当前登录用户的上下文中自动获取，无需前端传入。
  * </p>
  */
-public record UpdateUserCommand(Long id, String username, String password, String nickname, Integer userType, String mobile, String avatar, StatusEnum status, Long orgId, Long deptId, String loginIp, LocalDateTime loginDate) {
+public record UpdateUserCommand(Long id, String username, String password, String nickname, Integer userType, String mobile, String email, String avatar, StatusEnum status, Long orgId, Long deptId, String loginIp, LocalDateTime loginDate) {
 }
