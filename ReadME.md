@@ -15,33 +15,34 @@
 - [异常与响应规范](#异常与响应规范)
 - [配置与运行](#配置与运行)
 - [常用开发命令](#常用开发命令)
-- [未来改造方向](#未来改造方向)
+- [待治理事项](#待治理事项)
 
 ## 项目定位
 
-本项目当前主要承担以下职责：
+本项目主要承担以下职责：
 
 1. 提供可复用的 Spring Boot 后端基础工程。
-2. 以 DDD 四层结构约束业务代码边界。
-3. 沉淀租户、租户套餐等平台基础业务模块。
+2. 以 DDD 四层结构约束业务代码边界，并提供清晰的扩展模板。
+3. 沉淀认证、租户、组织、用户、角色、菜单、操作日志等平台基础业务模块。
 4. 提供统一的 Web 接口响应、参数校验、分页排序、异常处理和链路追踪能力。
-5. 为后续认证授权、租户隔离、菜单权限、组织用户、运营审计等模块提供基础骨架。
+5. 为后续平台端、供应商端、商家端、用户端业务扩展提供基础骨架。
 
 ## 技术栈
 
 | 分类 | 技术 | 当前版本/说明 |
 |---|---|---|
 | JDK | Java | 17 |
-| 框架 | Spring Boot | 3.5.13 |
+| 框架 | Spring Boot | 3.5.14 |
 | Web 容器 | Undertow | 替代默认 Tomcat |
 | ORM | MyBatis-Plus | 3.5.16 |
 | 数据库 | H2 / MySQL | dev 默认 H2，test/prod 使用 MySQL |
-| 权限框架 | Sa-Token | 1.45.0，当前业务接口尚未接入鉴权 |
+| 权限框架 | Sa-Token | 1.45.0，已接入登录态、会话、权限码校验 |
 | Redis | Redisson | 4.3.0 |
 | Bean 映射 | MapStruct | 1.5.5.Final |
 | 工具库 | Hutool / Guava / Caffeine | 通用工具、缓存、集合能力 |
 | API 文档 | SpringDoc OpenAPI | Swagger UI 分组管理 |
 | 链路追踪 | TraceIdFilter + MDC | 请求级 TraceId 透传 |
+| 静态检查 | Qodana | `qodana.yaml` 使用 JVM linter |
 | 构建工具 | Maven Wrapper | 推荐使用 `./mvnw` |
 
 ## 现有代码结构图
@@ -181,7 +182,7 @@ src/
 - 调用领域工厂、领域对象、仓储接口。
 - 处理跨实体、跨聚合的流程协调。
 
-当前示例：
+典型应用服务：
 
 - `TenantApplicationService`
 - `TenantPackageApplicationService`
@@ -190,7 +191,7 @@ src/
 
 - 新增业务用例时优先在应用服务中编排。
 - 应用层依赖领域层仓储接口，不依赖基础设施实现类。
-- 鉴权校验未来也建议在应用层或专门的安全切面中处理，不写入 Controller。
+- 鉴权校验优先使用注解、应用层或专门安全切面处理，不写入 Controller。
 
 ### 3. domain 领域层
 
@@ -237,71 +238,43 @@ src/
 
 ## 已实现业务模块
 
-### 租户管理
+当前代码已按同一套 DDD 链路实现以下模块：
 
-接口路径：
+| 模块 | Controller | 接口路径 | 核心能力 |
+|---|---|---|---|
+| 认证授权 | `AuthController` | `/api/v1/auth` | 账号密码登录、邮箱验证码登录、Token 刷新、当前 Token、退出登录、公钥获取 |
+| 租户管理 | `TenantController` | `/api/v1/tenant` | 创建、详情、分页、更新、删除 |
+| 租户套餐 | `TenantPackageController` | `/api/v1/tenant/package` | 创建、详情、分页、更新、删除 |
+| 用户管理 | `UserController` | `/api/v1/system/user` | 用户 CRUD、分页 |
+| 角色管理 | `RoleController` | `/api/v1/system/role` | 角色 CRUD、分页 |
+| 菜单管理 | `MenuController` | `/api/v1/system/menu` | 菜单 CRUD、分页 |
+| 组织管理 | `OrganizationController` | `/api/v1/system/organization` | 组织 CRUD、分页 |
+| 用户角色 | `UserRoleController` | `/api/v1/system/user-role` | 用户角色分配、CRUD、分页 |
+| 角色菜单 | `RoleMenuController` | `/api/v1/system/role-menu` | 角色菜单授权、CRUD、分页 |
+| 操作日志 | `OperateLogController` | `/api/v1/system/operate-log` | 操作日志 CRUD、分页 |
 
-```text
-/api/v1/tenant
-```
-
-能力：
-
-- 创建租户
-- 查询租户详情
-- 分页查询租户
-- 更新租户
-- 删除租户
-- 启用 / 停用租户
-
-核心链路：
+标准调用链路必须保持一致：
 
 ```text
-TenantController
-  -> TenantApplicationService
-    -> TenantFactory / TenantEntity
-    -> TenantRepository
-      -> TenantRepositoryImpl
-        -> TenantInternalService
-          -> TenantMapper
-            -> system_tenant
+XxxController
+  -> XxxApplicationService
+    -> XxxFactory / XxxEntity
+    -> XxxRepository
+      -> XxxRepositoryImpl
+        -> XxxInternalService
+          -> XxxMapper
+            -> system_xxx
 ```
 
-### 租户套餐管理
-
-接口路径：
-
-```text
-/api/v1/tenant/package
-```
-
-能力：
-
-- 创建租户套餐
-- 查询租户套餐详情
-- 分页查询租户套餐
-- 更新租户套餐
-- 删除租户套餐
-- 启用 / 停用租户套餐
-
-核心链路：
-
-```text
-TenantPackageController
-  -> TenantPackageApplicationService
-    -> TenantPackageFactory / TenantPackageEntity
-    -> TenantPackageRepository
-      -> TenantPackageRepositoryImpl
-        -> TenantPackageInternalService
-          -> TenantPackageMapper
-            -> system_tenant_package
-```
+例外规则：认证、加解密、限流、幂等等横切能力可以在 `infrastructure/security`、`infrastructure/crypto`、`infrastructure/aop` 或 `interfaces/web` 中实现，但不得把业务编排绕回 Controller 或 Mapper。
 
 ## 代码规范
 
+本节是当前项目的硬约束。新增代码优先复用现有 Tenant / User / Role 等模块的写法；如果确实需要例外，必须在类注释或方法注释中说明原因。
+
 ### 包结构规范
 
-新增业务模块建议按以下结构补齐：
+新增业务模块必须按以下结构补齐，除非该模块不是完整 CRUD 聚合：
 
 ```text
 interfaces/controller/XxxController.java
@@ -329,6 +302,14 @@ infrastructure/persistence/repository/XxxRepositoryImpl.java
 resources/mapper/XxxMapper.xml
 ```
 
+分层边界：
+
+- `interfaces` 只处理协议、参数校验、响应组装和接口文档。
+- `application` 只编排用例、事务、权限所需的领域协作。
+- `domain` 只表达业务模型、业务规则、仓储抽象和值对象。
+- `infrastructure` 只实现技术细节、框架配置、持久化、缓存、加解密、安全适配。
+- `shared/kernel` 只存放跨模块通用能力，禁止放具体业务模块语义。
+
 ### 命名规范
 
 | 类型 | 命名示例 | 说明 |
@@ -347,18 +328,31 @@ resources/mapper/XxxMapper.xml
 | Mapper | `TenantMapper` | MyBatis-Plus Mapper |
 | Converter | `TenantConverter` | Entity / PO 转换器 |
 
+命名收紧：
+
+- 创建命令使用 `CreateXxxCommand`，更新命令使用 `UpdateXxxCommand`，分页查询使用 `XxxPageQuery`。
+- HTTP 入参必须以 `Request` 结尾，HTTP 出参必须以 `ResponseVO` 结尾。
+- 数据库对象必须以 `PO` 结尾，领域对象必须以 `Entity` 结尾。
+- 枚举命名使用业务名加 `Enum` 或明确业务值对象名，例如 `StatusEnum`。
+- 常量类按职责放置，API、Trace 等全局常量放 `GlobalConstants`，安全会话常量放 `SecurityConstants`。
+
 ### 注释规范
 
 - 类、接口、枚举、record 需要说明职责。
 - 复杂业务方法需要说明业务语义。
 - 简单 getter/setter、显而易见的代码不需要逐行注释。
 - 注释应解释“为什么”和“业务含义”，不要重复描述语法。
+- 禁止提交模板化、空洞注释，例如“创建业务对象”“根据主键查询业务对象详情”；如果语义显而易见，可删除。
+- 对框架自动配置、租户绕过、权限放行、加密开关、限流窗口等容易误改的逻辑，必须说明原因和影响范围。
 
 ### 参数校验规范
 
 - HTTP 入参基础校验放在 Request DTO 中，通过 Jakarta Validation 注解实现。
 - 业务不变量校验放在领域工厂或领域实体中。
 - 跨对象、跨流程校验放在 Application Service 或领域服务中。
+- Controller 类必须使用 `@Validated`，请求体使用 `@Valid @RequestBody`。
+- 路径变量、查询参数必须按语义添加 `@NotNull`、`@NotBlank`、范围校验或自定义校验。
+- 禁止在 Controller 中用 `if` 拼业务错误响应；业务错误统一抛 `BusinessException`。
 
 示例：
 
@@ -371,9 +365,11 @@ TenantApplicationService 负责编排创建、更新、删除流程
 ### 事务规范
 
 - 写操作在 Application Service 方法上使用 `@Transactional`。
-- 查询操作默认不加事务，后续可按需使用只读事务。
+- 查询操作默认不加事务；涉及一致性读取或多仓储组合读取时可使用 `@Transactional(readOnly = true)`。
 - Controller 不处理事务。
 - RepositoryImpl 不主动开启业务事务。
+- 一个业务用例只能有一个清晰事务边界，优先放在 Application Service 的 public 方法上。
+- 发送通知、写操作日志、刷新缓存等副作用不要混入领域实体；必要时通过应用层或 AOP/事件机制处理。
 
 ### 排序规范
 
@@ -385,6 +381,8 @@ TenantApplicationService 负责编排创建、更新、删除流程
 - Controller 分页参数使用 `@SortWhitelist(XxxResponseVO.class)` 校验。
 - RepositoryImpl 中维护前端字段到数据库列名的映射。
 - 禁止直接把未校验的前端字段拼接进 SQL。
+- 前端排序字段使用下划线命名，后端 VO 字段保持 Java 驼峰，映射由排序工具和 RepositoryImpl 统一处理。
+- 新增排序字段时必须同步更新 Response VO 的 `@Sortable`、RepositoryImpl 字段映射和接口文档。
 
 示例：
 
@@ -392,6 +390,56 @@ TenantApplicationService 负责编排创建、更新、删除流程
 前端传参：sort=-created_at,name
 含义：按 created_at 降序，再按 name 升序
 ```
+
+### Lombok 与 Java 规范
+
+- 项目使用 Java 17，新增代码不得使用高于 Java 17 的语言特性。
+- DTO、PO 可使用 Lombok `@Data`；Service、Controller 优先使用 `@RequiredArgsConstructor` 注入依赖。
+- 领域实体允许使用 Lombok 减少样板代码，但必须保留表达业务行为的方法。
+- 禁止字段注入，禁止新增 `@Autowired` 字段。
+- 集合返回优先使用空集合，不返回 `null`。
+- 金额、数量、ID、时间等关键字段必须使用明确类型，禁止用 `String` 临时代替。
+
+### MapStruct 转换规范
+
+- 接口层统一通过 `ResponseVOConverter` 做 Entity -> VO 转换。
+- 持久化层统一通过 `infrastructure/persistence/converter/XxxConverter` 做 Entity <-> PO 转换。
+- Converter 只做字段映射，不写业务判断、不查数据库、不调用远程服务。
+- Entity -> PO 必须忽略审计字段、逻辑删除字段和框架自动填充字段。
+- PO -> Entity 必须通过 `restore(...)` 还原领域对象，避免绕过领域构造约束。
+
+### 安全与权限规范
+
+- 全局登录态由 `SaTokenConfigure` 拦截，白名单只能放登录、公钥、Actuator、Swagger、错误页等必要入口。
+- 业务写接口必须按权限码添加 `@SaCheckPermission`；权限码格式使用 `system:resource:action`。
+- 创建、更新、授权等非幂等写操作必须评估是否添加 `@Idempotent`。
+- 高频或易被滥用接口必须添加 `@RateLimit`，限流 key 必须避免包含明文敏感信息。
+- 登录成功后必须把 `tenantId`、`userType`、`isSuperAdmin` 等会话信息写入 Sa-Token Session。
+- 密码只允许使用 BCrypt 等单向哈希校验，禁止明文存储、明文日志和可逆加密存储。
+
+### 多租户规范
+
+- 需要租户隔离的业务表必须包含 `tenant_id`，PO 继承 `TenantBaseDO` 或显式处理租户字段。
+- 默认依赖 `LinkTenantLineHandler` 注入租户条件，禁止在业务 SQL 中手写绕过租户过滤。
+- 只有登录前查询、平台级公共配置、超级管理员必要查询等场景允许使用 `@TenantIgnore`。
+- `@TenantIgnore` 必须贴在最小范围的方法上，并在注释中说明为什么必须绕过租户隔离。
+- RepositoryImpl 返回领域对象前必须确认查询结果没有跨租户泄露风险。
+
+### 日志与链路追踪规范
+
+- 日志使用 Lombok `@Slf4j`，禁止 `System.out.println`。
+- 日志必须能通过 `traceId` 与请求关联；响应由 `TraceIdResponseBodyAdvice` 补充 `traceId`。
+- 登录失败、权限拒绝、加解密失败、幂等拦截、限流拦截等安全相关事件必须记录 warn 级别日志。
+- 禁止记录密码、Token、私钥、验证码、完整手机号等敏感信息。
+- 业务日志只记录必要 ID、状态和结果，不记录大对象完整 JSON。
+
+### 接口加解密规范
+
+- 接口加解密由 `ApiCryptoRequestFilter` 和 `ApiCryptoResponseBodyAdvice` 统一处理。
+- 开关、字段名、密钥、包含路径和排除路径统一放在 `link.api-crypto` 配置下。
+- 开启后请求体必须使用 `{ "data": "RSA密文" }` 结构，响应体同样包裹密文 `data`。
+- `/api/v1/auth/public-key`、Actuator、Swagger 必须保持排除，避免前端无法获取公钥或调试文档失效。
+- 生产环境密钥必须通过环境变量或配置中心注入，禁止继续使用开发默认密钥。
 
 ## 接口规范
 
@@ -430,20 +478,39 @@ TenantApplicationService 负责编排创建、更新、删除流程
 }
 ```
 
-### 接口路径建议
+### REST 路径规范
 
-| 业务 | 方法 | 路径 | 说明 |
-|---|---|---|---|
-| 租户 | `POST` | `/api/v1/tenant` | 创建租户 |
-| 租户 | `GET` | `/api/v1/tenant/{id}` | 查询租户详情 |
-| 租户 | `GET` | `/api/v1/tenant` | 分页查询租户 |
-| 租户 | `PUT` | `/api/v1/tenant/{id}` | 更新租户 |
-| 租户 | `DELETE` | `/api/v1/tenant/{id}` | 删除租户 |
-| 租户套餐 | `POST` | `/api/v1/tenant/package` | 创建套餐 |
-| 租户套餐 | `GET` | `/api/v1/tenant/package/{id}` | 查询套餐详情 |
-| 租户套餐 | `GET` | `/api/v1/tenant/package` | 分页查询套餐 |
-| 租户套餐 | `PUT` | `/api/v1/tenant/package/{id}` | 更新套餐 |
-| 租户套餐 | `DELETE` | `/api/v1/tenant/package/{id}` | 删除套餐 |
+- 所有业务 API 必须挂在 `GlobalConstants.API_PREFIX` 下。
+- 系统管理类接口统一使用 `/api/v1/system/**`。
+- 认证类接口统一使用 `/api/v1/auth/**`。
+- 资源路径使用单数业务名，例如 `/tenant`、`/system/user`，不要混用复数。
+- 创建使用 `POST /resource`，详情使用 `GET /resource/{id}`，分页使用 `GET /resource`，更新使用 `PUT /resource/{id}`，删除使用 `DELETE /resource/{id}`。
+- 授权、刷新 Token、发送验证码等非 CRUD 动作允许使用动词路径，例如 `/auth/refresh-token`、`/auth/email-code`、`/system/role-menu/authorize`。
+
+### Controller 规范
+
+- Controller 必须标注 `@RestController`、`@RequestMapping(GlobalConstants.API_PREFIX + "...")`、`@Validated`、`@RequiredArgsConstructor`。
+- Swagger 注解使用 `@Tag` 和 `@Operation`，接口摘要写用户能理解的业务动作。
+- Controller 只允许组装 Command / Query、调用 Application Service、转换 Response VO。
+- Controller 禁止直接依赖 Mapper、InternalService、RepositoryImpl、PO。
+- Controller 禁止写事务、缓存、SQL、复杂业务判断和权限数据查询。
+- 返回值必须使用 `ResultResponse<T>` 或 `ResultTableResponse<T>`，不得直接返回 Entity、PO、Map 或原始集合。
+
+### JSON 与时间规范
+
+- Jackson 全局使用 `SNAKE_CASE`，HTTP JSON 字段对外表现为下划线命名。
+- Java 代码字段保持驼峰命名，不为迎合前端改成下划线字段。
+- `Long`、`long`、`BigInteger` 会序列化为字符串，避免前端 JS 精度丢失。
+- `LocalDateTime` 统一格式为 `yyyy-MM-dd HH:mm:ss`。
+- 响应默认过滤 `null` 字段，接口契约中不要依赖 `null` 字段占位。
+
+### 认证接口规范
+
+- 登录入口、邮箱验证码、公钥接口必须在 `SaTokenConfigure` 白名单内。
+- 需要登录的接口不要手动调用登录校验，默认交给全局拦截器处理。
+- 需要权限码的接口使用 `@SaCheckPermission`，不要在 Controller 中手写角色判断。
+- Token 统一从 `Authorization` 请求头读取，格式为 `Bearer <token>`。
+- 前端获取接口加密公钥使用 `/api/v1/auth/public-key`。
 
 ## 持久化规范
 
@@ -451,26 +518,51 @@ TenantApplicationService 负责编排创建、更新、删除流程
 
 - PO 只表示数据库表结构。
 - PO 继承 `BaseDO` 获取公共审计字段。
+- 需要租户隔离的 PO 继承 `TenantBaseDO` 或显式声明 `tenantId`。
 - JSON 字段使用 `JacksonTypeHandler`。
 - 逻辑删除字段由 `BaseDO.deleted` 管理。
+- 表名必须通过 `@TableName` 显式声明；JSON 字段需要 `autoResultMap = true`。
+- 数据库关键字字段必须用反引号保护，例如 ``@TableField("`status`")``。
+- PO 禁止包含业务行为方法，业务行为放在 Entity。
 
 ### Mapper 规范
 
 - Mapper 继承 `BaseMapper<XxxPO>`。
 - 简单 CRUD 优先使用 MyBatis-Plus。
 - 复杂 SQL 再写入 `resources/mapper/XxxMapper.xml`。
+- XML 文件必须与 Mapper 同名，放在 `src/main/resources/mapper/`。
+- 手写 SQL 必须显式考虑逻辑删除、多租户、排序白名单和分页限制。
+- 禁止使用未校验的 `${}` 拼接前端输入；排序字段必须通过白名单映射后再拼接。
 
 ### Converter 规范
 
 - 使用 MapStruct。
 - Entity -> PO 时忽略审计字段：`creator`、`createTime`、`updater`、`updateTime`、`deleted`。
 - PO -> Entity 通过 `restore(...)` 方法还原领域对象。
+- 转换器命名为 `XxxConverter`，放在 `infrastructure/persistence/converter`。
+- 多字段组合、脱敏、权限过滤不放 Converter，按职责放到领域、应用或接口响应组装层。
 
 ### RepositoryImpl 规范
 
 - RepositoryImpl 实现 domain 层仓储接口。
 - RepositoryImpl 负责 QueryWrapper、Page、排序映射等持久化细节。
 - RepositoryImpl 返回领域对象，不返回 PO。
+- RepositoryImpl 只依赖 InternalService、Mapper、Converter 等基础设施组件，不暴露给 Controller。
+- 查询不存在时按仓储接口约定返回 `null`、`Optional` 或抛业务异常，不得混用。
+- 分页查询必须使用 `PageResult<T>` 返回领域分页结果。
+
+### InternalService 规范
+
+- `XxxInternalService` 是 MyBatis-Plus `IService` 的内部封装，只能在基础设施层使用。
+- `XxxInternalServiceImpl` 只处理通用持久化能力，不写领域业务规则。
+- 对外业务不得直接注入 InternalService，必须通过 domain Repository 抽象访问。
+
+### 数据库脚本规范
+
+- MySQL DDL / DML 放在 `src/sql/mysql/`，版本号随脚本名递增。
+- 修改表结构时必须同步检查 PO、Mapper XML、Entity、Converter、Response VO、排序映射。
+- 公共审计字段、逻辑删除字段、租户字段要与 `BaseDO` / `TenantBaseDO` 保持一致。
+- 新增索引要围绕分页筛选条件、租户字段、逻辑删除字段和唯一性约束设计。
 
 ## 异常与响应规范
 
@@ -504,6 +596,15 @@ SYSTEM_ERROR
 - 参数校验异常由 `GlobalExceptionHandler` 统一处理。
 - Controller 不直接拼装失败响应。
 - 系统异常不向前端暴露内部堆栈细节。
+- 认证失败、无权限、参数错误、资源不存在必须使用明确错误码，不得统一抛 `SYSTEM_ERROR`。
+- 异常消息必须面向用户或调用方可理解，内部诊断信息写日志。
+- 新增 ErrorCode 后必须确认 HTTP 状态映射是否符合语义。
+
+### 响应增强规范
+
+- `traceId` 由 `TraceIdResponseBodyAdvice` 统一补充，业务代码不手动设置。
+- `sortableFields` 由 `SortableFieldsResponseBodyAdvice` 统一补充，Controller 不手动维护。
+- 加密响应由 `ApiCryptoResponseBodyAdvice` 统一处理，业务响应对象仍按明文统一响应结构编写。
 
 ## 配置与运行
 
@@ -557,6 +658,8 @@ http://localhost:48080/swagger-ui/index.html
 ./mvnw compile
 ```
 
+编译必须作为提交前最低校验；涉及 MapStruct、配置属性、Mapper XML、注解处理器的修改尤其要执行。
+
 ### 测试
 
 ```bash
@@ -570,6 +673,14 @@ maven.test.skip=true
 ```
 
 因此测试命令会走 Maven 生命周期，但默认跳过测试编译与执行。
+
+需要强制执行测试时使用：
+
+```bash
+./mvnw test -Dmaven.test.skip=false
+```
+
+新增领域规则、加解密、安全拦截、排序分页、异常处理时，必须补充或更新测试。
 
 ### 打包
 
@@ -600,79 +711,53 @@ maven.test.skip=true
 9. 执行 `./mvnw compile` 和 `./mvnw test`。
 10. 更新接口文档或业务说明。
 
-## 未来改造方向
+## 待治理事项
 
-### 1. 认证与鉴权接入
+### 1. 权限模型收口
 
-当前项目已引入 Sa-Token，但租户和租户套餐 CRUD 暂未加鉴权。
-
-建议后续：
-
-- 接入登录、登出、刷新 Token。
-- 在应用层或安全切面中增加权限校验。
-- 定义菜单权限、按钮权限、数据权限。
+- 补齐所有业务写接口的 `@SaCheckPermission`。
+- 梳理菜单权限、按钮权限、接口权限的编码字典。
 - 区分平台端、供应商端、商家端、用户端访问边界。
+- 为超级管理员、租户管理员、普通用户建立最小权限测试用例。
 
-### 2. 租户隔离增强
+### 2. 多租户隔离复核
 
-当前已有 `TenantBaseDO`，但租户隔离尚未完整落地。
+- 逐表确认平台表、租户表、关联表边界。
+- 逐个 Mapper XML 复核租户条件和逻辑删除条件。
+- 为 `@TenantIgnore` 建立清单，确认每个绕过点都有注释和测试。
+- 增加跨租户访问保护用例。
 
-建议后续：
+### 3. 菜单与套餐联动
 
-- 建立租户上下文 `TenantContext`。
-- 接入 MyBatis-Plus 租户拦截器。
-- 对需要租户隔离的业务表统一继承 `TenantBaseDO`。
-- 明确平台表与租户表边界。
-- 增加跨租户访问保护。
-
-### 3. 菜单与权限模型完善
-
-租户套餐中已有 `menu_ids` 字段，但菜单模型尚需完善。
-
-建议后续：
-
-- 建立菜单表、角色表、角色菜单关联表的 DDD 模型。
 - 将租户套餐菜单授权与角色授权串联。
 - 支持套餐变更后自动影响租户可用菜单范围。
-- 增加菜单树查询、按钮权限编码、接口权限编码。
+- 增加菜单树查询、按钮权限编码、接口权限编码的契约说明。
 
 ### 4. 领域事件机制
 
 当前领域实体直接完成状态变更，尚未发布领域事件。
-
-建议后续：
 
 - 增加 `domain/event` 包。
 - 定义 `TenantCreatedEvent`、`TenantDisabledEvent`、`TenantPackageChangedEvent` 等事件。
 - 使用应用层发布事件，基础设施层监听并处理异步副作用。
 - 将操作日志、通知、缓存刷新从主流程中解耦。
 
-### 5. 审计与操作日志
+### 5. 审计与操作日志增强
 
-DDL 中已有 `system_operate_log`，但业务操作日志尚未完整接入。
-
-建议后续：
-
-- 建立操作日志注解或 AOP。
-- 自动记录模块、操作类型、业务 ID、traceId、用户、租户。
+- 完善 `OperateLogAspect` 覆盖范围。
+- 自动记录模块、操作类型、业务 ID、traceId、用户、租户和结果状态。
 - 支持敏感字段脱敏。
 - 支持操作日志分页查询和审计导出。
 
-### 6. DTO / Entity 转换收敛
+### 6. DTO / Entity 转换继续收敛
 
-当前 Controller 中仍存在部分手写 `toResponse(...)` 转换。
-
-建议后续：
-
-- 增加 interfaces assembler 层。
-- 将 Request -> Command、Entity -> VO 转换集中管理。
-- 避免 Controller 过多承担对象转换职责。
+- 继续减少 Controller 中的手写 Command / Query 组装样板。
+- 评估是否增加 interfaces assembler 层。
+- 将 Request -> Command、Entity -> VO 转换尽量集中管理。
 
 ### 7. 测试体系建设
 
 当前 Maven 配置默认跳过测试。
-
-建议后续：
 
 - 打开单元测试执行。
 - 为领域工厂补充规则测试。
@@ -682,16 +767,12 @@ DDL 中已有 `system_operate_log`，但业务操作日志尚未完整接入。
 
 ### 8. 缓存与性能优化
 
-建议后续：
-
 - 对租户套餐、菜单树等低频变更数据增加本地缓存或 Redis 缓存。
 - 统一缓存 Key 规范。
 - 增加缓存失效事件。
 - 对分页查询建立必要索引和慢 SQL 监控。
 
 ### 9. 安全增强
-
-建议后续：
 
 - 生产环境禁止默认密码和默认密钥。
 - 敏感配置全部改为环境变量或配置中心。
@@ -700,9 +781,7 @@ DDL 中已有 `system_operate_log`，但业务操作日志尚未完整接入。
 
 ### 10. 自动化与工程治理
 
-建议后续：
-
-- 增加 Checkstyle / Spotless / PMD 等静态检查。
+- 在 Qodana 基础上评估增加 Checkstyle / Spotless / PMD。
 - 接入 CI 流水线。
 - 增加接口契约测试。
 - 增加数据库迁移工具，例如 Flyway 或 Liquibase。
