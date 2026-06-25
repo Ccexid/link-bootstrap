@@ -13,6 +13,7 @@ import me.link.bootstrap.domain.entity.UserEntity;
 import me.link.bootstrap.domain.repository.UserRepository;
 import me.link.bootstrap.domain.valueobject.StatusEnum;
 import me.link.bootstrap.infrastructure.persistence.mapper.PermissionMapper;
+import me.link.bootstrap.infrastructure.security.EmailCodeService;
 import me.link.bootstrap.infrastructure.security.LoginAttemptService;
 import me.link.bootstrap.shared.kernel.constant.SecurityConstants;
 import me.link.bootstrap.shared.kernel.exception.BusinessException;
@@ -42,6 +43,7 @@ public class AuthApplicationService {
     private final UserRepository userRepository;
     private final PermissionMapper permissionMapper;
     private final LoginAttemptService loginAttemptService;
+    private final EmailCodeService emailCodeService;
 
     /**
      * 账号密码登录。
@@ -83,8 +85,26 @@ public class AuthApplicationService {
      * </p>
      */
     public void emailLogin(EmailLoginCommand command) {
-        verifyEmailCode(command);
+        String email = normalizeEmail(command.email());
         UserEntity user = resolveSingleUser(userRepository.findByEmail(command.email()), ErrorCode.USER_NOT_FOUND);
+        ensureUserEnabled(user);
+
+        if (loginAttemptService.isLocked(email, user.getTenantId())) {
+            log.warn("邮箱登录失败 - 账号已锁定: userId={}, tenantId={}", user.getId(), user.getTenantId());
+            throw new BusinessException(ErrorCode.USER_LOCKED);
+        }
+
+        try {
+            verifyEmailCode(command);
+        } catch (BusinessException ex) {
+            if (ex.getErrorCode() == ErrorCode.EMAIL_VERIFY_CODE_ERROR) {
+                long failures = loginAttemptService.recordFailure(email, user.getTenantId());
+                log.warn("邮箱登录失败 - 验证码错误: userId={}, tenantId={}, 累计失败次数={}", user.getId(), user.getTenantId(), failures);
+            }
+            throw ex;
+        }
+
+        loginAttemptService.reset(email, user.getTenantId());
         loginResolvedUser(user);
     }
 
@@ -92,7 +112,9 @@ public class AuthApplicationService {
      * 发送邮箱验证码。
      */
     public void sendEmailCode(SendEmailCodeCommand command) {
-        // TODO: 接入邮箱验证码服务,生成验证码并发送到 command.email()。
+        UserEntity user = resolveSingleUser(userRepository.findByEmail(command.email()), ErrorCode.USER_NOT_FOUND);
+        ensureUserEnabled(user);
+        emailCodeService.send(command.email());
     }
 
     private UserEntity resolveSingleUser(List<UserEntity> users, ErrorCode notFoundErrorCode) {
@@ -105,15 +127,23 @@ public class AuthApplicationService {
         return users.get(0);
     }
 
-    private void verifyEmailCode(EmailLoginCommand command) {
-        // TODO: 接入邮箱验证码服务,校验 command.email() 与 command.code() 是否匹配且未过期。
+    private String normalizeEmail(String email) {
+        return email == null ? "" : email.trim();
     }
 
-    private void loginResolvedUser(UserEntity user) {
+    private void verifyEmailCode(EmailLoginCommand command) {
+        emailCodeService.verify(command.email(), command.code());
+    }
+
+    private void ensureUserEnabled(UserEntity user) {
         if (user.getStatus() == StatusEnum.DISABLE) {
             log.warn("登录失败 - 账号已禁用: userId={}, tenantId={}", user.getId(), user.getTenantId());
             throw new BusinessException(ErrorCode.USER_DISABLED);
         }
+    }
+
+    private void loginResolvedUser(UserEntity user) {
+        ensureUserEnabled(user);
 
         StpUtil.login(user.getId());
         StpUtil.getSession().set(SecurityConstants.SESSION_KEY_TENANT_ID, user.getTenantId());

@@ -33,6 +33,18 @@ spring:
     deserialization:
       # 忽略前端传入但后端不存在的属性，增强兼容性
       fail-on-unknown-properties: false
+  mail:
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: ${MAIL_SMTP_AUTH:true}
+          starttls:
+            enable: ${MAIL_SMTP_STARTTLS_ENABLE:true}
 
 server:
   port: 48080
@@ -72,6 +84,14 @@ link:
       - /swagger-ui/**
       - /swagger-ui.html
   security:
+    email-code:
+      ttl: ${LINK_EMAIL_CODE_TTL:5m}
+      length: ${LINK_EMAIL_CODE_LENGTH:6}
+      max-verify-attempts: ${LINK_EMAIL_CODE_MAX_VERIFY_ATTEMPTS:5}
+      secret: ${LINK_EMAIL_CODE_SECRET:link-bootstrap-dev-email-code-secret}
+      from: ${LINK_EMAIL_CODE_FROM:}
+      sender-name: ${LINK_EMAIL_CODE_SENDER_NAME:Link Platform}
+      subject: ${LINK_EMAIL_CODE_SUBJECT:登录验证码}
     client-ip:
       trust-forward-headers: false
       forward-headers:

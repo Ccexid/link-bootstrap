@@ -41,6 +41,7 @@ public class AuthController {
     private final ApiCryptoProperties apiCryptoProperties;
 
     @PostMapping("/login")
+    @RateLimit(key = "#args[0].username", windowSeconds = 60L, maxRequests = 5L, message = "账号登录尝试过于频繁,请稍后再试")
     @Operation(summary = "用户登录(账号密码登录)", description = "校验账号密码并签发 Token")
     public ResultResponse<TokenResponseVO> login(@Valid @RequestBody LoginRequest request) {
         authApplicationService.login(new LoginCommand(
@@ -51,6 +52,7 @@ public class AuthController {
     }
 
     @PostMapping("/email-login")
+    @RateLimit(key = "#args[0].email", windowSeconds = 60L, maxRequests = 5L, message = "邮箱登录尝试过于频繁,请稍后再试")
     @Operation(summary = "用户登录(邮箱验证码登录)", description = "校验邮箱验证码并签发 Token")
     public ResultResponse<TokenResponseVO> emailLogin(@Valid @RequestBody EmailLoginRequest request) {
         authApplicationService.emailLogin(new EmailLoginCommand(
