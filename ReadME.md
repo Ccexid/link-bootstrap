@@ -42,6 +42,7 @@
 | 工具库 | Hutool / Guava / Caffeine | 通用工具、缓存、集合能力 |
 | API 文档 | SpringDoc OpenAPI | Swagger UI 分组管理 |
 | 链路追踪 | TraceIdFilter + MDC | 请求级 TraceId 透传 |
+| 切面能力 | Spring AOP | 幂等、限流、操作日志、租户绕过 |
 | 静态检查 | Qodana | `qodana.yaml` 使用 JVM linter |
 | 构建工具 | Maven Wrapper | 推荐使用 `./mvnw` |
 
@@ -55,67 +56,68 @@ src/
 │   │   │
 │   │   ├── interfaces/                         # 用户接口层：协议转换、参数校验、请求分发
 │   │   │   ├── controller/                     # REST Controller
+│   │   │   │   ├── AuthController.java
 │   │   │   │   ├── TenantController.java
-│   │   │   │   └── TenantPackageController.java
+│   │   │   │   ├── TenantPackageController.java
+│   │   │   │   ├── UserController.java
+│   │   │   │   ├── RoleController.java
+│   │   │   │   ├── MenuController.java
+│   │   │   │   ├── OrganizationController.java
+│   │   │   │   ├── UserRoleController.java
+│   │   │   │   ├── RoleMenuController.java
+│   │   │   │   └── OperateLogController.java
 │   │   │   ├── dto/
 │   │   │   │   ├── request/                    # HTTP 请求 DTO
 │   │   │   │   │   ├── PageRequest.java
 │   │   │   │   │   ├── SortablePageRequest.java
+│   │   │   │   │   ├── auth/
 │   │   │   │   │   ├── tenant/
-│   │   │   │   │   │   ├── TenantCreateRequest.java
-│   │   │   │   │   │   ├── TenantUpdateRequest.java
-│   │   │   │   │   │   └── TenantPageRequest.java
-│   │   │   │   │   └── tenantpackage/
-│   │   │   │   │       ├── TenantPackageCreateRequest.java
-│   │   │   │   │       ├── TenantPackageUpdateRequest.java
-│   │   │   │   │       └── TenantPackagePageRequest.java
+│   │   │   │   │   ├── tenantpackage/
+│   │   │   │   │   ├── user/
+│   │   │   │   │   ├── role/
+│   │   │   │   │   ├── menu/
+│   │   │   │   │   ├── organization/
+│   │   │   │   │   ├── userrole/
+│   │   │   │   │   ├── rolemenu/
+│   │   │   │   │   └── operatelog/
 │   │   │   │   └── response/                   # HTTP 响应 DTO / VO
 │   │   │   │       ├── ResultResponse.java
 │   │   │   │       ├── ResultTableResponse.java
+│   │   │   │       ├── LoginResponseVO.java
+│   │   │   │       ├── TokenResponseVO.java
 │   │   │   │       └── vo/
-│   │   │   │           ├── TenantResponseVO.java
-│   │   │   │           └── TenantPackageResponseVO.java
+│   │   │   ├── converter/                      # Entity -> Response VO 转换
 │   │   │   ├── validation/                     # 接口层自定义参数校验
 │   │   │   │   ├── SortWhitelist.java
 │   │   │   │   └── SortWhitelistValidator.java
-│   │   │   └── web/advice/                     # Web 响应增强与全局异常处理
-│   │   │       ├── GlobalExceptionHandler.java
-│   │   │       ├── SortableFieldsResponseBodyAdvice.java
-│   │   │       └── TraceIdResponseBodyAdvice.java
+│   │   │   └── web/
+│   │   │       ├── advice/                     # Web 响应增强与全局异常处理
+│   │   │       └── filter/                     # 请求解密等 Web 过滤器
 │   │   │
 │   │   ├── application/                        # 应用层：用例编排、事务控制、领域对象协调
-│   │   │   ├── command/                        # Command / Query 对象
-│   │   │   │   ├── CreateTenantCommand.java
-│   │   │   │   ├── UpdateTenantCommand.java
-│   │   │   │   ├── TenantPageQuery.java
-│   │   │   │   ├── CreateTenantPackageCommand.java
-│   │   │   │   ├── UpdateTenantPackageCommand.java
-│   │   │   │   └── TenantPackagePageQuery.java
+│   │   │   ├── command/                        # Command / Query / Result 对象
+│   │   │   ├── support/                        # 应用层断言等辅助能力
 │   │   │   └── service/
-│   │   │       ├── TenantApplicationService.java
-│   │   │       └── TenantPackageApplicationService.java
 │   │   │
 │   │   ├── domain/                             # 领域层：业务核心，禁止依赖具体技术实现
 │   │   │   ├── entity/
 │   │   │   │   ├── TenantEntity.java
-│   │   │   │   └── TenantPackageEntity.java
+│   │   │   │   ├── TenantPackageEntity.java
+│   │   │   │   └── XxxEntity.java
 │   │   │   ├── factory/
 │   │   │   │   ├── TenantFactory.java
-│   │   │   │   └── TenantPackageFactory.java
+│   │   │   │   └── XxxFactory.java
 │   │   │   ├── repository/                     # 仓储接口，仅声明领域需要的能力
 │   │   │   │   ├── TenantRepository.java
-│   │   │   │   └── TenantPackageRepository.java
+│   │   │   │   └── XxxRepository.java
 │   │   │   └── valueobject/
 │   │   │       ├── PageResult.java
 │   │   │       └── StatusEnum.java
 │   │   │
 │   │   ├── infrastructure/                     # 基础设施层：框架配置、数据库、Redis、追踪、健康检查
+│   │   │   ├── aop/                           # 幂等、限流、操作日志等切面
 │   │   │   ├── config/
-│   │   │   │   ├── LinkCorsAutoConfiguration.java
-│   │   │   │   ├── LinkJacksonAutoConfiguration.java
-│   │   │   │   ├── LinkMybatisAutoConfiguration.java
-│   │   │   │   ├── LinkSpringDocAutoConfiguration.java
-│   │   │   │   └── LinkUndertowAutoConfiguration.java
+│   │   │   ├── crypto/                        # 接口加解密、手机号加密
 │   │   │   ├── health/
 │   │   │   │   ├── DatabaseHealthIndicator.java
 │   │   │   │   ├── RedisHealthIndicator.java
@@ -127,6 +129,7 @@ src/
 │   │   │   │   ├── mapper/                     # MyBatis-Plus Mapper
 │   │   │   │   ├── po/                         # Persistent Object
 │   │   │   │   └── repository/                 # domain.repository 的实现
+│   │   │   ├── security/                       # 权限加载、权限缓存、登录失败限制
 │   │   │   └── tracing/
 │   │   │       ├── TraceIdContext.java
 │   │   │       └── TraceIdFilter.java
@@ -146,13 +149,15 @@ src/
 │       ├── application-dev.yml
 │       ├── application-test.yml
 │       ├── application-prod.yml
-│       └── mapper/
-│           ├── TenantMapper.xml
-│           └── TenantPackageMapper.xml
+│       ├── mapper/
+│       ├── schema.sql
+│       ├── logback-spring.xml
+│       └── spy.properties
 │
 └── sql/
     └── mysql/
-        └── link-DDL-v0.1.sql
+        ├── link-DDL-v0.1.sql
+        └── link-DML-v0.1.sql
 ```
 
 ## DDD 分层说明
@@ -245,7 +250,7 @@ src/
 | 认证授权 | `AuthController` | `/api/v1/auth` | 账号密码登录、邮箱验证码登录、Token 刷新、当前 Token、退出登录、公钥获取 |
 | 租户管理 | `TenantController` | `/api/v1/tenant` | 创建、详情、分页、更新、删除 |
 | 租户套餐 | `TenantPackageController` | `/api/v1/tenant/package` | 创建、详情、分页、更新、删除 |
-| 用户管理 | `UserController` | `/api/v1/system/user` | 用户 CRUD、分页 |
+| 用户管理 | `UserController` | `/api/v1/system/users` | 用户 CRUD、分页 |
 | 角色管理 | `RoleController` | `/api/v1/system/role` | 角色 CRUD、分页 |
 | 菜单管理 | `MenuController` | `/api/v1/system/menu` | 菜单 CRUD、分页 |
 | 组织管理 | `OrganizationController` | `/api/v1/system/organization` | 组织 CRUD、分页 |
@@ -412,10 +417,21 @@ TenantApplicationService 负责编排创建、更新、删除流程
 
 - 全局登录态由 `SaTokenConfigure` 拦截，白名单只能放登录、公钥、Actuator、Swagger、错误页等必要入口。
 - 业务写接口必须按权限码添加 `@SaCheckPermission`；权限码格式使用 `system:resource:action`。
-- 创建、更新、授权等非幂等写操作必须评估是否添加 `@Idempotent`。
+- 创建、更新、授权等非幂等写操作必须添加或明确评估 `@Idempotent`；当前新增、更新、授权接口默认使用该注解，删除接口按幂等语义可不加。
 - 高频或易被滥用接口必须添加 `@RateLimit`，限流 key 必须避免包含明文敏感信息。
 - 登录成功后必须把 `tenantId`、`userType`、`isSuperAdmin` 等会话信息写入 Sa-Token Session。
 - 密码只允许使用 BCrypt 等单向哈希校验，禁止明文存储、明文日志和可逆加密存储。
+- 权限列表与角色列表统一通过 `PermissionCacheService` 缓存，角色、菜单、用户角色、角色菜单变更后必须同步失效相关缓存。
+- 登录失败次数与账号锁定统一通过 `LoginAttemptService` 管理，不允许在 Controller 中临时实现失败计数。
+
+### 幂等、限流与审计规范
+
+- `@Idempotent` 只贴在会改变系统状态的接口或应用服务方法上，默认使用请求指纹；前端传幂等键时必须使用注解定义的请求头。
+- 幂等键、限流键统一由切面写入 Redis / Redisson，业务代码不得手写重复提交判断。
+- `@RateLimit` 的 `key` 使用 SpEL 时不得直接暴露手机号、邮箱、Token 等敏感值；确需按敏感字段限流时必须依赖切面哈希后的 Redis Key。
+- 操作日志由 `OperateLogAspect` 自动覆盖 Controller 公共方法，新增 Controller 不要手动调用 `OperateLogApplicationService`。
+- 操作日志接口自身必须避免递归记录；新增审计切面时要显式处理自调用或循环写入场景。
+- 操作日志 extra 字段只记录必要上下文，禁止记录密码、Token、验证码、私钥和完整敏感请求体。
 
 ### 多租户规范
 
@@ -440,6 +456,8 @@ TenantApplicationService 负责编排创建、更新、删除流程
 - 开启后请求体必须使用 `{ "data": "RSA密文" }` 结构，响应体同样包裹密文 `data`。
 - `/api/v1/auth/public-key`、Actuator、Swagger 必须保持排除，避免前端无法获取公钥或调试文档失效。
 - 生产环境密钥必须通过环境变量或配置中心注入，禁止继续使用开发默认密钥。
+- 手机号等业务敏感字段统一通过 `MobileCryptoService` 保护，数据库仅保存密文、哈希、掩码和 key version；查询条件需要使用哈希字段，响应只能返回掩码或脱敏值。
+- 新增敏感字段时必须同步检查 Request DTO、Entity、PO、Converter、RepositoryImpl 和 Response VO，禁止在转换器中绕过加密策略。
 
 ## 接口规范
 
@@ -483,9 +501,10 @@ TenantApplicationService 负责编排创建、更新、删除流程
 - 所有业务 API 必须挂在 `GlobalConstants.API_PREFIX` 下。
 - 系统管理类接口统一使用 `/api/v1/system/**`。
 - 认证类接口统一使用 `/api/v1/auth/**`。
-- 资源路径使用单数业务名，例如 `/tenant`、`/system/user`，不要混用复数。
+- 新增资源路径默认使用单数业务名，例如 `/tenant`、`/system/role`；已有路径以 Controller 当前实现为准，例如 `/system/users`。
 - 创建使用 `POST /resource`，详情使用 `GET /resource/{id}`，分页使用 `GET /resource`，更新使用 `PUT /resource/{id}`，删除使用 `DELETE /resource/{id}`。
 - 授权、刷新 Token、发送验证码等非 CRUD 动作允许使用动词路径，例如 `/auth/refresh-token`、`/auth/email-code`、`/system/role-menu/authorize`。
+- 认证白名单必须与 `SaTokenConfigure` 保持一致；新增登录前接口时必须同步检查接口加解密排除列表和限流策略。
 
 ### Controller 规范
 
@@ -495,6 +514,8 @@ TenantApplicationService 负责编排创建、更新、删除流程
 - Controller 禁止直接依赖 Mapper、InternalService、RepositoryImpl、PO。
 - Controller 禁止写事务、缓存、SQL、复杂业务判断和权限数据查询。
 - 返回值必须使用 `ResultResponse<T>` 或 `ResultTableResponse<T>`，不得直接返回 Entity、PO、Map 或原始集合。
+- Entity -> VO 统一使用 `ResponseVOConverter`；Controller 中禁止散落私有 `toResponse(...)` 方法。
+- 分页接口入参必须继承 `SortablePageRequest`，并使用 `@Validated @SortWhitelist(XxxResponseVO.class)`。
 
 ### JSON 与时间规范
 
@@ -618,6 +639,14 @@ SYSTEM_ERROR
 
 更多环境说明见：`PROFILE_USAGE.md`
 
+### 配置文件归属
+
+- `application.yml` 只放跨环境公共配置和默认 profile，不放生产密钥。
+- `application-dev.yml` 可保留本地 H2、Swagger、调试日志等开发便利配置。
+- `application-test.yml`、`application-prod.yml` 必须使用外部环境变量或配置中心注入数据库、Redis、接口加密密钥、手机号加密密钥等敏感配置。
+- 如果后续接入 Nacos，优先迁移环境相关和敏感配置；仓库内只保留本地开发默认值、配置项说明和安全占位符。
+- 新增 `link.*` 配置项必须提供 `@ConfigurationProperties` 类型绑定，禁止在业务代码中散落 `@Value`。
+
 ### 本地启动
 
 ```bash
@@ -715,7 +744,6 @@ maven.test.skip=true
 
 ### 1. 权限模型收口
 
-- 补齐所有业务写接口的 `@SaCheckPermission`。
 - 梳理菜单权限、按钮权限、接口权限的编码字典。
 - 区分平台端、供应商端、商家端、用户端访问边界。
 - 为超级管理员、租户管理员、普通用户建立最小权限测试用例。
@@ -803,5 +831,5 @@ maven.test.skip=true
 - 修改代码结构后建议更新项目知识图谱：
 
 ```bash
-graphify update .
+codegraph sync
 ```
