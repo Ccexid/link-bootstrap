@@ -21,4 +21,7 @@ public class LoginRequest {
     @Size(min = 8, max = 64, message = "密码长度必须在 8 到 64 之间")
     @Schema(description = "密码(明文,服务端加密比对)", example = "admin@123")
     private String password;
+
+    @Schema(description = "人机校验 Token,开启人机校验后必填")
+    private String captchaToken;
 }

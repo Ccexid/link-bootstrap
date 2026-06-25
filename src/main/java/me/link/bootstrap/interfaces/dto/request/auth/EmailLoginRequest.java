@@ -22,4 +22,7 @@ public class EmailLoginRequest {
     @Size(min = 4, max = 8, message = "验证码长度必须在 4 到 8 之间")
     @Schema(description = "邮箱验证码", example = "123456")
     private String code;
+
+    @Schema(description = "人机校验 Token,开启人机校验后必填")
+    private String captchaToken;
 }

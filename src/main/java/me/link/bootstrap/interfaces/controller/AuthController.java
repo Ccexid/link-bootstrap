@@ -46,7 +46,8 @@ public class AuthController {
     public ResultResponse<TokenResponseVO> login(@Valid @RequestBody LoginRequest request) {
         authApplicationService.login(new LoginCommand(
                 request.getUsername(),
-                request.getPassword()
+                request.getPassword(),
+                request.getCaptchaToken()
         ));
         return ResultResponse.success(responseVOConverter.toResponse(authApplicationService.currentToken()));
     }
@@ -57,7 +58,8 @@ public class AuthController {
     public ResultResponse<TokenResponseVO> emailLogin(@Valid @RequestBody EmailLoginRequest request) {
         authApplicationService.emailLogin(new EmailLoginCommand(
                 request.getEmail(),
-                request.getCode()
+                request.getCode(),
+                request.getCaptchaToken()
         ));
         return ResultResponse.success(responseVOConverter.toResponse(authApplicationService.currentToken()));
     }

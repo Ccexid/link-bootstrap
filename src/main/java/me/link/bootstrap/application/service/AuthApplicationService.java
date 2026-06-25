@@ -14,6 +14,7 @@ import me.link.bootstrap.domain.repository.UserRepository;
 import me.link.bootstrap.domain.valueobject.StatusEnum;
 import me.link.bootstrap.infrastructure.persistence.mapper.PermissionMapper;
 import me.link.bootstrap.infrastructure.security.EmailCodeService;
+import me.link.bootstrap.infrastructure.security.HumanVerificationService;
 import me.link.bootstrap.infrastructure.security.LoginAttemptService;
 import me.link.bootstrap.shared.kernel.constant.SecurityConstants;
 import me.link.bootstrap.shared.kernel.exception.BusinessException;
@@ -44,6 +45,7 @@ public class AuthApplicationService {
     private final PermissionMapper permissionMapper;
     private final LoginAttemptService loginAttemptService;
     private final EmailCodeService emailCodeService;
+    private final HumanVerificationService humanVerificationService;
 
     /**
      * 账号密码登录。
@@ -58,6 +60,7 @@ public class AuthApplicationService {
      * </p>
      */
     public void login(LoginCommand command) {
+        humanVerificationService.verify(command.captchaToken());
         UserEntity user = resolveSingleUser(userRepository.findByUsername(command.username()), ErrorCode.USER_NOT_FOUND);
 
         // 锁定前置检查:防止已锁定账号被持续尝试
@@ -85,6 +88,7 @@ public class AuthApplicationService {
      * </p>
      */
     public void emailLogin(EmailLoginCommand command) {
+        humanVerificationService.verify(command.captchaToken());
         String email = normalizeEmail(command.email());
         UserEntity user = resolveSingleUser(userRepository.findByEmail(command.email()), ErrorCode.USER_NOT_FOUND);
         ensureUserEnabled(user);

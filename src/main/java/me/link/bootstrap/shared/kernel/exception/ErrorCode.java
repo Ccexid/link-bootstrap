@@ -51,6 +51,8 @@ public enum ErrorCode {
     USER_TENANT_AMBIGUOUS(500_001_005, "账号存在多个租户,请先选择租户"),
     /** 业务错误: 邮箱验证码错误或已失效 */
     EMAIL_VERIFY_CODE_ERROR(500_001_006, "验证码错误或已失效"),
+    /** 业务错误: 人机校验未通过 */
+    HUMAN_VERIFICATION_FAILED(500_001_007, "人机校验未通过"),
     /** 业务错误: 租户订阅套餐已过期,限制部分或全部功能 */
     TENANT_EXPIRED(500_002_001, "租户已过期"),
     /** 业务错误: 根据租户ID未查询到租户记录 */

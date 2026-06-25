@@ -84,6 +84,14 @@ link:
       - /swagger-ui/**
       - /swagger-ui.html
   security:
+    human-verification:
+      enabled: ${LINK_HUMAN_VERIFICATION_ENABLED:false}
+      verify-url: ${LINK_HUMAN_VERIFICATION_VERIFY_URL:https://challenges.cloudflare.com/turnstile/v0/siteverify}
+      secret: ${LINK_HUMAN_VERIFICATION_SECRET:0x4AAAAAADqoAuvWKLN9zJkkqvmsCc8RwkA}
+      response-param: ${LINK_HUMAN_VERIFICATION_RESPONSE_PARAM:response}
+      secret-param: ${LINK_HUMAN_VERIFICATION_SECRET_PARAM:secret}
+      remote-ip-param: ${LINK_HUMAN_VERIFICATION_REMOTE_IP_PARAM:remoteip}
+      timeout: ${LINK_HUMAN_VERIFICATION_TIMEOUT:3s}
     email-code:
       ttl: ${LINK_EMAIL_CODE_TTL:5m}
       length: ${LINK_EMAIL_CODE_LENGTH:6}

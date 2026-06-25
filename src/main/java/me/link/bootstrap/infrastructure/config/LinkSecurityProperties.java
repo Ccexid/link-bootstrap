@@ -28,6 +28,9 @@ public class LinkSecurityProperties {
     /** 邮箱验证码配置。 */
     private EmailCode emailCode = new EmailCode();
 
+    /** 登录人机校验配置。 */
+    private HumanVerification humanVerification = new HumanVerification();
+
     @Data
     public static class Login {
         /** 触发账号锁定的连续失败次数阈值。 */
@@ -59,5 +62,29 @@ public class LinkSecurityProperties {
 
         /** 邮件标题。 */
         private String subject = "登录验证码";
+    }
+
+    @Data
+    public static class HumanVerification {
+        /** 是否启用登录人机校验。 */
+        private boolean enabled = false;
+
+        /** 人机校验服务端验证地址。 */
+        private String verifyUrl;
+
+        /** 人机校验服务端密钥。 */
+        private String secret;
+
+        /** 请求 token 参数名。 */
+        private String responseParam = "response";
+
+        /** 请求密钥参数名。 */
+        private String secretParam = "secret";
+
+        /** 请求客户端 IP 参数名。为空则不传。 */
+        private String remoteIpParam = "remoteip";
+
+        /** 远程校验超时时间。 */
+        private Duration timeout = Duration.ofSeconds(3);
     }
 }
