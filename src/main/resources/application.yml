@@ -99,6 +99,8 @@ link:
       secret: ${LINK_EMAIL_CODE_SECRET:link-bootstrap-dev-email-code-secret}
       from: ${LINK_EMAIL_CODE_FROM:}
       sender-name: ${LINK_EMAIL_CODE_SENDER_NAME:Link Platform}
+      system-name: ${LINK_EMAIL_CODE_SYSTEM_NAME:Link Platform}
+      company-name: ${LINK_EMAIL_CODE_COMPANY_NAME:Link Platform}
       subject: ${LINK_EMAIL_CODE_SUBJECT:登录验证码}
     client-ip:
       trust-forward-headers: false

@@ -60,6 +60,12 @@ public class LinkSecurityProperties {
         /** 发件人展示名,预留给后续 MIME 邮件使用。 */
         private String senderName = "Link Platform";
 
+        /** 邮件模板中展示的系统名称。 */
+        private String systemName = "Link Platform";
+
+        /** 邮件模板中展示的公司名称。 */
+        private String companyName = "Link Platform";
+
         /** 邮件标题。 */
         private String subject = "登录验证码";
     }

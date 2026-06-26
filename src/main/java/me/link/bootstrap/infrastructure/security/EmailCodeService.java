@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import me.link.bootstrap.infrastructure.config.LinkSecurityProperties;
 import me.link.bootstrap.shared.kernel.exception.BusinessException;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RAtomicLong;
 import org.redisson.api.RBucket;
@@ -12,17 +14,19 @@ import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Duration;
+import java.time.Year;
 import java.util.HexFormat;
 
 /**
@@ -125,15 +129,15 @@ public class EmailCodeService {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "邮箱发件人未配置");
         }
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(from);
-        message.setTo(email);
-        message.setSubject(properties.getSubject());
-        message.setText(buildMailText(code, properties));
-
         try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, false, StandardCharsets.UTF_8.name());
+            setFrom(helper, from, properties.getSenderName());
+            helper.setTo(email);
+            helper.setSubject(properties.getSubject());
+            helper.setText(buildMailText(code, properties), buildMailHtml(code, properties));
             mailSender.send(message);
-        } catch (MailException ex) {
+        } catch (MailException | MessagingException | UnsupportedEncodingException ex) {
             log.warn("邮箱验证码发送失败: emailKey={}", emailKey(email), ex);
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "验证码发送失败");
         }
@@ -147,6 +151,84 @@ public class EmailCodeService {
                 验证码 %d 分钟内有效，请勿泄露给他人。
                 如果不是您本人操作，请忽略本邮件。
                 """.formatted(code, ttlMinutes);
+    }
+
+    private String buildMailHtml(String code, LinkSecurityProperties.EmailCode properties) {
+        long ttlMinutes = Math.max(1L, properties.getTtl().toMinutes());
+        String rawSystemName = StringUtils.defaultIfBlank(properties.getSystemName(), "Link Platform");
+        String rawCompanyName = StringUtils.defaultIfBlank(properties.getCompanyName(), rawSystemName);
+        String systemName = escapeHtml(rawSystemName);
+        String companyName = escapeHtml(rawCompanyName);
+        String escapedCode = escapeHtml(code);
+        int year = Year.now().getValue();
+        return """
+                <!DOCTYPE html>
+                <html lang="zh-CN">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>验证码邮件</title>
+                </head>
+                <body style="margin: 0; padding: 0; background-color: #f4f4f4; font-family: 'Helvetica Neue', Helvetica, Arial, 'Microsoft YaHei', sans-serif;">
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%%" style="background-color: #f4f4f4;">
+                        <tr>
+                            <td align="center" style="padding: 20px 0;">
+                                <table border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow: hidden; max-width: 600px;">
+                                    <tr>
+                                        <td style="background-color: #1890ff; padding: 20px 40px;" align="left">
+                                            <span style="font-size: 20px; font-weight: bold; color: #ffffff; text-decoration: none;">%s</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 40px 40px 20px 40px; color: #333333; font-size: 14px; line-height: 1.6;">
+                                            <p style="margin: 0 0 15px 0;">尊敬的用户，您好！</p>
+                                            <p style="margin: 0 0 15px 0;">您正在进行身份验证操作，请使用以下验证码完成验证：</p>
+                                            <div style="text-align: center; margin: 30px 0;">
+                                                <span style="font-size: 32px; font-weight: bold; color: #1890ff; letter-spacing: 6px; background-color: #f0f8ff; padding: 15px 30px; border-radius: 4px; border: 1px dashed #1890ff; display: inline-block;">%s</span>
+                                            </div>
+                                            <p style="margin: 0 0 10px 0; color: #999999; font-size: 12px;">
+                                                * 验证码有效期为 <strong style="color: #ff4d4f;">%d</strong> 分钟，请尽快输入。
+                                            </p>
+                                            <p style="margin: 0 0 10px 0; color: #999999; font-size: 12px;">
+                                                * 如果这不是您本人的操作，请忽略此邮件，您的账户安全不受影响。
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 20px 40px 40px 40px; border-top: 1px solid #eeeeee; color: #999999; font-size: 12px; line-height: 1.5;">
+                                            <p style="margin: 0;">此邮件由系统自动发送，请勿直接回复。</p>
+                                            <p style="margin: 5px 0 0 0;">&copy; %d %s. 保留所有权利。</p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </body>
+                </html>
+                """.formatted(systemName, escapedCode, ttlMinutes, year, companyName);
+    }
+
+    private void setFrom(MimeMessageHelper helper, String from, String senderName)
+            throws MessagingException, UnsupportedEncodingException {
+        String normalizedSenderName = StringUtils.trimToNull(senderName);
+        if (normalizedSenderName == null) {
+            helper.setFrom(from);
+            return;
+        }
+        helper.setFrom(from, normalizedSenderName);
+    }
+
+    private String escapeHtml(String value) {
+        if (value == null) {
+            return "";
+        }
+        return value
+                .replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#39;");
     }
 
     private String generateCode(int length) {
