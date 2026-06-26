@@ -9,7 +9,7 @@ import me.link.bootstrap.domain.valueobject.PageResult;
 import me.link.bootstrap.domain.valueobject.StatusEnum;
 import me.link.bootstrap.infrastructure.persistence.internal.TenantPackageInternalService;
 import me.link.bootstrap.infrastructure.persistence.po.TenantPackagePO;
-import me.link.bootstrap.infrastructure.persistence.repository.support.PageOrderHelper;
+import me.link.bootstrap.infrastructure.persistence.support.PageOrderHelper;
 import me.link.bootstrap.interfaces.dto.request.tenantpackage.TenantPackageCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.tenantpackage.TenantPackagePageRequest;
 import me.link.bootstrap.interfaces.dto.request.tenantpackage.TenantPackageUpdateRequest;

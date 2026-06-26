@@ -11,7 +11,7 @@ import me.link.bootstrap.infrastructure.crypto.MobileCryptoService;
 import me.link.bootstrap.infrastructure.crypto.ProtectedMobile;
 import me.link.bootstrap.infrastructure.persistence.internal.TenantInternalService;
 import me.link.bootstrap.infrastructure.persistence.po.TenantPO;
-import me.link.bootstrap.infrastructure.persistence.repository.support.PageOrderHelper;
+import me.link.bootstrap.infrastructure.persistence.support.PageOrderHelper;
 import me.link.bootstrap.interfaces.dto.request.tenant.TenantCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.tenant.TenantPageRequest;
 import me.link.bootstrap.interfaces.dto.request.tenant.TenantUpdateRequest;

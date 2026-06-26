@@ -7,7 +7,7 @@ import me.link.bootstrap.application.support.ApplicationAssert;
 import me.link.bootstrap.domain.valueobject.PageResult;
 import me.link.bootstrap.infrastructure.persistence.internal.UserRoleInternalService;
 import me.link.bootstrap.infrastructure.persistence.po.UserRolePO;
-import me.link.bootstrap.infrastructure.persistence.repository.support.PageOrderHelper;
+import me.link.bootstrap.infrastructure.persistence.support.PageOrderHelper;
 import me.link.bootstrap.infrastructure.security.PermissionCacheService;
 import me.link.bootstrap.interfaces.dto.request.userrole.UserRoleAssignRequest;
 import me.link.bootstrap.interfaces.dto.request.userrole.UserRoleCreateRequest;

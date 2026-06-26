@@ -9,7 +9,7 @@ import me.link.bootstrap.domain.valueobject.PageResult;
 import me.link.bootstrap.domain.valueobject.StatusEnum;
 import me.link.bootstrap.infrastructure.persistence.internal.MenuInternalService;
 import me.link.bootstrap.infrastructure.persistence.po.MenuPO;
-import me.link.bootstrap.infrastructure.persistence.repository.support.PageOrderHelper;
+import me.link.bootstrap.infrastructure.persistence.support.PageOrderHelper;
 import me.link.bootstrap.infrastructure.security.PermissionCacheService;
 import me.link.bootstrap.interfaces.dto.request.menu.MenuCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.menu.MenuPageRequest;

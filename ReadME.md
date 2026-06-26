@@ -73,7 +73,7 @@ src/
 │   │   │   │   ├── internal/impl/
 │   │   │   │   ├── mapper/
 │   │   │   │   ├── po/
-│   │   │   │   └── repository/                 # 存量 DDD 适配器，新增模块默认不再生成
+│   │   │   │   └── support/                    # 分页排序等持久化辅助
 │   │   │   ├── security/
 │   │   │   └── tracing/
 │   │   ├── domain/                             # 存量领域模型，新增模块默认不再生成
@@ -99,7 +99,7 @@ XxxController
 
 当前轻量样板统一以 `XxxController -> XxxApplicationService -> XxxInternalService -> XxxMapper -> XxxPO` 为准，优先参考下方“已迁移样板”模块。
 
-存量 DDD 链路可以在迁移前继续运行，但不能作为新增模块模板继续复制。
+当前主运行链路已经移除存量 DDD 适配器；新增模块不得再复制旧 DDD 样板。
 
 ## 结构约束
 
@@ -595,9 +595,9 @@ maven.test.skip=true
 - 操作日志写入仍由当前会话补齐租户 ID，自动审计切面直接复用操作日志应用服务。
 - 已迁移模块不再保留 `XxxEntity`、`XxxFactory`、`XxxRepository`、`XxxRepositoryImpl`、`XxxConverter` 作为运行链路文件。
 
-### 存量模块迁移顺序
+### 旧结构迁移顺序
 
-建议按复杂度从低到高迁移：
+后续如果引入或发现旧 DDD 样板代码，按复杂度从低到高迁移：
 
 1. 纯 CRUD 且无特殊缓存失效的模块。
 2. 带租户字段但无跨模块副作用的模块。
@@ -618,7 +618,7 @@ maven.test.skip=true
 
 ### 维护建议
 
-- 新增模块优先复制租户模块的轻量链路，而不是复制存量 DDD 链路。
+- 新增模块优先复制租户、用户、角色等已迁移模块的轻量链路。
 - 修改数据库表时同步检查 PO、Mapper XML、Response VO、排序映射和服务查询条件。
 - 新增排序字段时同步更新 VO 的 `@Sortable` 和服务内字段映射。
 - 新增业务异常时同步补充 `ErrorCode`。

@@ -7,7 +7,7 @@ import me.link.bootstrap.application.support.ApplicationAssert;
 import me.link.bootstrap.domain.valueobject.PageResult;
 import me.link.bootstrap.infrastructure.persistence.internal.RoleMenuInternalService;
 import me.link.bootstrap.infrastructure.persistence.po.RoleMenuPO;
-import me.link.bootstrap.infrastructure.persistence.repository.support.PageOrderHelper;
+import me.link.bootstrap.infrastructure.persistence.support.PageOrderHelper;
 import me.link.bootstrap.infrastructure.security.PermissionCacheService;
 import me.link.bootstrap.interfaces.dto.request.rolemenu.RoleMenuAuthorizeRequest;
 import me.link.bootstrap.interfaces.dto.request.rolemenu.RoleMenuCreateRequest;

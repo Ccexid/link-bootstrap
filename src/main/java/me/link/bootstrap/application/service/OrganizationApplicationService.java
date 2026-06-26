@@ -11,7 +11,7 @@ import me.link.bootstrap.infrastructure.crypto.MobileCryptoService;
 import me.link.bootstrap.infrastructure.crypto.ProtectedMobile;
 import me.link.bootstrap.infrastructure.persistence.internal.OrganizationInternalService;
 import me.link.bootstrap.infrastructure.persistence.po.OrganizationPO;
-import me.link.bootstrap.infrastructure.persistence.repository.support.PageOrderHelper;
+import me.link.bootstrap.infrastructure.persistence.support.PageOrderHelper;
 import me.link.bootstrap.interfaces.dto.request.organization.OrganizationCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.organization.OrganizationPageRequest;
 import me.link.bootstrap.interfaces.dto.request.organization.OrganizationUpdateRequest;

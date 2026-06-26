@@ -1,4 +1,4 @@
-package me.link.bootstrap.infrastructure.persistence.repository.support;
+package me.link.bootstrap.infrastructure.persistence.support;
 
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

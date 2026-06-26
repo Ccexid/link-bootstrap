@@ -32,7 +32,7 @@ import java.util.List;
  * <b>@TenantIgnore</b>:登录时尚未建立 Sa-Token 会话,
  * {@link me.link.bootstrap.shared.kernel.database.mybatis.LinkTenantLineHandler} 取不到 tenantId,
  * 默认行为会让查询 SQL 退化为 {@code tenant_id IS NULL} 而查不到数据。
- * 登录查询由仓储方法显式标注绕过租户拦截,认证成功后再将用户所属 tenantId 写入 Session。
+ * 登录查询由用户应用服务的最小查询方法显式标注绕过租户拦截,认证成功后再将用户所属 tenantId 写入 Session。
  * </p>
  */
 @Slf4j
@@ -89,7 +89,7 @@ public class AuthApplicationService {
     public void emailLogin(EmailLoginCommand command) {
         humanVerificationService.verify(command.captchaToken());
         String email = normalizeEmail(command.email());
-        UserPO user = resolveSingleUser(userApplicationService.findByEmailForLogin(command.email()), ErrorCode.USER_NOT_FOUND);
+        UserPO user = resolveSingleUser(userApplicationService.findByEmailForLogin(email), ErrorCode.USER_NOT_FOUND);
         ensureUserEnabled(user);
 
         if (loginAttemptService.isLocked(email, user.getTenantId())) {
@@ -115,9 +115,10 @@ public class AuthApplicationService {
      * 发送邮箱验证码。
      */
     public void sendEmailCode(SendEmailCodeCommand command) {
-        UserPO user = resolveSingleUser(userApplicationService.findByEmailForLogin(command.email()), ErrorCode.USER_NOT_FOUND);
+        String email = normalizeEmail(command.email());
+        UserPO user = resolveSingleUser(userApplicationService.findByEmailForLogin(email), ErrorCode.USER_NOT_FOUND);
         ensureUserEnabled(user);
-        emailCodeService.send(command.email());
+        emailCodeService.send(email);
     }
 
     private UserPO resolveSingleUser(List<UserPO> users, ErrorCode notFoundErrorCode) {
