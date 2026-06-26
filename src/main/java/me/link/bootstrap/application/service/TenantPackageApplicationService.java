@@ -87,11 +87,11 @@ public class TenantPackageApplicationService {
 
     private static String normalizeName(String name) {
         if (StrUtil.isBlank(name)) {
-            throw new IllegalArgumentException("套餐名不能为空");
+            ApplicationAssert.invalidParam("套餐名不能为空");
         }
         String normalizedName = name.trim();
         if (normalizedName.length() > NAME_MAX_LENGTH) {
-            throw new IllegalArgumentException(String.format("套餐名长度不能超过%d个字符", NAME_MAX_LENGTH));
+            ApplicationAssert.invalidParam(String.format("套餐名长度不能超过%d个字符", NAME_MAX_LENGTH));
         }
         return normalizedName;
     }
@@ -102,19 +102,19 @@ public class TenantPackageApplicationService {
         }
         String normalizedRemark = remark.trim();
         if (normalizedRemark.length() > REMARK_MAX_LENGTH) {
-            throw new IllegalArgumentException(String.format("备注长度不能超过%d个字符", REMARK_MAX_LENGTH));
+            ApplicationAssert.invalidParam(String.format("备注长度不能超过%d个字符", REMARK_MAX_LENGTH));
         }
         return normalizedRemark;
     }
 
     private static Set<Long> normalizeMenuIds(Set<Long> menuIds) {
         if (menuIds == null || menuIds.isEmpty()) {
-            throw new IllegalArgumentException("关联菜单不能为空");
+            ApplicationAssert.invalidParam("关联菜单不能为空");
         }
         Set<Long> normalizedMenuIds = new LinkedHashSet<>();
         for (Long menuId : menuIds) {
             if (menuId == null || menuId <= 0) {
-                throw new IllegalArgumentException("关联菜单编号必须大于0");
+                ApplicationAssert.invalidParam("关联菜单编号必须大于0");
             }
             normalizedMenuIds.add(menuId);
         }

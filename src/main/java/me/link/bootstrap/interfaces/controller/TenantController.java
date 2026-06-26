@@ -58,6 +58,7 @@ public class TenantController {
      * 根据主键查询业务对象详情。
      */
     @GetMapping("/{id}")
+    @SaCheckPermission("system:tenant:query")
     @Operation(summary = "查询租户详情", description = "根据租户ID查询租户详情")
     public ResultResponse<TenantResponseVO> get(@PathVariable @NotNull(message = "租户ID不能为空") Long id) {
         return ResultResponse.success(responseVOConverter.toResponse(tenantApplicationService.get(id)));
@@ -67,6 +68,7 @@ public class TenantController {
      * 分页查询业务对象列表。
      */
     @GetMapping
+    @SaCheckPermission("system:tenant:list")
     @Operation(summary = "分页查询租户", description = "分页查询租户列表")
     public ResultTableResponse<TenantResponseVO> page(@Validated @SortWhitelist(TenantResponseVO.class) TenantPageRequest request) {
         PageResult<TenantPO> pageResult = tenantApplicationService.page(request);

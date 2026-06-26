@@ -52,12 +52,14 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @SaCheckPermission("system:user:query")
     @Operation(summary = "查询用户详情", description = "根据ID查询用户详情")
     public ResultResponse<UserResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         return ResultResponse.success(responseVOConverter.toResponse(userApplicationService.get(id)));
     }
 
     @GetMapping
+    @SaCheckPermission("system:user:list")
     @Operation(summary = "分页查询用户", description = "分页查询用户列表")
     public ResultTableResponse<UserResponseVO> page(@Validated @SortWhitelist(UserResponseVO.class) UserPageRequest request) {
         PageResult<UserPO> pageResult = userApplicationService.page(request);

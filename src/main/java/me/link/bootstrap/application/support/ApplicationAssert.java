@@ -35,4 +35,20 @@ public final class ApplicationAssert {
             throw new BusinessException(errorCode);
         }
     }
+
+    /**
+     * 校验业务入参，失败时统一抛出参数错误码。
+     */
+    public static void requireValid(boolean valid, String message) {
+        if (!valid) {
+            invalidParam(message);
+        }
+    }
+
+    /**
+     * 统一抛出业务参数错误。
+     */
+    public static void invalidParam(String message) {
+        throw new BusinessException(ErrorCode.PARAM_VALIDATION_ERROR, message);
+    }
 }

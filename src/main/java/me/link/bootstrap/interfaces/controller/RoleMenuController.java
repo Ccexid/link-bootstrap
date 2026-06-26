@@ -62,12 +62,14 @@ public class RoleMenuController {
     }
 
     @GetMapping("/{id}")
+    @SaCheckPermission("system:role-menu:query")
     @Operation(summary = "查询角色菜单关联详情", description = "根据ID查询角色菜单关联详情")
     public ResultResponse<RoleMenuResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         return ResultResponse.success(responseVOConverter.toResponse(roleMenuApplicationService.get(id)));
     }
 
     @GetMapping
+    @SaCheckPermission("system:role-menu:list")
     @Operation(summary = "分页查询角色菜单关联", description = "分页查询角色菜单关联列表")
     public ResultTableResponse<RoleMenuResponseVO> page(@Validated @SortWhitelist(RoleMenuResponseVO.class) RoleMenuPageRequest request) {
         PageResult<RoleMenuPO> pageResult = roleMenuApplicationService.page(request);

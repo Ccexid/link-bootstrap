@@ -52,6 +52,7 @@ public class CommunitySectionController {
     }
 
     @GetMapping("/{id}")
+    @SaCheckPermission("system:community:section:query")
     @Operation(summary = "获取社区板块详情")
     public ResultResponse<CommunitySectionResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         CommunitySectionPO section = communitySectionApplicationService.get(id);
@@ -59,6 +60,7 @@ public class CommunitySectionController {
     }
 
     @GetMapping
+    @SaCheckPermission("system:community:section:list")
     @Operation(summary = "分页查询社区板块")
     public ResultTableResponse<CommunitySectionResponseVO> page(@Validated @SortWhitelist(CommunitySectionResponseVO.class) CommunitySectionPageRequest request) {
         PageResult<CommunitySectionPO> pageResult = communitySectionApplicationService.page(request);

@@ -52,12 +52,14 @@ public class MenuController {
     }
 
     @GetMapping("/{id}")
+    @SaCheckPermission("system:menu:query")
     @Operation(summary = "查询菜单详情", description = "根据ID查询菜单详情")
     public ResultResponse<MenuResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         return ResultResponse.success(responseVOConverter.toResponse(menuApplicationService.get(id)));
     }
 
     @GetMapping
+    @SaCheckPermission("system:menu:list")
     @Operation(summary = "分页查询菜单", description = "分页查询菜单列表")
     public ResultTableResponse<MenuResponseVO> page(@Validated @SortWhitelist(MenuResponseVO.class) MenuPageRequest request) {
         PageResult<MenuPO> pageResult = menuApplicationService.page(request);

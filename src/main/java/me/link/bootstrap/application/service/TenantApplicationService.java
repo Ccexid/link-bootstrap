@@ -115,10 +115,10 @@ public class TenantApplicationService {
         }
         String normalizedContactMobile = contactMobile.trim();
         if (normalizedContactMobile.length() > CONTACT_MOBILE_MAX_LENGTH) {
-            throw new IllegalArgumentException(String.format("联系手机长度不能超过%d个字符", CONTACT_MOBILE_MAX_LENGTH));
+            ApplicationAssert.invalidParam(String.format("联系手机长度不能超过%d个字符", CONTACT_MOBILE_MAX_LENGTH));
         }
         if (!CONTACT_MOBILE_PATTERN.matcher(normalizedContactMobile).matches()) {
-            throw new IllegalArgumentException("联系手机格式不正确");
+            ApplicationAssert.invalidParam("联系手机格式不正确");
         }
         return normalizedContactMobile;
     }
@@ -128,19 +128,19 @@ public class TenantApplicationService {
             return null;
         }
         if (websites.size() > WEBSITE_MAX_COUNT) {
-            throw new IllegalArgumentException(String.format("绑定域名数量不能超过%d个", WEBSITE_MAX_COUNT));
+            ApplicationAssert.invalidParam(String.format("绑定域名数量不能超过%d个", WEBSITE_MAX_COUNT));
         }
         Set<String> normalizedWebsites = new LinkedHashSet<>();
         for (String website : websites) {
             if (StrUtil.isBlank(website)) {
-                throw new IllegalArgumentException("绑定域名不能为空");
+                ApplicationAssert.invalidParam("绑定域名不能为空");
             }
             String normalizedWebsite = website.trim().toLowerCase();
             if (normalizedWebsite.length() > WEBSITE_MAX_LENGTH) {
-                throw new IllegalArgumentException(String.format("绑定域名长度不能超过%d个字符", WEBSITE_MAX_LENGTH));
+                ApplicationAssert.invalidParam(String.format("绑定域名长度不能超过%d个字符", WEBSITE_MAX_LENGTH));
             }
             if (!WEBSITE_PATTERN.matcher(normalizedWebsite).matches()) {
-                throw new IllegalArgumentException(String.format("绑定域名格式不正确: %s", normalizedWebsite));
+                ApplicationAssert.invalidParam(String.format("绑定域名格式不正确: %s", normalizedWebsite));
             }
             normalizedWebsites.add(normalizedWebsite);
         }

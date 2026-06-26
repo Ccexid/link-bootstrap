@@ -91,7 +91,7 @@ public class UserRoleApplicationService {
     @Transactional
     public void assign(UserRoleAssignRequest request) {
         if (request.getUserId() == null || request.getUserId() <= 0) {
-            throw new IllegalArgumentException("用户角色关联userId必须大于0");
+            ApplicationAssert.invalidParam("用户角色关联userId必须大于0");
         }
         Long tenantId = SecurityHelper.getRequiredTenantId();
         List<UserRolePO> userRoles = request.getRoleIds() == null ? List.of() : request.getRoleIds().stream()
@@ -123,13 +123,13 @@ public class UserRoleApplicationService {
 
     private static void applyMutableFields(UserRolePO userRole, Long userId, Long roleId, Long tenantId) {
         if (userId == null || userId <= 0) {
-            throw new IllegalArgumentException("用户角色关联userId必须大于0");
+            ApplicationAssert.invalidParam("用户角色关联userId必须大于0");
         }
         if (roleId == null || roleId <= 0) {
-            throw new IllegalArgumentException("用户角色关联roleId必须大于0");
+            ApplicationAssert.invalidParam("用户角色关联roleId必须大于0");
         }
         if (tenantId == null || tenantId <= 0) {
-            throw new IllegalArgumentException("用户角色关联tenantId必须大于0");
+            ApplicationAssert.invalidParam("用户角色关联tenantId必须大于0");
         }
         userRole.setUserId(userId);
         userRole.setRoleId(roleId);

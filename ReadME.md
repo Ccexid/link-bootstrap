@@ -476,6 +476,7 @@ infrastructure/persistence/repository/XxxRepositoryImpl.java
 - 全局登录态由 `SaTokenConfigure` 拦截。
 - 白名单只能放登录、公钥、Actuator、Swagger、错误页等必要入口。
 - 业务写接口必须按权限码添加 `@SaCheckPermission`。
+- 后台管理查询接口也必须按权限码添加 `@SaCheckPermission`，详情接口使用 `*:query`，分页列表接口使用 `*:list`，不得只依赖全局登录态拦截器。
 - 权限码格式使用 `system:resource:action`、`system:community:resource:action`、`community:resource:action` 或 `member:resource:action`。
 - 高频或易被滥用接口必须添加 `@RateLimit`。
 - 登录成功后必须把 `tenantId`、`userType`、`isSuperAdmin` 写入 Sa-Token Session。
@@ -512,6 +513,7 @@ infrastructure/persistence/repository/XxxRepositoryImpl.java
 - 幂等键、限流键统一由切面写入 Redis / Redisson。
 - `@RateLimit` 的 key 不得直接暴露手机号、邮箱、Token 等敏感值。
 - 操作日志由 `OperateLogAspect` 自动覆盖 Controller 公共方法。
+- 操作日志作为审计数据只允许后台查询，不对前端开放 create/update/delete 接口；需要写入日志时只能通过 `OperateLogAspect` 或应用内部专用入口。
 - 操作日志 extra 字段只记录必要上下文，禁止记录密码、Token、验证码、私钥和完整敏感请求体。
 
 ### 接口加解密
@@ -578,6 +580,7 @@ SYSTEM_ERROR
 ### 异常处理
 
 - 业务异常使用 `BusinessException`。
+- 应用服务层、请求过滤器、AOP 切面和安全上下文工具中的主动业务校验必须走 `BusinessException + ErrorCode`，参数错误统一使用 `ApplicationAssert.invalidParam(...)` 或 `ApplicationAssert.requireValid(...)`，禁止直接 `throw new IllegalArgumentException(...)`、`throw new IllegalStateException(...)` 或 `throw new RuntimeException(...)`。
 - 参数校验异常由 `GlobalExceptionHandler` 统一处理。
 - Controller 不直接拼装失败响应。
 - 系统异常不向前端暴露内部堆栈细节。
@@ -700,7 +703,7 @@ maven.test.skip=true
 - 角色编码同租户唯一校验、分页排序映射和角色变更后的权限缓存失效保留在服务层。
 - 用户角色分配、角色菜单授权的覆盖式删除/批量插入和权限缓存失效保留在服务层。
 - 认证模块直接接收登录/邮箱验证码 Request DTO，Token 刷新结果放在 `application/support`，不再保留透传 `LoginCommand`、`EmailLoginCommand`、`SendEmailCodeCommand`。
-- 操作日志写入仍由当前会话补齐租户 ID，自动审计切面直接复用操作日志应用服务。
+- 操作日志写入由自动审计切面复用操作日志应用服务；已登录请求使用当前租户 ID，匿名公开请求统一落到平台租户 0。
 - 社区板块模块直接使用 `CommunitySectionPO` 和 `CommunitySectionInternalService`，板块编码同租户唯一、父子板块删除限制、默认排序和状态归一化保留在服务层。
 - 已迁移模块不再保留 `XxxCommand`、`XxxQuery`、`XxxEntity`、`XxxFactory`、`XxxRepository`、`XxxRepositoryImpl`、`XxxConverter` 作为运行链路文件。
 

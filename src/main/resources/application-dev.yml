@@ -2,7 +2,7 @@
 # 开发环境配置
 # ========================================
 
-# 数据库配置 (使用本地H2数据库)
+# 数据库配置 (开发环境默认使用本地 MySQL)
 spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
@@ -33,7 +33,7 @@ spring:
           min-idle: 1
           max-wait: 2000ms
 
-  # SQL初始化 (开发环境自动建表)
+  # SQL初始化关闭；业务结构和种子数据以 src/sql/mysql/link-DDL-v0.1.sql、link-DML-v0.1.sql 为准
   sql:
     init:
       mode: never

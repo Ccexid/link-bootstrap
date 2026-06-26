@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.link.bootstrap.application.service.OperateLogApplicationService;
-import me.link.bootstrap.interfaces.dto.request.operatelog.OperateLogCreateRequest;
+import me.link.bootstrap.application.support.OperateLogRecord;
 import me.link.bootstrap.infrastructure.tracing.TraceIdContext;
 import me.link.bootstrap.shared.kernel.config.ClientIpProperties;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -126,22 +126,22 @@ public class OperateLogAspect {
         try {
             Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
             String requestMethod = request.getMethod();
-            OperateLogCreateRequest createRequest = new OperateLogCreateRequest();
-            createRequest.setTraceId(TraceIdContext.get());
-            createRequest.setUserId(currentUserId());
-            createRequest.setUserType(DEFAULT_USER_TYPE);
-            createRequest.setUserIp(clientIp(request));
-            createRequest.setUserAgent(truncate(request.getHeader("User-Agent"), 512));
-            createRequest.setModule(moduleName(joinPoint, method));
-            createRequest.setOperation(operationType(requestMethod));
-            createRequest.setBizId(bizId(joinPoint.getArgs()));
-            createRequest.setAction(actionName(method));
-            createRequest.setExtra(extra(joinPoint, request, thrown));
-            createRequest.setSuccess(success);
-            createRequest.setRequestMethod(requestMethod);
-            createRequest.setRequestUrl(truncate(request.getRequestURI(), 512));
-            createRequest.setDuration(duration);
-            operateLogApplicationService.createForCurrentContext(createRequest);
+            OperateLogRecord record = new OperateLogRecord();
+            record.setTraceId(TraceIdContext.get());
+            record.setUserId(currentUserId());
+            record.setUserType(DEFAULT_USER_TYPE);
+            record.setUserIp(clientIp(request));
+            record.setUserAgent(truncate(request.getHeader("User-Agent"), 512));
+            record.setModule(moduleName(joinPoint, method));
+            record.setOperation(operationType(requestMethod));
+            record.setBizId(bizId(joinPoint.getArgs()));
+            record.setAction(actionName(method));
+            record.setExtra(extra(joinPoint, request, thrown));
+            record.setSuccess(success);
+            record.setRequestMethod(requestMethod);
+            record.setRequestUrl(truncate(request.getRequestURI(), 512));
+            record.setDuration(duration);
+            operateLogApplicationService.createForCurrentContext(record);
         } catch (Exception ex) {
             log.warn("自动记录操作日志失败: {}", ex.getMessage(), ex);
         }

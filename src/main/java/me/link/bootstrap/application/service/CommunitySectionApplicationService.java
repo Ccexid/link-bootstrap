@@ -102,7 +102,7 @@ public class CommunitySectionApplicationService {
                                     Integer sort,
                                     StatusEnum status) {
         if (StrUtil.isBlank(name)) {
-            throw new IllegalArgumentException("社区板块name不能为空");
+            ApplicationAssert.invalidParam("社区板块name不能为空");
         }
         section.setName(name.trim());
         section.setCode(code);
@@ -124,7 +124,7 @@ public class CommunitySectionApplicationService {
 
     private static String normalizeCode(String code) {
         if (StrUtil.isBlank(code)) {
-            throw new IllegalArgumentException("社区板块code不能为空");
+            ApplicationAssert.invalidParam("社区板块code不能为空");
         }
         return code.trim().toLowerCase(Locale.ROOT);
     }

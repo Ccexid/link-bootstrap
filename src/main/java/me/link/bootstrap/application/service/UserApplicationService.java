@@ -158,25 +158,25 @@ public class UserApplicationService {
 
     private void validate(String username, String password, String nickname, String mobile, String email) {
         if (StrUtil.isBlank(username)) {
-            throw new IllegalArgumentException("用户username不能为空");
+            ApplicationAssert.invalidParam("用户username不能为空");
         }
         if (StrUtil.isBlank(nickname)) {
-            throw new IllegalArgumentException("用户nickname不能为空");
+            ApplicationAssert.invalidParam("用户nickname不能为空");
         }
         if (password == null || password.isEmpty()) {
-            throw new IllegalArgumentException("用户密码不能为空");
+            ApplicationAssert.invalidParam("用户密码不能为空");
         }
         if (password.length() < PASSWORD_MIN_LENGTH || password.length() > PASSWORD_MAX_LENGTH) {
-            throw new IllegalArgumentException("用户密码长度必须在 " + PASSWORD_MIN_LENGTH + " 到 " + PASSWORD_MAX_LENGTH + " 之间");
+            ApplicationAssert.invalidParam("用户密码长度必须在 " + PASSWORD_MIN_LENGTH + " 到 " + PASSWORD_MAX_LENGTH + " 之间");
         }
         if (StrUtil.isBlank(mobile)) {
-            throw new IllegalArgumentException("用户手机号不能为空");
+            ApplicationAssert.invalidParam("用户手机号不能为空");
         }
         if (!MOBILE_PATTERN.matcher(mobile.trim()).matches()) {
-            throw new IllegalArgumentException("用户手机号格式不正确");
+            ApplicationAssert.invalidParam("用户手机号格式不正确");
         }
         if (StrUtil.isNotBlank(email) && !EMAIL_PATTERN.matcher(email.trim()).matches()) {
-            throw new IllegalArgumentException("用户邮箱格式不正确");
+            ApplicationAssert.invalidParam("用户邮箱格式不正确");
         }
     }
 

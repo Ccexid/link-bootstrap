@@ -2,6 +2,7 @@ package me.link.bootstrap.infrastructure.crypto;
 
 import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.RSA;
+import me.link.bootstrap.application.support.ApplicationAssert;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -27,7 +28,7 @@ public class ApiCryptoService {
 
     public String decryptRequest(String encryptedText) {
         if (!StringUtils.hasText(encryptedText)) {
-            throw new IllegalArgumentException("请求密文不能为空");
+            ApplicationAssert.invalidParam("请求密文不能为空");
         }
         return decryptRsa.decryptStr(encryptedText, KeyType.PrivateKey, StandardCharsets.UTF_8);
     }

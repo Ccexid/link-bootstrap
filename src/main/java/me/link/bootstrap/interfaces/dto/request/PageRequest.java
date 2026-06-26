@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import me.link.bootstrap.application.support.ApplicationAssert;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -51,14 +52,13 @@ public class PageRequest implements Serializable {
      * </p>
      *
      * @return 分页大小
-     * @throws IllegalArgumentException 如果 pageSize 值不合法
      */
     public Integer getPageSize() {
         if (pageSize == null) {
-            throw new IllegalArgumentException("每页条数不能为空");
+            ApplicationAssert.invalidParam("每页条数不能为空");
         }
         if (pageSize < 1 || pageSize > PAGE_SIZE_MAX) {
-            throw new IllegalArgumentException(String.format("每页条数必须在 1-%d 范围内，当前值: %d", PAGE_SIZE_MAX, pageSize));
+            ApplicationAssert.invalidParam(String.format("每页条数必须在 1-%d 范围内，当前值: %d", PAGE_SIZE_MAX, pageSize));
         }
         return pageSize;
     }

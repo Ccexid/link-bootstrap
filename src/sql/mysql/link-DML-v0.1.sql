@@ -136,10 +136,7 @@ VALUES
 INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `updater`)
 VALUES
     (160, '操作日志', 'system:operate-log:list',   2, 70, 1,   'log',   'log',   'system/operateLog/index', 'SystemOperateLog', 0, 0, 0, 0, 1, 1),
-    (161, '日志创建', 'system:operate-log:create', 3, 10, 160, '',      '',      NULL,                      NULL,               0, 0, 0, 0, 1, 1),
-    (162, '日志查询', 'system:operate-log:query',  3, 20, 160, '',      '',      NULL,                      NULL,               0, 0, 0, 0, 1, 1),
-    (163, '日志更新', 'system:operate-log:update', 3, 30, 160, '',      '',      NULL,                      NULL,               0, 0, 0, 0, 1, 1),
-    (164, '日志删除', 'system:operate-log:delete', 3, 40, 160, '',      '',      NULL,                      NULL,               0, 0, 0, 0, 1, 1);
+    (162, '日志查询', 'system:operate-log:query',  3, 20, 160, '',      '',      NULL,                      NULL,               0, 0, 0, 0, 1, 1);
 
 -- ---------- 3.9 租户管理(平台超管功能,目录) ----------
 INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `updater`)

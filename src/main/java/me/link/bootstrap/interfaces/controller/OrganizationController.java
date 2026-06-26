@@ -52,12 +52,14 @@ public class OrganizationController {
     }
 
     @GetMapping("/{id}")
+    @SaCheckPermission("system:organization:query")
     @Operation(summary = "查询组织详情", description = "根据ID查询组织详情")
     public ResultResponse<OrganizationResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         return ResultResponse.success(responseVOConverter.toResponse(organizationApplicationService.get(id)));
     }
 
     @GetMapping
+    @SaCheckPermission("system:organization:list")
     @Operation(summary = "分页查询组织", description = "分页查询组织列表")
     public ResultTableResponse<OrganizationResponseVO> page(@Validated @SortWhitelist(OrganizationResponseVO.class) OrganizationPageRequest request) {
         PageResult<OrganizationPO> pageResult = organizationApplicationService.page(request);

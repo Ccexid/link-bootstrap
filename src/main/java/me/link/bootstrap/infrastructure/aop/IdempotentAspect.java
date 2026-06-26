@@ -123,7 +123,7 @@ public class IdempotentAspect {
             byte[] bytes = digest.digest(value.getBytes(StandardCharsets.UTF_8));
             return HexFormat.of().formatHex(bytes);
         } catch (NoSuchAlgorithmException ex) {
-            throw new IllegalStateException("当前运行环境不支持 SHA-256", ex);
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, ex);
         }
     }
 

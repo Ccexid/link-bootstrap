@@ -3,6 +3,8 @@ package me.link.bootstrap.shared.kernel.util;
 import cn.dev33.satoken.stp.StpUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.link.bootstrap.shared.kernel.constant.SecurityConstants;
+import me.link.bootstrap.shared.kernel.exception.BusinessException;
+import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 
 /**
  * 安全上下文工具类，用于获取当前登录用户信息。
@@ -93,12 +95,11 @@ public final class SecurityHelper {
      * 获取当前登录用户的 ID，如果未登录则抛出异常。
      *
      * @return 用户 ID
-     * @throws IllegalStateException 用户未登录时抛出
      */
     public static Long getRequiredUserId() {
         Long userId = getUserId();
         if (userId == null) {
-            throw new IllegalStateException("当前用户未登录");
+            throw new BusinessException(ErrorCode.UNAUTHORIZED, "当前用户未登录");
         }
         return userId;
     }
@@ -107,12 +108,11 @@ public final class SecurityHelper {
      * 获取当前登录用户的租户 ID，如果未登录或未设置则抛出异常。
      *
      * @return 租户 ID
-     * @throws IllegalStateException 用户未登录或租户ID未设置时抛出
      */
     public static Long getRequiredTenantId() {
         Long tenantId = getTenantId();
         if (tenantId == null) {
-            throw new IllegalStateException("当前用户未登录或租户ID未设置");
+            throw new BusinessException(ErrorCode.UNAUTHORIZED, "当前用户未登录或租户ID未设置");
         }
         return tenantId;
     }

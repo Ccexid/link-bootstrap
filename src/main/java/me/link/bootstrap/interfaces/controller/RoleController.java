@@ -52,12 +52,14 @@ public class RoleController {
     }
 
     @GetMapping("/{id}")
+    @SaCheckPermission("system:role:query")
     @Operation(summary = "查询角色详情", description = "根据ID查询角色详情")
     public ResultResponse<RoleResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         return ResultResponse.success(responseVOConverter.toResponse(roleApplicationService.get(id)));
     }
 
     @GetMapping
+    @SaCheckPermission("system:role:list")
     @Operation(summary = "分页查询角色", description = "分页查询角色列表")
     public ResultTableResponse<RoleResponseVO> page(@Validated @SortWhitelist(RoleResponseVO.class) RolePageRequest request) {
         PageResult<RolePO> pageResult = roleApplicationService.page(request);

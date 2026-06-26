@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import me.link.bootstrap.infrastructure.crypto.ApiCryptoService;
 import me.link.bootstrap.interfaces.dto.response.ResultResponse;
 import me.link.bootstrap.interfaces.dto.response.ResultTableResponse;
+import me.link.bootstrap.shared.kernel.exception.BusinessException;
+import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.Ordered;
@@ -66,7 +68,7 @@ public class ApiCryptoResponseBodyAdvice implements ResponseBodyAdvice<Object> {
             response.getHeaders().add("X-Encrypted", "RSA");
             return Map.of(apiCryptoService.properties().getResponseField(), encryptedText);
         } catch (JsonProcessingException e) {
-            throw new IllegalStateException("响应加密失败", e);
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, e);
         }
     }
 }

@@ -62,12 +62,14 @@ public class UserRoleController {
     }
 
     @GetMapping("/{id}")
+    @SaCheckPermission("system:user-role:query")
     @Operation(summary = "查询用户角色关联详情", description = "根据ID查询用户角色关联详情")
     public ResultResponse<UserRoleResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         return ResultResponse.success(responseVOConverter.toResponse(userRoleApplicationService.get(id)));
     }
 
     @GetMapping
+    @SaCheckPermission("system:user-role:list")
     @Operation(summary = "分页查询用户角色关联", description = "分页查询用户角色关联列表")
     public ResultTableResponse<UserRoleResponseVO> page(@Validated @SortWhitelist(UserRoleResponseVO.class) UserRolePageRequest request) {
         PageResult<UserRolePO> pageResult = userRoleApplicationService.page(request);

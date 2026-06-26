@@ -97,7 +97,7 @@ public class OrganizationApplicationService {
                                     String contactMobile,
                                     StatusEnum status) {
         if (StrUtil.isBlank(name)) {
-            throw new IllegalArgumentException("组织name不能为空");
+            ApplicationAssert.invalidParam("组织name不能为空");
         }
         String normalizedContactMobile = normalizeContactMobile(contactMobile);
         organization.setName(name.trim());
@@ -116,7 +116,7 @@ public class OrganizationApplicationService {
         }
         String normalizedContactMobile = contactMobile.trim();
         if (!CONTACT_MOBILE_PATTERN.matcher(normalizedContactMobile).matches()) {
-            throw new IllegalArgumentException("组织联系电话格式不正确");
+            ApplicationAssert.invalidParam("组织联系电话格式不正确");
         }
         return normalizedContactMobile;
     }

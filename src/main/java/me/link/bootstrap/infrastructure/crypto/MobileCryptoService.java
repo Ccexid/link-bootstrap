@@ -2,6 +2,8 @@ package me.link.bootstrap.infrastructure.crypto;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import me.link.bootstrap.shared.kernel.exception.BusinessException;
+import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
@@ -70,7 +72,7 @@ public class MobileCryptoService {
             cipher.init(Cipher.DECRYPT_MODE, encryptionKey, new GCMParameterSpec(GCM_TAG_BITS, iv));
             return new String(cipher.doFinal(cipherBytes), StandardCharsets.UTF_8);
         } catch (GeneralSecurityException | IllegalArgumentException ex) {
-            throw new IllegalStateException("手机号密文解密失败", ex);
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, ex);
         }
     }
 
@@ -103,7 +105,7 @@ public class MobileCryptoService {
             buffer.put(cipherBytes);
             return Base64.getEncoder().encodeToString(buffer.array());
         } catch (GeneralSecurityException ex) {
-            throw new IllegalStateException("手机号加密失败", ex);
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, ex);
         }
     }
 
@@ -113,7 +115,7 @@ public class MobileCryptoService {
             mac.init(hashKey);
             return HexFormat.of().formatHex(mac.doFinal(mobile.getBytes(StandardCharsets.UTF_8)));
         } catch (GeneralSecurityException ex) {
-            throw new IllegalStateException("手机号哈希生成失败", ex);
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, ex);
         }
     }
 
@@ -126,7 +128,7 @@ public class MobileCryptoService {
             return MessageDigest.getInstance("SHA-256")
                     .digest(text.getBytes(StandardCharsets.UTF_8));
         } catch (GeneralSecurityException ex) {
-            throw new IllegalStateException("手机号加密密钥派生失败", ex);
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, ex);
         }
     }
 }

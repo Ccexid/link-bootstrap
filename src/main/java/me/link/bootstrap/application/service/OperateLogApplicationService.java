@@ -5,13 +5,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import me.link.bootstrap.application.support.ApplicationAssert;
+import me.link.bootstrap.application.support.OperateLogRecord;
 import me.link.bootstrap.shared.kernel.valueobject.PageResult;
 import me.link.bootstrap.infrastructure.persistence.internal.OperateLogInternalService;
 import me.link.bootstrap.infrastructure.persistence.po.OperateLogPO;
 import me.link.bootstrap.infrastructure.persistence.support.PageOrderHelper;
-import me.link.bootstrap.interfaces.dto.request.operatelog.OperateLogCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.operatelog.OperateLogPageRequest;
-import me.link.bootstrap.interfaces.dto.request.operatelog.OperateLogUpdateRequest;
 import me.link.bootstrap.shared.kernel.database.mybatis.TenantIgnore;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 import me.link.bootstrap.shared.kernel.util.SecurityHelper;
@@ -21,8 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Map;
 
 /**
- * 操作日志服务，直接编排审计日志持久化、分页过滤和租户上下文补齐。
- * <p>显式创建日志时从当前登录上下文补齐租户 ID，自动日志允许匿名请求落到平台租户。</p>
+ * 操作日志服务，编排审计日志内部写入、分页过滤和租户上下文补齐。
+ * <p>操作日志不暴露前端写接口；自动日志允许匿名请求落到平台租户。</p>
  */
 @Service
 @RequiredArgsConstructor
@@ -41,11 +40,6 @@ public class OperateLogApplicationService {
 
     private final OperateLogInternalService operateLogInternalService;
 
-    @Transactional
-    public OperateLogPO create(OperateLogCreateRequest request) {
-        return createWithTenantId(request, SecurityHelper.getRequiredTenantId());
-    }
-
     /**
      * 自动操作日志写入入口。
      * <p>
@@ -55,14 +49,14 @@ public class OperateLogApplicationService {
      */
     @TenantIgnore
     @Transactional
-    public OperateLogPO createForCurrentContext(OperateLogCreateRequest request) {
+    public OperateLogPO createForCurrentContext(OperateLogRecord record) {
         Long tenantId = SecurityHelper.getTenantId();
-        return createWithTenantId(request, tenantId == null ? PLATFORM_TENANT_ID : tenantId);
+        return createWithTenantId(record, tenantId == null ? PLATFORM_TENANT_ID : tenantId);
     }
 
-    private OperateLogPO createWithTenantId(OperateLogCreateRequest request, Long tenantId) {
+    private OperateLogPO createWithTenantId(OperateLogRecord record, Long tenantId) {
         OperateLogPO operateLog = new OperateLogPO();
-        applyMutableFields(operateLog, request.getTraceId(), request.getUserId(), request.getUserType(), request.getUserIp(), request.getUserAgent(), request.getModule(), request.getOperation(), request.getBizId(), request.getAction(), request.getExtra(), request.getSuccess(), request.getRequestMethod(), request.getRequestUrl(), request.getDuration());
+        applyMutableFields(operateLog, record.getTraceId(), record.getUserId(), record.getUserType(), record.getUserIp(), record.getUserAgent(), record.getModule(), record.getOperation(), record.getBizId(), record.getAction(), record.getExtra(), record.getSuccess(), record.getRequestMethod(), record.getRequestUrl(), record.getDuration());
         operateLog.setTenantId(tenantId);
         operateLogInternalService.save(operateLog);
         return operateLog;
@@ -87,20 +81,6 @@ public class OperateLogApplicationService {
         return new PageResult<>(result.getRecords(), result.getTotal());
     }
 
-    @Transactional
-    public OperateLogPO update(Long id, OperateLogUpdateRequest request) {
-        OperateLogPO operateLog = get(id);
-        applyMutableFields(operateLog, request.getTraceId(), request.getUserId(), request.getUserType(), request.getUserIp(), request.getUserAgent(), request.getModule(), request.getOperation(), request.getBizId(), request.getAction(), request.getExtra(), request.getSuccess(), request.getRequestMethod(), request.getRequestUrl(), request.getDuration());
-        operateLog.setTenantId(SecurityHelper.getRequiredTenantId());
-        ApplicationAssert.requireSuccess(operateLogInternalService.updateById(operateLog), ErrorCode.OPERATE_LOG_NOT_FOUND);
-        return get(id);
-    }
-
-    @Transactional
-    public void delete(Long id) {
-        ApplicationAssert.requireSuccess(operateLogInternalService.removeById(id), ErrorCode.OPERATE_LOG_NOT_FOUND);
-    }
-
     private static void applyMutableFields(OperateLogPO operateLog,
                                            String traceId,
                                            Long userId,
@@ -117,16 +97,16 @@ public class OperateLogApplicationService {
                                            String requestUrl,
                                            Integer duration) {
         if (userId == null || userId < 0) {
-            throw new IllegalArgumentException("操作日志userId不能小于0");
+            ApplicationAssert.invalidParam("操作日志userId不能小于0");
         }
         if (StrUtil.isBlank(module)) {
-            throw new IllegalArgumentException("操作日志module不能为空");
+            ApplicationAssert.invalidParam("操作日志module不能为空");
         }
         if (bizId == null || bizId < 0) {
-            throw new IllegalArgumentException("操作日志bizId不能小于0");
+            ApplicationAssert.invalidParam("操作日志bizId不能小于0");
         }
         if (StrUtil.isBlank(action)) {
-            throw new IllegalArgumentException("操作日志action不能为空");
+            ApplicationAssert.invalidParam("操作日志action不能为空");
         }
         operateLog.setTraceId(traceId);
         operateLog.setUserId(userId);

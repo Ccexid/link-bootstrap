@@ -97,7 +97,7 @@ public class MenuApplicationService {
                                            Boolean keepAlive,
                                            Boolean alwaysShow) {
         if (StrUtil.isBlank(name)) {
-            throw new IllegalArgumentException("菜单name不能为空");
+            ApplicationAssert.invalidParam("菜单name不能为空");
         }
         menu.setName(name.trim());
         menu.setPermission(permission);

@@ -258,7 +258,7 @@ public class EmailCodeService {
             mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), HMAC_ALGORITHM));
             return HexFormat.of().formatHex(mac.doFinal((email + ":" + code).getBytes(StandardCharsets.UTF_8)));
         } catch (Exception ex) {
-            throw new IllegalStateException("邮箱验证码签名失败", ex);
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, ex);
         }
     }
 
@@ -267,7 +267,7 @@ public class EmailCodeService {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             return HexFormat.of().formatHex(digest.digest(value.getBytes(StandardCharsets.UTF_8)));
         } catch (NoSuchAlgorithmException ex) {
-            throw new IllegalStateException("SHA-256 不可用", ex);
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, ex);
         }
     }
 

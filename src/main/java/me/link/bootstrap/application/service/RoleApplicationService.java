@@ -159,10 +159,10 @@ public class RoleApplicationService {
 
     private void validateBasicFields(String name, String code) {
         if (StrUtil.isBlank(name)) {
-            throw new IllegalArgumentException("角色name不能为空");
+            ApplicationAssert.invalidParam("角色name不能为空");
         }
         if (StrUtil.isBlank(code)) {
-            throw new IllegalArgumentException("角色code不能为空");
+            ApplicationAssert.invalidParam("角色code不能为空");
         }
     }
 }

@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import me.link.bootstrap.infrastructure.crypto.ApiCryptoService;
+import me.link.bootstrap.application.support.ApplicationAssert;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
@@ -75,7 +76,7 @@ public class ApiCryptoRequestFilter extends OncePerRequestFilter {
         JsonNode root = objectMapper.readTree(requestBody);
         JsonNode encryptedNode = root.get(apiCryptoService.properties().getRequestField());
         if (encryptedNode == null || !encryptedNode.isTextual()) {
-            throw new IllegalArgumentException("请求体必须包含密文字段: " + apiCryptoService.properties().getRequestField());
+            ApplicationAssert.invalidParam("请求体必须包含密文字段: " + apiCryptoService.properties().getRequestField());
         }
 
         String plainBody = apiCryptoService.decryptRequest(encryptedNode.asText());
@@ -101,7 +102,7 @@ public class ApiCryptoRequestFilter extends OncePerRequestFilter {
     private Map<String, String[]> toParameterMap(String plainParameters) throws IOException {
         JsonNode root = objectMapper.readTree(plainParameters);
         if (!root.isObject()) {
-            throw new IllegalArgumentException("请求参数密文解密后必须是 JSON 对象");
+            ApplicationAssert.invalidParam("请求参数密文解密后必须是 JSON 对象");
         }
 
         Map<String, String[]> parameterMap = new LinkedHashMap<>();

@@ -92,7 +92,7 @@ public class RoleMenuApplicationService {
     @Transactional
     public void authorize(RoleMenuAuthorizeRequest request) {
         if (request.getRoleId() == null || request.getRoleId() <= 0) {
-            throw new IllegalArgumentException("角色菜单关联roleId必须大于0");
+            ApplicationAssert.invalidParam("角色菜单关联roleId必须大于0");
         }
         Long tenantId = SecurityHelper.getRequiredTenantId();
         List<RoleMenuPO> roleMenus = request.getMenuIds() == null ? List.of() : request.getMenuIds().stream()
@@ -124,13 +124,13 @@ public class RoleMenuApplicationService {
 
     private static void applyMutableFields(RoleMenuPO roleMenu, Long roleId, Long menuId, Long tenantId) {
         if (roleId == null || roleId <= 0) {
-            throw new IllegalArgumentException("角色菜单关联roleId必须大于0");
+            ApplicationAssert.invalidParam("角色菜单关联roleId必须大于0");
         }
         if (menuId == null || menuId <= 0) {
-            throw new IllegalArgumentException("角色菜单关联menuId必须大于0");
+            ApplicationAssert.invalidParam("角色菜单关联menuId必须大于0");
         }
         if (tenantId == null || tenantId <= 0) {
-            throw new IllegalArgumentException("角色菜单关联tenantId必须大于0");
+            ApplicationAssert.invalidParam("角色菜单关联tenantId必须大于0");
         }
         roleMenu.setRoleId(roleId);
         roleMenu.setMenuId(menuId);
