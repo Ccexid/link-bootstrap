@@ -1,15 +1,15 @@
 package me.link.bootstrap.interfaces.converter;
 
 import me.link.bootstrap.application.command.TokenRefreshResult;
-import me.link.bootstrap.domain.entity.MenuEntity;
-import me.link.bootstrap.domain.entity.OperateLogEntity;
 import me.link.bootstrap.domain.entity.OrganizationEntity;
 import me.link.bootstrap.domain.entity.RoleEntity;
 import me.link.bootstrap.domain.entity.RoleMenuEntity;
-import me.link.bootstrap.domain.entity.TenantEntity;
-import me.link.bootstrap.domain.entity.TenantPackageEntity;
 import me.link.bootstrap.domain.entity.UserEntity;
 import me.link.bootstrap.domain.entity.UserRoleEntity;
+import me.link.bootstrap.infrastructure.persistence.po.MenuPO;
+import me.link.bootstrap.infrastructure.persistence.po.OperateLogPO;
+import me.link.bootstrap.infrastructure.persistence.po.TenantPackagePO;
+import me.link.bootstrap.infrastructure.persistence.po.TenantPO;
 import me.link.bootstrap.interfaces.dto.response.vo.MenuResponseVO;
 import me.link.bootstrap.interfaces.dto.response.vo.OperateLogResponseVO;
 import me.link.bootstrap.interfaces.dto.response.vo.OrganizationResponseVO;
@@ -22,16 +22,21 @@ import me.link.bootstrap.interfaces.dto.response.vo.UserResponseVO;
 import me.link.bootstrap.interfaces.dto.response.vo.UserRoleResponseVO;
 import me.link.bootstrap.shared.kernel.converter.BaseConverter;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 /**
- * 接口层响应对象转换器，统一将应用层结果和领域实体转换为前端 VO。
+ * 接口层响应对象转换器，统一将应用层结果、领域实体或 PO 转换为前端 VO。
  */
 @Mapper(config = BaseConverter.class)
 public interface ResponseVOConverter {
 
-    MenuResponseVO toResponse(MenuEntity menu);
+    @Mapping(target = "createdAt", source = "createTime")
+    @Mapping(target = "updatedAt", source = "updateTime")
+    MenuResponseVO toResponse(MenuPO menu);
 
-    OperateLogResponseVO toResponse(OperateLogEntity operateLog);
+    @Mapping(target = "createdAt", source = "createTime")
+    @Mapping(target = "updatedAt", source = "updateTime")
+    OperateLogResponseVO toResponse(OperateLogPO operateLog);
 
     OrganizationResponseVO toResponse(OrganizationEntity organization);
 
@@ -39,9 +44,14 @@ public interface ResponseVOConverter {
 
     RoleResponseVO toResponse(RoleEntity role);
 
-    TenantPackageResponseVO toResponse(TenantPackageEntity tenantPackage);
+    @Mapping(target = "createdAt", source = "createTime")
+    @Mapping(target = "updatedAt", source = "updateTime")
+    TenantPackageResponseVO toResponse(TenantPackagePO tenantPackage);
 
-    TenantResponseVO toResponse(TenantEntity tenant);
+    @Mapping(target = "contactMobile", source = "contactMobileMask")
+    @Mapping(target = "createdAt", source = "createTime")
+    @Mapping(target = "updatedAt", source = "updateTime")
+    TenantResponseVO toResponse(TenantPO tenant);
 
     TokenResponseVO toResponse(TokenRefreshResult result);
 

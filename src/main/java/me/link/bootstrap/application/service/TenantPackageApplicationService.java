@@ -1,72 +1,123 @@
 package me.link.bootstrap.application.service;
 
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import me.link.bootstrap.application.support.ApplicationAssert;
-import me.link.bootstrap.application.command.CreateTenantPackageCommand;
-import me.link.bootstrap.application.command.TenantPackagePageQuery;
-import me.link.bootstrap.application.command.UpdateTenantPackageCommand;
-import me.link.bootstrap.domain.entity.TenantPackageEntity;
-import me.link.bootstrap.domain.factory.TenantPackageFactory;
-import me.link.bootstrap.domain.repository.TenantPackageRepository;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.domain.valueobject.StatusEnum;
+import me.link.bootstrap.infrastructure.persistence.internal.TenantPackageInternalService;
+import me.link.bootstrap.infrastructure.persistence.po.TenantPackagePO;
+import me.link.bootstrap.infrastructure.persistence.repository.support.PageOrderHelper;
+import me.link.bootstrap.interfaces.dto.request.tenantpackage.TenantPackageCreateRequest;
+import me.link.bootstrap.interfaces.dto.request.tenantpackage.TenantPackagePageRequest;
+import me.link.bootstrap.interfaces.dto.request.tenantpackage.TenantPackageUpdateRequest;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
 /**
- * 租户套餐应用服务，负责编排套餐创建、查询、更新和删除流程。
+ * 租户套餐服务，按轻量 CRUD 结构直接编排校验、事务和持久化。
  */
 @Service
 @RequiredArgsConstructor
 public class TenantPackageApplicationService {
 
-    private final TenantPackageRepository tenantPackageRepository;
+    private static final int NAME_MAX_LENGTH = 30;
+    private static final int REMARK_MAX_LENGTH = 256;
+    private static final Map<String, String> SORT_FIELD_MAPPING = Map.of(
+            "id", "id",
+            "name", "name",
+            "created_at", "create_time",
+            "updated_at", "update_time"
+    );
 
-    /**
-     * 创建业务对象。
-     */
+    private final TenantPackageInternalService tenantPackageInternalService;
+
     @Transactional
-    public TenantPackageEntity create(CreateTenantPackageCommand command) {
-        TenantPackageEntity tenantPackage = TenantPackageFactory.create(command.name(), command.remark(), command.menuIds());
-        return tenantPackageRepository.save(tenantPackage);
+    public TenantPackagePO create(TenantPackageCreateRequest request) {
+        TenantPackagePO tenantPackage = new TenantPackagePO();
+        tenantPackage.setName(normalizeName(request.getName()));
+        tenantPackage.setRemark(normalizeRemark(request.getRemark()));
+        tenantPackage.setMenuIds(normalizeMenuIds(request.getMenuIds()));
+        tenantPackage.setStatus(StatusEnum.NORMAL);
+        tenantPackageInternalService.save(tenantPackage);
+        return tenantPackage;
     }
 
-    /**
-     * 根据主键查询业务对象详情。
-     */
-    public TenantPackageEntity get(Long id) {
-        return ApplicationAssert.requireFound(tenantPackageRepository.findById(id), ErrorCode.TENANT_PACKAGE_NOT_FOUND);
+    public TenantPackagePO get(Long id) {
+        return ApplicationAssert.requireFound(tenantPackageInternalService.getById(id), ErrorCode.TENANT_PACKAGE_NOT_FOUND);
     }
 
-    /**
-     * 分页查询业务对象列表。
-     */
-    public PageResult<TenantPackageEntity> page(TenantPackagePageQuery query) {
-        return tenantPackageRepository.page(query.pageNo(), query.pageSize(), query.name(), query.sortingFields());
+    public PageResult<TenantPackagePO> page(TenantPackagePageRequest request) {
+        Page<TenantPackagePO> page = Page.of(request.getPageNo(), request.getPageSize());
+        PageOrderHelper.applyOrders(page, request.getSortingFields(), SORT_FIELD_MAPPING);
+        LambdaQueryWrapper<TenantPackagePO> wrapper = new LambdaQueryWrapper<TenantPackagePO>()
+                .like(StrUtil.isNotBlank(request.getName()), TenantPackagePO::getName, request.getName())
+                .orderByDesc(request.getSortingFields() == null || request.getSortingFields().isEmpty(), TenantPackagePO::getId);
+        Page<TenantPackagePO> result = tenantPackageInternalService.page(page, wrapper);
+        return new PageResult<>(result.getRecords(), result.getTotal());
     }
 
-    /**
-     * 更新业务对象。
-     */
     @Transactional
-    public TenantPackageEntity update(UpdateTenantPackageCommand command) {
-        TenantPackageEntity tenantPackage = get(command.id());
-        TenantPackageFactory.changeBasicInfo(tenantPackage, command.name(), command.remark(), command.menuIds());
-        if (Boolean.TRUE.equals(command.enabled())) {
-            tenantPackage.enable();
+    public TenantPackagePO update(Long id, TenantPackageUpdateRequest request) {
+        TenantPackagePO tenantPackage = get(id);
+        tenantPackage.setName(normalizeName(request.getName()));
+        tenantPackage.setRemark(normalizeRemark(request.getRemark()));
+        tenantPackage.setMenuIds(normalizeMenuIds(request.getMenuIds()));
+        if (Boolean.TRUE.equals(request.getEnabled())) {
+            tenantPackage.setStatus(StatusEnum.NORMAL);
         }
-        if (Boolean.FALSE.equals(command.enabled())) {
-            tenantPackage.disable();
+        if (Boolean.FALSE.equals(request.getEnabled())) {
+            tenantPackage.setStatus(StatusEnum.DISABLE);
         }
-        ApplicationAssert.requireSuccess(tenantPackageRepository.update(tenantPackage), ErrorCode.TENANT_PACKAGE_NOT_FOUND);
-        return get(command.id());
+        ApplicationAssert.requireSuccess(tenantPackageInternalService.updateById(tenantPackage), ErrorCode.TENANT_PACKAGE_NOT_FOUND);
+        return get(id);
     }
 
-    /**
-     * 根据主键删除业务对象。
-     */
     @Transactional
     public void delete(Long id) {
-        ApplicationAssert.requireSuccess(tenantPackageRepository.deleteById(id), ErrorCode.TENANT_PACKAGE_NOT_FOUND);
+        ApplicationAssert.requireSuccess(tenantPackageInternalService.removeById(id), ErrorCode.TENANT_PACKAGE_NOT_FOUND);
+    }
+
+    private static String normalizeName(String name) {
+        if (StrUtil.isBlank(name)) {
+            throw new IllegalArgumentException("套餐名不能为空");
+        }
+        String normalizedName = name.trim();
+        if (normalizedName.length() > NAME_MAX_LENGTH) {
+            throw new IllegalArgumentException(String.format("套餐名长度不能超过%d个字符", NAME_MAX_LENGTH));
+        }
+        return normalizedName;
+    }
+
+    private static String normalizeRemark(String remark) {
+        if (StrUtil.isBlank(remark)) {
+            return "";
+        }
+        String normalizedRemark = remark.trim();
+        if (normalizedRemark.length() > REMARK_MAX_LENGTH) {
+            throw new IllegalArgumentException(String.format("备注长度不能超过%d个字符", REMARK_MAX_LENGTH));
+        }
+        return normalizedRemark;
+    }
+
+    private static Set<Long> normalizeMenuIds(Set<Long> menuIds) {
+        if (menuIds == null || menuIds.isEmpty()) {
+            throw new IllegalArgumentException("关联菜单不能为空");
+        }
+        Set<Long> normalizedMenuIds = new LinkedHashSet<>();
+        for (Long menuId : menuIds) {
+            if (menuId == null || menuId <= 0) {
+                throw new IllegalArgumentException("关联菜单编号必须大于0");
+            }
+            normalizedMenuIds.add(menuId);
+        }
+        return normalizedMenuIds;
     }
 }

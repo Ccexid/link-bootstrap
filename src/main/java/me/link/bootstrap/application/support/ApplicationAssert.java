@@ -20,6 +20,13 @@ public final class ApplicationAssert {
         return optional.orElseThrow(() -> new BusinessException(errorCode));
     }
 
+    public static <T> T requireFound(T value, ErrorCode errorCode) {
+        if (value == null) {
+            throw new BusinessException(errorCode);
+        }
+        return value;
+    }
+
     /**
      * 校验布尔操作结果，失败时抛出指定业务错误码。
      */

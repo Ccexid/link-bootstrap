@@ -6,12 +6,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import me.link.bootstrap.application.command.CreateMenuCommand;
-import me.link.bootstrap.application.command.MenuPageQuery;
-import me.link.bootstrap.application.command.UpdateMenuCommand;
 import me.link.bootstrap.application.service.MenuApplicationService;
-import me.link.bootstrap.domain.entity.MenuEntity;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.infrastructure.persistence.po.MenuPO;
 import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.menu.MenuCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.menu.MenuPageRequest;
@@ -50,21 +47,7 @@ public class MenuController {
     @Idempotent
     @Operation(summary = "创建菜单", description = "创建菜单基础信息")
     public ResultResponse<MenuResponseVO> create(@Valid @RequestBody MenuCreateRequest request) {
-        MenuEntity menu = menuApplicationService.create(new CreateMenuCommand(
-                request.getName(),
-                request.getPermission(),
-                request.getType(),
-                request.getSort(),
-                request.getParentId(),
-                request.getPath(),
-                request.getIcon(),
-                request.getComponent(),
-                request.getComponentName(),
-                request.getStatus(),
-                request.getVisible(),
-                request.getKeepAlive(),
-                request.getAlwaysShow()
-        ));
+        MenuPO menu = menuApplicationService.create(request);
         return ResultResponse.success(responseVOConverter.toResponse(menu));
     }
 
@@ -77,16 +60,7 @@ public class MenuController {
     @GetMapping
     @Operation(summary = "分页查询菜单", description = "分页查询菜单列表")
     public ResultTableResponse<MenuResponseVO> page(@Validated @SortWhitelist(MenuResponseVO.class) MenuPageRequest request) {
-        PageResult<MenuEntity> pageResult = menuApplicationService.page(new MenuPageQuery(
-                request.getPageNo(),
-                request.getPageSize(),
-                request.getName(),
-                request.getPermission(),
-                request.getType(),
-                request.getParentId(),
-                request.getStatus(),
-                request.getSortingFields()
-        ));
+        PageResult<MenuPO> pageResult = menuApplicationService.page(request);
         return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
     }
 
@@ -96,22 +70,7 @@ public class MenuController {
     @Operation(summary = "更新菜单", description = "更新菜单基础信息")
     public ResultResponse<MenuResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
                                                   @Valid @RequestBody MenuUpdateRequest request) {
-        MenuEntity menu = menuApplicationService.update(new UpdateMenuCommand(
-                id,
-                request.getName(),
-                request.getPermission(),
-                request.getType(),
-                request.getSort(),
-                request.getParentId(),
-                request.getPath(),
-                request.getIcon(),
-                request.getComponent(),
-                request.getComponentName(),
-                request.getStatus(),
-                request.getVisible(),
-                request.getKeepAlive(),
-                request.getAlwaysShow()
-        ));
+        MenuPO menu = menuApplicationService.update(id, request);
         return ResultResponse.success(responseVOConverter.toResponse(menu));
     }
 

@@ -6,12 +6,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import me.link.bootstrap.application.command.CreateTenantCommand;
-import me.link.bootstrap.application.command.TenantPageQuery;
-import me.link.bootstrap.application.command.UpdateTenantCommand;
 import me.link.bootstrap.application.service.TenantApplicationService;
-import me.link.bootstrap.domain.entity.TenantEntity;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.infrastructure.persistence.po.TenantPO;
 import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.tenant.TenantCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.tenant.TenantPageRequest;
@@ -53,16 +50,7 @@ public class TenantController {
     @Idempotent
     @Operation(summary = "创建租户", description = "创建租户基础信息")
     public ResultResponse<TenantResponseVO> create(@Valid @RequestBody TenantCreateRequest request) {
-        TenantEntity tenant = tenantApplicationService.create(new CreateTenantCommand(
-                request.getName(),
-                request.getContactUserId(),
-                request.getContactName(),
-                request.getContactMobile(),
-                request.getWebsites(),
-                request.getPackageId(),
-                request.getExpireTime(),
-                request.getAccountCount()
-        ));
+        TenantPO tenant = tenantApplicationService.create(request);
         return ResultResponse.success(responseVOConverter.toResponse(tenant));
     }
 
@@ -81,12 +69,7 @@ public class TenantController {
     @GetMapping
     @Operation(summary = "分页查询租户", description = "分页查询租户列表")
     public ResultTableResponse<TenantResponseVO> page(@Validated @SortWhitelist(TenantResponseVO.class) TenantPageRequest request) {
-        PageResult<TenantEntity> pageResult = tenantApplicationService.page(new TenantPageQuery(
-                request.getPageNo(),
-                request.getPageSize(),
-                request.getName(),
-                request.getSortingFields()
-        ));
+        PageResult<TenantPO> pageResult = tenantApplicationService.page(request);
         return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
     }
 
@@ -99,17 +82,7 @@ public class TenantController {
     @Operation(summary = "更新租户", description = "更新租户基础信息")
     public ResultResponse<TenantResponseVO> update(@PathVariable @NotNull(message = "租户ID不能为空") Long id,
                                                    @Valid @RequestBody TenantUpdateRequest request) {
-        TenantEntity tenant = tenantApplicationService.update(new UpdateTenantCommand(
-                id,
-                request.getContactName(),
-                request.getContactUserId(),
-                request.getContactMobile(),
-                request.getWebsites(),
-                request.getPackageId(),
-                request.getExpireTime(),
-                request.getAccountCount(),
-                request.getEnabled()
-        ));
+        TenantPO tenant = tenantApplicationService.update(id, request);
         return ResultResponse.success(responseVOConverter.toResponse(tenant));
     }
 

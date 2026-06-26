@@ -6,12 +6,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import me.link.bootstrap.application.command.CreateTenantPackageCommand;
-import me.link.bootstrap.application.command.TenantPackagePageQuery;
-import me.link.bootstrap.application.command.UpdateTenantPackageCommand;
 import me.link.bootstrap.application.service.TenantPackageApplicationService;
-import me.link.bootstrap.domain.entity.TenantPackageEntity;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.infrastructure.persistence.po.TenantPackagePO;
 import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.tenantpackage.TenantPackageCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.tenantpackage.TenantPackagePageRequest;
@@ -53,11 +50,7 @@ public class TenantPackageController {
     @Idempotent
     @Operation(summary = "创建租户套餐", description = "创建租户套餐基础信息")
     public ResultResponse<TenantPackageResponseVO> create(@Valid @RequestBody TenantPackageCreateRequest request) {
-        TenantPackageEntity tenantPackage = tenantPackageApplicationService.create(new CreateTenantPackageCommand(
-                request.getName(),
-                request.getRemark(),
-                request.getMenuIds()
-        ));
+        TenantPackagePO tenantPackage = tenantPackageApplicationService.create(request);
         return ResultResponse.success(responseVOConverter.toResponse(tenantPackage));
     }
 
@@ -76,12 +69,7 @@ public class TenantPackageController {
     @GetMapping
     @Operation(summary = "分页查询租户套餐", description = "分页查询租户套餐列表")
     public ResultTableResponse<TenantPackageResponseVO> page(@Validated @SortWhitelist(TenantPackageResponseVO.class) TenantPackagePageRequest request) {
-        PageResult<TenantPackageEntity> pageResult = tenantPackageApplicationService.page(new TenantPackagePageQuery(
-                request.getPageNo(),
-                request.getPageSize(),
-                request.getName(),
-                request.getSortingFields()
-        ));
+        PageResult<TenantPackagePO> pageResult = tenantPackageApplicationService.page(request);
         return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
     }
 
@@ -94,13 +82,7 @@ public class TenantPackageController {
     @Operation(summary = "更新租户套餐", description = "更新租户套餐基础信息")
     public ResultResponse<TenantPackageResponseVO> update(@PathVariable @NotNull(message = "租户套餐ID不能为空") Long id,
                                                           @Valid @RequestBody TenantPackageUpdateRequest request) {
-        TenantPackageEntity tenantPackage = tenantPackageApplicationService.update(new UpdateTenantPackageCommand(
-                id,
-                request.getName(),
-                request.getRemark(),
-                request.getMenuIds(),
-                request.getEnabled()
-        ));
+        TenantPackagePO tenantPackage = tenantPackageApplicationService.update(id, request);
         return ResultResponse.success(responseVOConverter.toResponse(tenantPackage));
     }
 

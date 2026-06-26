@@ -6,12 +6,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import me.link.bootstrap.application.command.CreateOperateLogCommand;
-import me.link.bootstrap.application.command.OperateLogPageQuery;
-import me.link.bootstrap.application.command.UpdateOperateLogCommand;
 import me.link.bootstrap.application.service.OperateLogApplicationService;
-import me.link.bootstrap.domain.entity.OperateLogEntity;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.infrastructure.persistence.po.OperateLogPO;
 import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.operatelog.OperateLogCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.operatelog.OperateLogPageRequest;
@@ -50,22 +47,7 @@ public class OperateLogController {
     @Idempotent
     @Operation(summary = "创建操作日志", description = "创建操作日志基础信息")
     public ResultResponse<OperateLogResponseVO> create(@Valid @RequestBody OperateLogCreateRequest request) {
-        OperateLogEntity operateLog = operateLogApplicationService.create(new CreateOperateLogCommand(
-                request.getTraceId(),
-                request.getUserId(),
-                request.getUserType(),
-                request.getUserIp(),
-                request.getUserAgent(),
-                request.getModule(),
-                request.getOperation(),
-                request.getBizId(),
-                request.getAction(),
-                request.getExtra(),
-                request.getSuccess(),
-                request.getRequestMethod(),
-                request.getRequestUrl(),
-                request.getDuration()
-        ));
+        OperateLogPO operateLog = operateLogApplicationService.create(request);
         return ResultResponse.success(responseVOConverter.toResponse(operateLog));
     }
 
@@ -78,17 +60,7 @@ public class OperateLogController {
     @GetMapping
     @Operation(summary = "分页查询操作日志", description = "分页查询操作日志列表")
     public ResultTableResponse<OperateLogResponseVO> page(@Validated @SortWhitelist(OperateLogResponseVO.class) OperateLogPageRequest request) {
-        PageResult<OperateLogEntity> pageResult = operateLogApplicationService.page(new OperateLogPageQuery(
-                request.getPageNo(),
-                request.getPageSize(),
-                request.getTraceId(),
-                request.getUserId(),
-                request.getModule(),
-                request.getOperation(),
-                request.getBizId(),
-                request.getSuccess(),
-                request.getSortingFields()
-        ));
+        PageResult<OperateLogPO> pageResult = operateLogApplicationService.page(request);
         return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
     }
 
@@ -98,23 +70,7 @@ public class OperateLogController {
     @Operation(summary = "更新操作日志", description = "更新操作日志基础信息")
     public ResultResponse<OperateLogResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
                                                   @Valid @RequestBody OperateLogUpdateRequest request) {
-        OperateLogEntity operateLog = operateLogApplicationService.update(new UpdateOperateLogCommand(
-                id,
-                request.getTraceId(),
-                request.getUserId(),
-                request.getUserType(),
-                request.getUserIp(),
-                request.getUserAgent(),
-                request.getModule(),
-                request.getOperation(),
-                request.getBizId(),
-                request.getAction(),
-                request.getExtra(),
-                request.getSuccess(),
-                request.getRequestMethod(),
-                request.getRequestUrl(),
-                request.getDuration()
-        ));
+        OperateLogPO operateLog = operateLogApplicationService.update(id, request);
         return ResultResponse.success(responseVOConverter.toResponse(operateLog));
     }
 

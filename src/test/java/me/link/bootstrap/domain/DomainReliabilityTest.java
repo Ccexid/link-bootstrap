@@ -1,13 +1,10 @@
 package me.link.bootstrap.domain;
 
-import me.link.bootstrap.domain.entity.MenuEntity;
 import me.link.bootstrap.domain.entity.RoleMenuEntity;
 import me.link.bootstrap.domain.entity.UserRoleEntity;
-import me.link.bootstrap.domain.factory.MenuFactory;
 import me.link.bootstrap.domain.factory.RoleMenuFactory;
 import me.link.bootstrap.domain.factory.UserRoleFactory;
 import me.link.bootstrap.domain.valueobject.PageResult;
-import me.link.bootstrap.domain.valueobject.StatusEnum;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -60,24 +57,4 @@ class DomainReliabilityTest {
         assertThat(roleMenu.getTenantId()).isEqualTo(3L);
     }
 
-    @Test
-    void menuFactoryShouldTrimName() {
-        MenuEntity menu = MenuFactory.create(
-                " 首页 ",
-                "system:home",
-                1,
-                1,
-                0L,
-                "/home",
-                "home",
-                "Home",
-                "HomePage",
-                StatusEnum.NORMAL,
-                true,
-                true,
-                false
-        );
-
-        assertThat(menu.getName()).isEqualTo("首页");
-    }
 }
