@@ -7,7 +7,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import me.link.bootstrap.application.service.UserRoleApplicationService;
-import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.shared.kernel.valueobject.PageResult;
 import me.link.bootstrap.infrastructure.persistence.po.UserRolePO;
 import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.userrole.UserRoleAssignRequest;

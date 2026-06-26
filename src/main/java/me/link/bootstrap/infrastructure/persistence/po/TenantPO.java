@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import me.link.bootstrap.domain.valueobject.StatusEnum;
+import me.link.bootstrap.shared.kernel.valueobject.StatusEnum;
 import me.link.bootstrap.shared.kernel.database.mybatis.BaseDO;
 
 import java.time.LocalDateTime;

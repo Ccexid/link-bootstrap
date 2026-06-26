@@ -76,8 +76,7 @@ src/
 │   │   │   │   └── support/                    # 分页排序等持久化辅助
 │   │   │   ├── security/
 │   │   │   └── tracing/
-│   │   ├── domain/                             # 存量领域模型，新增模块默认不再生成
-│   │   └── shared/kernel/                      # 跨模块共享技术内核
+│   │   └── shared/kernel/                      # 跨模块共享技术内核和值对象
 │   └── resources/
 │       ├── application.yml
 │       ├── application-dev.yml
@@ -99,7 +98,7 @@ XxxController
 
 当前轻量样板统一以 `XxxController -> XxxApplicationService -> XxxInternalService -> XxxMapper -> XxxPO` 为准，优先参考下方“已迁移样板”模块。
 
-当前主运行链路已经移除存量 DDD 适配器；新增模块不得再复制旧 DDD 样板。
+当前主运行链路已经移除存量 DDD 适配器和默认 `domain` 包；新增模块不得再复制旧 DDD 样板。
 
 ## 结构约束
 
@@ -157,16 +156,16 @@ XxxController
 职责：
 
 - 存放跨模块通用技术能力。
-- 包括统一异常、统一常量、分页结果、排序字段、基础 DO、租户上下文、注解和工具类。
+- 包括统一异常、统一常量、通用状态枚举、分页结果、排序字段、基础 DO、租户上下文、注解和工具类。
 
 禁止：
 
 - 放具体业务模块语义。
-- 依赖 `interfaces`、`application`、`domain` 中的业务类。
+- 依赖 `interfaces`、`application`、`infrastructure` 中的具体业务实现类。
 
 ### 领域模型升级条件
 
-新增模块默认不生成 `domain`。只有同时满足以下任意两项，才允许升级为独立领域模型：
+新增模块默认不生成 `domain` 包。只有同时满足以下任意两项，才允许升级为独立领域模型：
 
 - 存在明显聚合根，且有多个实体/值对象共同维护不变量。
 - 同一对象有多种状态流转，状态变化需要封装行为方法。
@@ -174,7 +173,7 @@ XxxController
 - 存在跨持久化技术或跨外部系统的仓储抽象需求。
 - 规则需要在多个用例中复用，复制到服务私有方法会造成真实重复。
 
-升级后必须在类注释中说明为什么需要 `Entity`、`Factory`、`Repository` 抽象。未说明原因的 DDD 样板视为结构膨胀。
+升级后必须在类注释中说明为什么需要 `Entity`、`Factory`、`Repository` 抽象，并在本 README 的“已迁移样板”或模块说明中记录原因。未说明原因的 DDD 样板视为结构膨胀。
 
 ## 代码生成约束
 
@@ -342,7 +341,7 @@ infrastructure/persistence/repository/XxxRepositoryImpl.java
 
 ### 分页与排序
 
-- 分页结果统一返回 `PageResult<T>`。
+- 分页结果统一返回 `shared/kernel/valueobject/PageResult<T>`。
 - Response VO 中只有标记 `@Sortable` 的字段允许前端排序。
 - Controller 分页参数使用 `@SortWhitelist(XxxResponseVO.class)` 校验。
 - ApplicationService 中维护前端字段到数据库列名的映射。

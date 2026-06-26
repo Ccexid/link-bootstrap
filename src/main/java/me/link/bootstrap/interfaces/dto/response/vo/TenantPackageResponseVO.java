@@ -3,7 +3,7 @@ package me.link.bootstrap.interfaces.dto.response.vo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import me.link.bootstrap.domain.valueobject.StatusEnum;
+import me.link.bootstrap.shared.kernel.valueobject.StatusEnum;
 import me.link.bootstrap.shared.kernel.annotation.Sortable;
 
 import java.io.Serial;

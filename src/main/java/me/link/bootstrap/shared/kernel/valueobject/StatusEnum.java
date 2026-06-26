@@ -1,4 +1,4 @@
-package me.link.bootstrap.domain.valueobject;
+package me.link.bootstrap.shared.kernel.valueobject;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;

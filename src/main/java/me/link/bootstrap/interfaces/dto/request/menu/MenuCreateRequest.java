@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import me.link.bootstrap.domain.valueobject.StatusEnum;
+import me.link.bootstrap.shared.kernel.valueobject.StatusEnum;
 
 import java.io.Serial;
 import java.io.Serializable;

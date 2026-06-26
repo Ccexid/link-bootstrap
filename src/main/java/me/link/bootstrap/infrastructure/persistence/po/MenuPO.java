@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import me.link.bootstrap.domain.valueobject.StatusEnum;
+import me.link.bootstrap.shared.kernel.valueobject.StatusEnum;
 import me.link.bootstrap.shared.kernel.database.mybatis.BaseDO;
 
 /**

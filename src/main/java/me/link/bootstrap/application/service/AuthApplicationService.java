@@ -9,7 +9,7 @@ import me.link.bootstrap.application.command.EmailLoginCommand;
 import me.link.bootstrap.application.command.LoginCommand;
 import me.link.bootstrap.application.command.SendEmailCodeCommand;
 import me.link.bootstrap.application.command.TokenRefreshResult;
-import me.link.bootstrap.domain.valueobject.StatusEnum;
+import me.link.bootstrap.shared.kernel.valueobject.StatusEnum;
 import me.link.bootstrap.infrastructure.persistence.mapper.PermissionMapper;
 import me.link.bootstrap.infrastructure.persistence.po.UserPO;
 import me.link.bootstrap.infrastructure.security.EmailCodeService;

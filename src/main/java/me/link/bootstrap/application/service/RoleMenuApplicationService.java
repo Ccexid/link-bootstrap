@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import me.link.bootstrap.application.support.ApplicationAssert;
-import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.shared.kernel.valueobject.PageResult;
 import me.link.bootstrap.infrastructure.persistence.internal.RoleMenuInternalService;
 import me.link.bootstrap.infrastructure.persistence.po.RoleMenuPO;
 import me.link.bootstrap.infrastructure.persistence.support.PageOrderHelper;

@@ -2,7 +2,7 @@ package me.link.bootstrap.interfaces.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.shared.kernel.valueobject.PageResult;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 
 import java.io.Serial;
