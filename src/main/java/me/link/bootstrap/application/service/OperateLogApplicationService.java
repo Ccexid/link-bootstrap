@@ -12,6 +12,7 @@ import me.link.bootstrap.infrastructure.persistence.repository.support.PageOrder
 import me.link.bootstrap.interfaces.dto.request.operatelog.OperateLogCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.operatelog.OperateLogPageRequest;
 import me.link.bootstrap.interfaces.dto.request.operatelog.OperateLogUpdateRequest;
+import me.link.bootstrap.shared.kernel.database.mybatis.TenantIgnore;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 import me.link.bootstrap.shared.kernel.util.SecurityHelper;
 import org.springframework.stereotype.Service;
@@ -21,11 +22,13 @@ import java.util.Map;
 
 /**
  * 操作日志服务，直接编排审计日志持久化、分页过滤和租户上下文补齐。
- * <p>写入时从当前登录上下文补齐租户 ID，查询侧由租户拦截器负责隔离。</p>
+ * <p>显式创建日志时从当前登录上下文补齐租户 ID，自动日志允许匿名请求落到平台租户。</p>
  */
 @Service
 @RequiredArgsConstructor
 public class OperateLogApplicationService {
+
+    private static final long PLATFORM_TENANT_ID = 0L;
 
     private static final Map<String, String> SORT_FIELD_MAPPING = Map.of(
             "id", "id",
@@ -40,9 +43,27 @@ public class OperateLogApplicationService {
 
     @Transactional
     public OperateLogPO create(OperateLogCreateRequest request) {
+        return createWithTenantId(request, SecurityHelper.getRequiredTenantId());
+    }
+
+    /**
+     * 自动操作日志写入入口。
+     * <p>
+     * 匿名接口（如发送登录邮箱验证码）没有 Sa-Token 会话，不能强制读取租户上下文；
+     * 这类日志统一归到平台租户 0，并显式忽略租户插件，避免 INSERT 阶段被补入 NULL 租户。
+     * </p>
+     */
+    @TenantIgnore
+    @Transactional
+    public OperateLogPO createForCurrentContext(OperateLogCreateRequest request) {
+        Long tenantId = SecurityHelper.getTenantId();
+        return createWithTenantId(request, tenantId == null ? PLATFORM_TENANT_ID : tenantId);
+    }
+
+    private OperateLogPO createWithTenantId(OperateLogCreateRequest request, Long tenantId) {
         OperateLogPO operateLog = new OperateLogPO();
         applyMutableFields(operateLog, request.getTraceId(), request.getUserId(), request.getUserType(), request.getUserIp(), request.getUserAgent(), request.getModule(), request.getOperation(), request.getBizId(), request.getAction(), request.getExtra(), request.getSuccess(), request.getRequestMethod(), request.getRequestUrl(), request.getDuration());
-        operateLog.setTenantId(SecurityHelper.getRequiredTenantId());
+        operateLog.setTenantId(tenantId);
         operateLogInternalService.save(operateLog);
         return operateLog;
     }

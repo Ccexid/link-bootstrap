@@ -141,7 +141,7 @@ public class OperateLogAspect {
             createRequest.setRequestMethod(requestMethod);
             createRequest.setRequestUrl(truncate(request.getRequestURI(), 512));
             createRequest.setDuration(duration);
-            operateLogApplicationService.create(createRequest);
+            operateLogApplicationService.createForCurrentContext(createRequest);
         } catch (Exception ex) {
             log.warn("自动记录操作日志失败: {}", ex.getMessage(), ex);
         }

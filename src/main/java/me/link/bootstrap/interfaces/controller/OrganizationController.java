@@ -6,12 +6,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import me.link.bootstrap.application.command.CreateOrganizationCommand;
-import me.link.bootstrap.application.command.OrganizationPageQuery;
-import me.link.bootstrap.application.command.UpdateOrganizationCommand;
 import me.link.bootstrap.application.service.OrganizationApplicationService;
-import me.link.bootstrap.domain.entity.OrganizationEntity;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.infrastructure.persistence.po.OrganizationPO;
 import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.organization.OrganizationCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.organization.OrganizationPageRequest;
@@ -50,16 +47,7 @@ public class OrganizationController {
     @Idempotent
     @Operation(summary = "创建组织", description = "创建组织基础信息")
     public ResultResponse<OrganizationResponseVO> create(@Valid @RequestBody OrganizationCreateRequest request) {
-        OrganizationEntity organization = organizationApplicationService.create(new CreateOrganizationCommand(
-                request.getName(),
-                request.getOrgType(),
-                request.getParentId(),
-                request.getAncestors(),
-                request.getLevel(),
-                request.getContactName(),
-                request.getContactMobile(),
-                request.getStatus()
-        ));
+        OrganizationPO organization = organizationApplicationService.create(request);
         return ResultResponse.success(responseVOConverter.toResponse(organization));
     }
 
@@ -72,15 +60,7 @@ public class OrganizationController {
     @GetMapping
     @Operation(summary = "分页查询组织", description = "分页查询组织列表")
     public ResultTableResponse<OrganizationResponseVO> page(@Validated @SortWhitelist(OrganizationResponseVO.class) OrganizationPageRequest request) {
-        PageResult<OrganizationEntity> pageResult = organizationApplicationService.page(new OrganizationPageQuery(
-                request.getPageNo(),
-                request.getPageSize(),
-                request.getName(),
-                request.getOrgType(),
-                request.getParentId(),
-                request.getStatus(),
-                request.getSortingFields()
-        ));
+        PageResult<OrganizationPO> pageResult = organizationApplicationService.page(request);
         return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
     }
 
@@ -90,17 +70,7 @@ public class OrganizationController {
     @Operation(summary = "更新组织", description = "更新组织基础信息")
     public ResultResponse<OrganizationResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
                                                   @Valid @RequestBody OrganizationUpdateRequest request) {
-        OrganizationEntity organization = organizationApplicationService.update(new UpdateOrganizationCommand(
-                id,
-                request.getName(),
-                request.getOrgType(),
-                request.getParentId(),
-                request.getAncestors(),
-                request.getLevel(),
-                request.getContactName(),
-                request.getContactMobile(),
-                request.getStatus()
-        ));
+        OrganizationPO organization = organizationApplicationService.update(id, request);
         return ResultResponse.success(responseVOConverter.toResponse(organization));
     }
 

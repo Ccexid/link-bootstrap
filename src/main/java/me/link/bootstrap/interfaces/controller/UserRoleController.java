@@ -6,13 +6,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import me.link.bootstrap.application.command.AssignUserRoleCommand;
-import me.link.bootstrap.application.command.CreateUserRoleCommand;
-import me.link.bootstrap.application.command.UserRolePageQuery;
-import me.link.bootstrap.application.command.UpdateUserRoleCommand;
 import me.link.bootstrap.application.service.UserRoleApplicationService;
-import me.link.bootstrap.domain.entity.UserRoleEntity;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.infrastructure.persistence.po.UserRolePO;
 import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.userrole.UserRoleAssignRequest;
 import me.link.bootstrap.interfaces.dto.request.userrole.UserRoleCreateRequest;
@@ -52,10 +48,7 @@ public class UserRoleController {
     @Idempotent
     @Operation(summary = "创建用户角色关联", description = "创建用户角色关联基础信息")
     public ResultResponse<UserRoleResponseVO> create(@Valid @RequestBody UserRoleCreateRequest request) {
-        UserRoleEntity userRole = userRoleApplicationService.create(new CreateUserRoleCommand(
-                request.getUserId(),
-                request.getRoleId()
-        ));
+        UserRolePO userRole = userRoleApplicationService.create(request);
         return ResultResponse.success(responseVOConverter.toResponse(userRole));
     }
 
@@ -64,10 +57,7 @@ public class UserRoleController {
     @Idempotent
     @Operation(summary = "批量分配用户角色", description = "覆盖指定用户的角色分配")
     public ResultResponse<Void> assign(@Valid @RequestBody UserRoleAssignRequest request) {
-        userRoleApplicationService.assign(new AssignUserRoleCommand(
-                request.getUserId(),
-                request.getRoleIds()
-        ));
+        userRoleApplicationService.assign(request);
         return ResultResponse.success();
     }
 
@@ -80,13 +70,7 @@ public class UserRoleController {
     @GetMapping
     @Operation(summary = "分页查询用户角色关联", description = "分页查询用户角色关联列表")
     public ResultTableResponse<UserRoleResponseVO> page(@Validated @SortWhitelist(UserRoleResponseVO.class) UserRolePageRequest request) {
-        PageResult<UserRoleEntity> pageResult = userRoleApplicationService.page(new UserRolePageQuery(
-                request.getPageNo(),
-                request.getPageSize(),
-                request.getUserId(),
-                request.getRoleId(),
-                request.getSortingFields()
-        ));
+        PageResult<UserRolePO> pageResult = userRoleApplicationService.page(request);
         return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
     }
 
@@ -96,11 +80,7 @@ public class UserRoleController {
     @Operation(summary = "更新用户角色关联", description = "更新用户角色关联基础信息")
     public ResultResponse<UserRoleResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
                                                   @Valid @RequestBody UserRoleUpdateRequest request) {
-        UserRoleEntity userRole = userRoleApplicationService.update(new UpdateUserRoleCommand(
-                id,
-                request.getUserId(),
-                request.getRoleId()
-        ));
+        UserRolePO userRole = userRoleApplicationService.update(id, request);
         return ResultResponse.success(responseVOConverter.toResponse(userRole));
     }
 

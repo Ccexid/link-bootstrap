@@ -34,10 +34,10 @@ spring:
       # 忽略前端传入但后端不存在的属性，增强兼容性
       fail-on-unknown-properties: false
   mail:
-    host: ${MAIL_HOST:}
+    host: ${MAIL_HOST:smtp.qq.com}
     port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:}
-    password: ${MAIL_PASSWORD:}
+    username: ${MAIL_USERNAME:a29_0626@foxmail.com}
+    password: ${MAIL_PASSWORD:lpzotlqkvqvibhbd}
     default-encoding: UTF-8
     properties:
       mail:

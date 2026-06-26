@@ -6,13 +6,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import me.link.bootstrap.application.command.AuthorizeRoleMenuCommand;
-import me.link.bootstrap.application.command.CreateRoleMenuCommand;
-import me.link.bootstrap.application.command.RoleMenuPageQuery;
-import me.link.bootstrap.application.command.UpdateRoleMenuCommand;
 import me.link.bootstrap.application.service.RoleMenuApplicationService;
-import me.link.bootstrap.domain.entity.RoleMenuEntity;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.infrastructure.persistence.po.RoleMenuPO;
 import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.rolemenu.RoleMenuAuthorizeRequest;
 import me.link.bootstrap.interfaces.dto.request.rolemenu.RoleMenuCreateRequest;
@@ -52,10 +48,7 @@ public class RoleMenuController {
     @Idempotent
     @Operation(summary = "创建角色菜单关联", description = "创建角色菜单关联基础信息")
     public ResultResponse<RoleMenuResponseVO> create(@Valid @RequestBody RoleMenuCreateRequest request) {
-        RoleMenuEntity roleMenu = roleMenuApplicationService.create(new CreateRoleMenuCommand(
-                request.getRoleId(),
-                request.getMenuId()
-        ));
+        RoleMenuPO roleMenu = roleMenuApplicationService.create(request);
         return ResultResponse.success(responseVOConverter.toResponse(roleMenu));
     }
 
@@ -64,10 +57,7 @@ public class RoleMenuController {
     @Idempotent
     @Operation(summary = "批量授权角色菜单", description = "覆盖指定角色的菜单授权")
     public ResultResponse<Void> authorize(@Valid @RequestBody RoleMenuAuthorizeRequest request) {
-        roleMenuApplicationService.authorize(new AuthorizeRoleMenuCommand(
-                request.getRoleId(),
-                request.getMenuIds()
-        ));
+        roleMenuApplicationService.authorize(request);
         return ResultResponse.success();
     }
 
@@ -80,13 +70,7 @@ public class RoleMenuController {
     @GetMapping
     @Operation(summary = "分页查询角色菜单关联", description = "分页查询角色菜单关联列表")
     public ResultTableResponse<RoleMenuResponseVO> page(@Validated @SortWhitelist(RoleMenuResponseVO.class) RoleMenuPageRequest request) {
-        PageResult<RoleMenuEntity> pageResult = roleMenuApplicationService.page(new RoleMenuPageQuery(
-                request.getPageNo(),
-                request.getPageSize(),
-                request.getRoleId(),
-                request.getMenuId(),
-                request.getSortingFields()
-        ));
+        PageResult<RoleMenuPO> pageResult = roleMenuApplicationService.page(request);
         return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
     }
 
@@ -96,11 +80,7 @@ public class RoleMenuController {
     @Operation(summary = "更新角色菜单关联", description = "更新角色菜单关联基础信息")
     public ResultResponse<RoleMenuResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
                                                   @Valid @RequestBody RoleMenuUpdateRequest request) {
-        RoleMenuEntity roleMenu = roleMenuApplicationService.update(new UpdateRoleMenuCommand(
-                id,
-                request.getRoleId(),
-                request.getMenuId()
-        ));
+        RoleMenuPO roleMenu = roleMenuApplicationService.update(id, request);
         return ResultResponse.success(responseVOConverter.toResponse(roleMenu));
     }
 

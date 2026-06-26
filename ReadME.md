@@ -97,7 +97,7 @@ XxxController
       -> XxxPO
 ```
 
-当前轻量样板：`TenantController/TenantPackageController/MenuController -> XxxApplicationService -> XxxInternalService -> XxxMapper -> XxxPO`。
+当前轻量样板统一以 `XxxController -> XxxApplicationService -> XxxInternalService -> XxxMapper -> XxxPO` 为准，优先参考下方“已迁移样板”模块。
 
 存量 DDD 链路可以在迁移前继续运行，但不能作为新增模块模板继续复制。
 
@@ -263,9 +263,9 @@ infrastructure/persistence/repository/XxxRepositoryImpl.java
 | 用户管理 | `UserController` | `/api/v1/system/users` | 存量 DDD |
 | 角色管理 | `RoleController` | `/api/v1/system/role` | 存量 DDD |
 | 菜单管理 | `MenuController` | `/api/v1/system/menu` | 已迁移轻量结构 |
-| 组织管理 | `OrganizationController` | `/api/v1/system/organization` | 存量 DDD |
-| 用户角色 | `UserRoleController` | `/api/v1/system/user-role` | 存量 DDD |
-| 角色菜单 | `RoleMenuController` | `/api/v1/system/role-menu` | 存量 DDD |
+| 组织管理 | `OrganizationController` | `/api/v1/system/organization` | 已迁移轻量结构 |
+| 用户角色 | `UserRoleController` | `/api/v1/system/user-role` | 已迁移轻量结构 |
+| 角色菜单 | `RoleMenuController` | `/api/v1/system/role-menu` | 已迁移轻量结构 |
 | 操作日志 | `OperateLogController` | `/api/v1/system/operate-log` | 已迁移轻量结构 |
 
 ## 接口规范
@@ -577,7 +577,7 @@ maven.test.skip=true
 
 ### 已迁移样板
 
-`Tenant`、`TenantPackage`、`Menu`、`OperateLog` 模块已作为轻量结构样板：
+`Tenant`、`TenantPackage`、`Menu`、`Organization`、`UserRole`、`RoleMenu`、`OperateLog` 模块已作为轻量结构样板：
 
 - Controller 不再组装 `CreateXxxCommand`、`UpdateXxxCommand`、`XxxPageQuery`。
 - ApplicationService 直接接收 Request DTO。
@@ -585,6 +585,8 @@ maven.test.skip=true
 - 租户手机号保护、域名规范化、排序映射和事务边界保留在服务层。
 - 租户套餐名称/备注/菜单编号规范化保留在服务层。
 - 菜单名称规范化、分页查询、排序映射和权限缓存失效保留在服务层。
+- 组织名称校验、联系电话格式校验、手机号加密/哈希/脱敏和租户上下文补齐保留在服务层。
+- 用户角色分配、角色菜单授权的覆盖式删除/批量插入和权限缓存失效保留在服务层。
 - 操作日志写入仍由当前会话补齐租户 ID，自动审计切面直接复用操作日志应用服务。
 - 已迁移模块不再保留 `XxxEntity`、`XxxFactory`、`XxxRepository`、`XxxRepositoryImpl`、`XxxConverter` 作为运行链路文件。
 

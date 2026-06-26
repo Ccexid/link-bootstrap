@@ -1,15 +1,15 @@
 package me.link.bootstrap.interfaces.converter;
 
 import me.link.bootstrap.application.command.TokenRefreshResult;
-import me.link.bootstrap.domain.entity.OrganizationEntity;
 import me.link.bootstrap.domain.entity.RoleEntity;
-import me.link.bootstrap.domain.entity.RoleMenuEntity;
 import me.link.bootstrap.domain.entity.UserEntity;
-import me.link.bootstrap.domain.entity.UserRoleEntity;
 import me.link.bootstrap.infrastructure.persistence.po.MenuPO;
 import me.link.bootstrap.infrastructure.persistence.po.OperateLogPO;
+import me.link.bootstrap.infrastructure.persistence.po.OrganizationPO;
+import me.link.bootstrap.infrastructure.persistence.po.RoleMenuPO;
 import me.link.bootstrap.infrastructure.persistence.po.TenantPackagePO;
 import me.link.bootstrap.infrastructure.persistence.po.TenantPO;
+import me.link.bootstrap.infrastructure.persistence.po.UserRolePO;
 import me.link.bootstrap.interfaces.dto.response.vo.MenuResponseVO;
 import me.link.bootstrap.interfaces.dto.response.vo.OperateLogResponseVO;
 import me.link.bootstrap.interfaces.dto.response.vo.OrganizationResponseVO;
@@ -38,9 +38,14 @@ public interface ResponseVOConverter {
     @Mapping(target = "updatedAt", source = "updateTime")
     OperateLogResponseVO toResponse(OperateLogPO operateLog);
 
-    OrganizationResponseVO toResponse(OrganizationEntity organization);
+    @Mapping(target = "contactMobile", source = "contactMobileMask")
+    @Mapping(target = "createdAt", source = "createTime")
+    @Mapping(target = "updatedAt", source = "updateTime")
+    OrganizationResponseVO toResponse(OrganizationPO organization);
 
-    RoleMenuResponseVO toResponse(RoleMenuEntity roleMenu);
+    @Mapping(target = "createdAt", source = "createTime")
+    @Mapping(target = "updatedAt", source = "updateTime")
+    RoleMenuResponseVO toResponse(RoleMenuPO roleMenu);
 
     RoleResponseVO toResponse(RoleEntity role);
 
@@ -57,5 +62,7 @@ public interface ResponseVOConverter {
 
     UserResponseVO toResponse(UserEntity user);
 
-    UserRoleResponseVO toResponse(UserRoleEntity userRole);
+    @Mapping(target = "createdAt", source = "createTime")
+    @Mapping(target = "updatedAt", source = "updateTime")
+    UserRoleResponseVO toResponse(UserRolePO userRole);
 }
