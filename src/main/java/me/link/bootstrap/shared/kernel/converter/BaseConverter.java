@@ -10,7 +10,7 @@ import org.mapstruct.*;
  *
  * <p><strong>重要说明：</strong></p>
  * <ul>
- *     <li>子类继承时必须明确指定泛型类型，例如：{@code @Mapper(config = BaseConverter.class) public interface UserConverter extends BaseConverter<User, UserDTO>}</li>
+ *     <li>子类继承时必须明确指定泛型类型，例如：{@code @Mapper(config = BaseConverter.class) public interface ResponseVOConverter}</li>
  *     <li>如果正向转换（convert）定义了字段映射，逆向转换（reverseConvert）会自动继承反向映射规则</li>
  *     <li>当源对象为 null 时，转换方法返回 null；当源集合为 null 时，返回空列表而非 null</li>
  * </ul>

@@ -6,12 +6,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import me.link.bootstrap.application.command.CreateRoleCommand;
-import me.link.bootstrap.application.command.RolePageQuery;
-import me.link.bootstrap.application.command.UpdateRoleCommand;
 import me.link.bootstrap.application.service.RoleApplicationService;
-import me.link.bootstrap.domain.entity.RoleEntity;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.infrastructure.persistence.po.RolePO;
 import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.role.RoleCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.role.RolePageRequest;
@@ -50,16 +47,7 @@ public class RoleController {
     @Idempotent
     @Operation(summary = "创建角色", description = "创建角色基础信息")
     public ResultResponse<RoleResponseVO> create(@Valid @RequestBody RoleCreateRequest request) {
-        RoleEntity role = roleApplicationService.create(new CreateRoleCommand(
-                request.getName(),
-                request.getCode(),
-                request.getSort(),
-                request.getDataScope(),
-                request.getDataScopeDeptIds(),
-                request.getStatus(),
-                request.getType(),
-                request.getRemark()
-        ));
+        RolePO role = roleApplicationService.create(request);
         return ResultResponse.success(responseVOConverter.toResponse(role));
     }
 
@@ -72,15 +60,7 @@ public class RoleController {
     @GetMapping
     @Operation(summary = "分页查询角色", description = "分页查询角色列表")
     public ResultTableResponse<RoleResponseVO> page(@Validated @SortWhitelist(RoleResponseVO.class) RolePageRequest request) {
-        PageResult<RoleEntity> pageResult = roleApplicationService.page(new RolePageQuery(
-                request.getPageNo(),
-                request.getPageSize(),
-                request.getName(),
-                request.getCode(),
-                request.getStatus(),
-                request.getType(),
-                request.getSortingFields()
-        ));
+        PageResult<RolePO> pageResult = roleApplicationService.page(request);
         return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
     }
 
@@ -90,17 +70,7 @@ public class RoleController {
     @Operation(summary = "更新角色", description = "更新角色基础信息")
     public ResultResponse<RoleResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
                                                   @Valid @RequestBody RoleUpdateRequest request) {
-        RoleEntity role = roleApplicationService.update(new UpdateRoleCommand(
-                id,
-                request.getName(),
-                request.getCode(),
-                request.getSort(),
-                request.getDataScope(),
-                request.getDataScopeDeptIds(),
-                request.getStatus(),
-                request.getType(),
-                request.getRemark()
-        ));
+        RolePO role = roleApplicationService.update(id, request);
         return ResultResponse.success(responseVOConverter.toResponse(role));
     }
 

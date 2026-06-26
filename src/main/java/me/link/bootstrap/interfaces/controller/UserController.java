@@ -6,12 +6,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import me.link.bootstrap.application.command.CreateUserCommand;
-import me.link.bootstrap.application.command.UserPageQuery;
-import me.link.bootstrap.application.command.UpdateUserCommand;
 import me.link.bootstrap.application.service.UserApplicationService;
-import me.link.bootstrap.domain.entity.UserEntity;
 import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.infrastructure.persistence.po.UserPO;
 import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.user.UserCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.user.UserPageRequest;
@@ -50,20 +47,7 @@ public class UserController {
     @Idempotent
     @Operation(summary = "创建用户", description = "创建用户基础信息")
     public ResultResponse<UserResponseVO> create(@Valid @RequestBody UserCreateRequest request) {
-        UserEntity user = userApplicationService.create(new CreateUserCommand(
-                request.getUsername(),
-                request.getPassword(),
-                request.getNickname(),
-                request.getUserType(),
-                request.getMobile(),
-                request.getEmail(),
-                request.getAvatar(),
-                request.getStatus(),
-                request.getOrgId(),
-                request.getDeptId(),
-                request.getLoginIp(),
-                request.getLoginDate()
-        ));
+        UserPO user = userApplicationService.create(request);
         return ResultResponse.success(responseVOConverter.toResponse(user));
     }
 
@@ -76,17 +60,7 @@ public class UserController {
     @GetMapping
     @Operation(summary = "分页查询用户", description = "分页查询用户列表")
     public ResultTableResponse<UserResponseVO> page(@Validated @SortWhitelist(UserResponseVO.class) UserPageRequest request) {
-        PageResult<UserEntity> pageResult = userApplicationService.page(new UserPageQuery(
-                request.getPageNo(),
-                request.getPageSize(),
-                request.getUsername(),
-                request.getNickname(),
-                request.getMobile(),
-                request.getEmail(),
-                request.getUserType(),
-                request.getStatus(),
-                request.getSortingFields()
-        ));
+        PageResult<UserPO> pageResult = userApplicationService.page(request);
         return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
     }
 
@@ -96,21 +70,7 @@ public class UserController {
     @Operation(summary = "更新用户", description = "更新用户基础信息")
     public ResultResponse<UserResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
                                                   @Valid @RequestBody UserUpdateRequest request) {
-        UserEntity user = userApplicationService.update(new UpdateUserCommand(
-                id,
-                request.getUsername(),
-                request.getPassword(),
-                request.getNickname(),
-                request.getUserType(),
-                request.getMobile(),
-                request.getEmail(),
-                request.getAvatar(),
-                request.getStatus(),
-                request.getOrgId(),
-                request.getDeptId(),
-                request.getLoginIp(),
-                request.getLoginDate()
-        ));
+        UserPO user = userApplicationService.update(id, request);
         return ResultResponse.success(responseVOConverter.toResponse(user));
     }
 

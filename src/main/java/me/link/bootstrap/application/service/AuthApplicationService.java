@@ -9,10 +9,9 @@ import me.link.bootstrap.application.command.EmailLoginCommand;
 import me.link.bootstrap.application.command.LoginCommand;
 import me.link.bootstrap.application.command.SendEmailCodeCommand;
 import me.link.bootstrap.application.command.TokenRefreshResult;
-import me.link.bootstrap.domain.entity.UserEntity;
-import me.link.bootstrap.domain.repository.UserRepository;
 import me.link.bootstrap.domain.valueobject.StatusEnum;
 import me.link.bootstrap.infrastructure.persistence.mapper.PermissionMapper;
+import me.link.bootstrap.infrastructure.persistence.po.UserPO;
 import me.link.bootstrap.infrastructure.security.EmailCodeService;
 import me.link.bootstrap.infrastructure.security.HumanVerificationService;
 import me.link.bootstrap.infrastructure.security.LoginAttemptService;
@@ -41,7 +40,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthApplicationService {
 
-    private final UserRepository userRepository;
+    private final UserApplicationService userApplicationService;
     private final PermissionMapper permissionMapper;
     private final LoginAttemptService loginAttemptService;
     private final EmailCodeService emailCodeService;
@@ -55,13 +54,13 @@ public class AuthApplicationService {
      * 供 SecurityHelper / LinkTenantLineHandler 在后续请求中使用。
      * </p>
      * <p>
-     * <b>@TenantIgnore 位置</b>:仅作用于 {@code UserRepositoryImpl.findByUsername},
+     * <b>@TenantIgnore 位置</b>:仅作用于 {@code UserApplicationService.findByUsernameForLogin},
      * 不再覆盖整个 login 方法,避免后续查询角色码时也被绕过(角色码必须按当前租户查)。
      * </p>
      */
     public void login(LoginCommand command) {
         humanVerificationService.verify(command.captchaToken());
-        UserEntity user = resolveSingleUser(userRepository.findByUsername(command.username()), ErrorCode.USER_NOT_FOUND);
+        UserPO user = resolveSingleUser(userApplicationService.findByUsernameForLogin(command.username()), ErrorCode.USER_NOT_FOUND);
 
         // 锁定前置检查:防止已锁定账号被持续尝试
         if (loginAttemptService.isLocked(command.username(), user.getTenantId())) {
@@ -83,14 +82,14 @@ public class AuthApplicationService {
     /**
      * 邮箱验证码登录。
      * <p>
-     * <b>@TenantIgnore 位置</b>:仅作用于 {@code UserRepositoryImpl.findByEmail},
+     * <b>@TenantIgnore 位置</b>:仅作用于 {@code UserApplicationService.findByEmailForLogin},
      * 不覆盖后续角色码查询。
      * </p>
      */
     public void emailLogin(EmailLoginCommand command) {
         humanVerificationService.verify(command.captchaToken());
         String email = normalizeEmail(command.email());
-        UserEntity user = resolveSingleUser(userRepository.findByEmail(command.email()), ErrorCode.USER_NOT_FOUND);
+        UserPO user = resolveSingleUser(userApplicationService.findByEmailForLogin(command.email()), ErrorCode.USER_NOT_FOUND);
         ensureUserEnabled(user);
 
         if (loginAttemptService.isLocked(email, user.getTenantId())) {
@@ -116,12 +115,12 @@ public class AuthApplicationService {
      * 发送邮箱验证码。
      */
     public void sendEmailCode(SendEmailCodeCommand command) {
-        UserEntity user = resolveSingleUser(userRepository.findByEmail(command.email()), ErrorCode.USER_NOT_FOUND);
+        UserPO user = resolveSingleUser(userApplicationService.findByEmailForLogin(command.email()), ErrorCode.USER_NOT_FOUND);
         ensureUserEnabled(user);
         emailCodeService.send(command.email());
     }
 
-    private UserEntity resolveSingleUser(List<UserEntity> users, ErrorCode notFoundErrorCode) {
+    private UserPO resolveSingleUser(List<UserPO> users, ErrorCode notFoundErrorCode) {
         if (users == null || users.isEmpty()) {
             throw new BusinessException(notFoundErrorCode);
         }
@@ -139,14 +138,14 @@ public class AuthApplicationService {
         emailCodeService.verify(command.email(), command.code());
     }
 
-    private void ensureUserEnabled(UserEntity user) {
+    private void ensureUserEnabled(UserPO user) {
         if (user.getStatus() == StatusEnum.DISABLE) {
             log.warn("登录失败 - 账号已禁用: userId={}, tenantId={}", user.getId(), user.getTenantId());
             throw new BusinessException(ErrorCode.USER_DISABLED);
         }
     }
 
-    private void loginResolvedUser(UserEntity user) {
+    private void loginResolvedUser(UserPO user) {
         ensureUserEnabled(user);
 
         StpUtil.login(user.getId());

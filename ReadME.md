@@ -260,8 +260,8 @@ infrastructure/persistence/repository/XxxRepositoryImpl.java
 | 认证授权 | `AuthController` | `/api/v1/auth` | 存量应用服务 + 安全组件 |
 | 租户管理 | `TenantController` | `/api/v1/tenant` | 已迁移轻量结构 |
 | 租户套餐 | `TenantPackageController` | `/api/v1/tenant/package` | 已迁移轻量结构 |
-| 用户管理 | `UserController` | `/api/v1/system/users` | 存量 DDD |
-| 角色管理 | `RoleController` | `/api/v1/system/role` | 存量 DDD |
+| 用户管理 | `UserController` | `/api/v1/system/users` | 已迁移轻量结构 |
+| 角色管理 | `RoleController` | `/api/v1/system/role` | 已迁移轻量结构 |
 | 菜单管理 | `MenuController` | `/api/v1/system/menu` | 已迁移轻量结构 |
 | 组织管理 | `OrganizationController` | `/api/v1/system/organization` | 已迁移轻量结构 |
 | 用户角色 | `UserRoleController` | `/api/v1/system/user-role` | 已迁移轻量结构 |
@@ -376,7 +376,10 @@ infrastructure/persistence/repository/XxxRepositoryImpl.java
 - 登录成功后必须把 `tenantId`、`userType`、`isSuperAdmin` 写入 Sa-Token Session。
 - 密码只允许使用 BCrypt 等单向哈希校验。
 - 登录失败次数与账号锁定统一通过 `LoginAttemptService` 管理。
+- 用户管理已经迁移为轻量结构：`UserApplicationService` 直接使用 `UserInternalService`，仍需在服务内完成密码 BCrypt 哈希、手机号加密/哈希/脱敏和邮箱规范化。
+- 登录前用户解析必须调用 `UserApplicationService.findByUsernameForLogin` 或 `findByEmailForLogin`，这两个方法使用最小范围 `@TenantIgnore` 绕过租户拦截；不要把 `@TenantIgnore` 扩大到整个认证流程。
 - 权限列表与角色列表统一通过 `PermissionCacheService` 缓存，角色、菜单、用户角色、角色菜单变更后必须同步失效相关缓存。
+- 角色管理已经迁移为轻量结构：`RoleApplicationService` 直接使用 `RoleInternalService`，仍需保留角色编码同租户唯一校验和角色变更后的权限缓存失效。
 
 ### 多端访问边界
 
@@ -577,7 +580,7 @@ maven.test.skip=true
 
 ### 已迁移样板
 
-`Tenant`、`TenantPackage`、`Menu`、`Organization`、`UserRole`、`RoleMenu`、`OperateLog` 模块已作为轻量结构样板：
+`Tenant`、`TenantPackage`、`User`、`Role`、`Menu`、`Organization`、`UserRole`、`RoleMenu`、`OperateLog` 模块已作为轻量结构样板：
 
 - Controller 不再组装 `CreateXxxCommand`、`UpdateXxxCommand`、`XxxPageQuery`。
 - ApplicationService 直接接收 Request DTO。
@@ -586,6 +589,8 @@ maven.test.skip=true
 - 租户套餐名称/备注/菜单编号规范化保留在服务层。
 - 菜单名称规范化、分页查询、排序映射和权限缓存失效保留在服务层。
 - 组织名称校验、联系电话格式校验、手机号加密/哈希/脱敏和租户上下文补齐保留在服务层。
+- 用户密码 BCrypt 哈希、手机号加密/哈希/脱敏、邮箱规范化和登录前最小范围 `@TenantIgnore` 查询保留在服务层。
+- 角色编码同租户唯一校验、分页排序映射和角色变更后的权限缓存失效保留在服务层。
 - 用户角色分配、角色菜单授权的覆盖式删除/批量插入和权限缓存失效保留在服务层。
 - 操作日志写入仍由当前会话补齐租户 ID，自动审计切面直接复用操作日志应用服务。
 - 已迁移模块不再保留 `XxxEntity`、`XxxFactory`、`XxxRepository`、`XxxRepositoryImpl`、`XxxConverter` 作为运行链路文件。

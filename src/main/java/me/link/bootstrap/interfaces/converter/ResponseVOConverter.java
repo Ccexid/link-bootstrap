@@ -1,14 +1,14 @@
 package me.link.bootstrap.interfaces.converter;
 
 import me.link.bootstrap.application.command.TokenRefreshResult;
-import me.link.bootstrap.domain.entity.RoleEntity;
-import me.link.bootstrap.domain.entity.UserEntity;
 import me.link.bootstrap.infrastructure.persistence.po.MenuPO;
 import me.link.bootstrap.infrastructure.persistence.po.OperateLogPO;
 import me.link.bootstrap.infrastructure.persistence.po.OrganizationPO;
+import me.link.bootstrap.infrastructure.persistence.po.RolePO;
 import me.link.bootstrap.infrastructure.persistence.po.RoleMenuPO;
 import me.link.bootstrap.infrastructure.persistence.po.TenantPackagePO;
 import me.link.bootstrap.infrastructure.persistence.po.TenantPO;
+import me.link.bootstrap.infrastructure.persistence.po.UserPO;
 import me.link.bootstrap.infrastructure.persistence.po.UserRolePO;
 import me.link.bootstrap.interfaces.dto.response.vo.MenuResponseVO;
 import me.link.bootstrap.interfaces.dto.response.vo.OperateLogResponseVO;
@@ -47,7 +47,9 @@ public interface ResponseVOConverter {
     @Mapping(target = "updatedAt", source = "updateTime")
     RoleMenuResponseVO toResponse(RoleMenuPO roleMenu);
 
-    RoleResponseVO toResponse(RoleEntity role);
+    @Mapping(target = "createdAt", source = "createTime")
+    @Mapping(target = "updatedAt", source = "updateTime")
+    RoleResponseVO toResponse(RolePO role);
 
     @Mapping(target = "createdAt", source = "createTime")
     @Mapping(target = "updatedAt", source = "updateTime")
@@ -60,7 +62,10 @@ public interface ResponseVOConverter {
 
     TokenResponseVO toResponse(TokenRefreshResult result);
 
-    UserResponseVO toResponse(UserEntity user);
+    @Mapping(target = "mobile", source = "mobileMask")
+    @Mapping(target = "createdAt", source = "createTime")
+    @Mapping(target = "updatedAt", source = "updateTime")
+    UserResponseVO toResponse(UserPO user);
 
     @Mapping(target = "createdAt", source = "createTime")
     @Mapping(target = "updatedAt", source = "updateTime")
