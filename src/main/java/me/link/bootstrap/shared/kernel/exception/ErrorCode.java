@@ -67,6 +67,12 @@ public enum ErrorCode {
     ROLE_MENU_NOT_FOUND(500_003_004, "角色菜单关联不存在"),
     USER_ROLE_NOT_FOUND(500_003_005, "用户角色关联不存在"),
     OPERATE_LOG_NOT_FOUND(500_003_006, "操作日志不存在"),
+    /** 业务错误: 根据社区板块ID未查询到板块记录 */
+    COMMUNITY_SECTION_NOT_FOUND(500_010_001, "社区板块不存在"),
+    /** 业务错误: 社区板块编码在同一租户下已存在 */
+    COMMUNITY_SECTION_CODE_DUPLICATE(500_010_002, "社区板块编码已存在"),
+    /** 业务错误: 社区板块存在子板块,不允许直接删除 */
+    COMMUNITY_SECTION_HAS_CHILDREN(500_010_003, "存在子板块,不能删除"),
     /** 业务错误: 系统内部发生未预期异常,需查看日志定位 */
     SYSTEM_ERROR(500_999_999, "系统内部错误");
 

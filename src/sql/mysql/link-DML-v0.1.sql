@@ -6,7 +6,7 @@
 --
 -- 执行前提:link-DDL-v0.1.sql 已建表完毕,数据库默认字符集 utf8mb4。
 -- 重复执行:本脚本所有 INSERT 都使用显式主键 ID,重复执行会因唯一索引报错。
---          重置环境时先依次 TRUNCATE 八张业务表(脚本末尾给了模板,默认注释)。
+--          重置环境时先依次 TRUNCATE 业务表(脚本末尾给了模板,默认注释)。
 --
 -- ====================================================================
 -- 密码说明(已预填,可直接执行)
@@ -53,8 +53,8 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ====================================================================
 INSERT INTO `system_tenant_package` (`id`, `name`, `status`, `remark`, `menu_ids`, `creator`, `updater`)
 VALUES
-    (1, '基础套餐',   0, '默认套餐,包含用户/角色/菜单/组织/操作日志', JSON_ARRAY(100,110,120,130,140,150,160), 1, 1),
-    (2, '高级套餐',   0, '高级套餐,额外含租户管理菜单',                 JSON_ARRAY(100,110,120,130,140,150,160,200,210), 1, 1);
+    (1, '基础套餐',   0, '默认套餐,包含用户/角色/菜单/组织/操作日志/社区板块', JSON_ARRAY(100,110,120,130,140,150,160,300), 1, 1),
+    (2, '高级套餐',   0, '高级套餐,额外含租户管理菜单',                     JSON_ARRAY(100,110,120,130,140,150,160,200,210,300), 1, 1);
 
 -- ====================================================================
 -- 2. 租户 system_tenant
@@ -164,6 +164,16 @@ VALUES
     (213, '套餐更新', 'system:tenant-package:update', 3, 30, 210, '',         '',        NULL,                   NULL,            0, 0, 0, 0, 1, 1),
     (214, '套餐删除', 'system:tenant-package:delete', 3, 40, 210, '',         '',        NULL,                   NULL,            0, 0, 0, 0, 1, 1);
 
+-- ---------- 3.12 社区运营 ----------
+INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `updater`)
+VALUES
+    (3,   '社区运营', '',                              1, 30, 0,   '/community', 'community', NULL,                       NULL,               0, 0, 0, 0, 1, 1),
+    (300, '板块管理', 'system:community:section:list', 2, 10, 3,   'sections',   'list',      'community/section/index',  'CommunitySection', 0, 0, 0, 0, 1, 1),
+    (301, '板块创建', 'system:community:section:create', 3, 10, 300, '',         '',          NULL,                       NULL,               0, 0, 0, 0, 1, 1),
+    (302, '板块查询', 'system:community:section:query',  3, 20, 300, '',         '',          NULL,                       NULL,               0, 0, 0, 0, 1, 1),
+    (303, '板块更新', 'system:community:section:update', 3, 30, 300, '',         '',          NULL,                       NULL,               0, 0, 0, 0, 1, 1),
+    (304, '板块删除', 'system:community:section:delete', 3, 40, 300, '',         '',          NULL,                       NULL,               0, 0, 0, 0, 1, 1);
+
 -- ====================================================================
 -- 4. 角色 system_role
 -- ====================================================================
@@ -241,14 +251,15 @@ WHERE m.`deleted` = 0
     130, 131, 132, 133, 134,
     140, 141, 142, 143, 144, 145,
     150, 151, 152, 153, 154, 155,
-    160, 162
+    160, 162,
+    3, 300, 301, 302, 303, 304
   );
 
 -- 7.4 tenant_user (role=4, tenant=1) 仅查看类菜单
 INSERT INTO `system_role_menu` (`role_id`, `menu_id`, `tenant_id`, `creator`, `updater`)
 SELECT 4, m.`id`, 1, 1, 1 FROM `system_menu` m
 WHERE m.`deleted` = 0
-  AND m.`id` IN (1, 100, 102, 110, 112, 120, 122, 130, 132, 160, 162);
+  AND m.`id` IN (1, 100, 102, 110, 112, 120, 122, 130, 132, 160, 162, 3, 300, 302);
 
 -- 7.5 tenant_admin (role=5, tenant=2) 同 role=3
 INSERT INTO `system_role_menu` (`role_id`, `menu_id`, `tenant_id`, `creator`, `updater`)
@@ -262,11 +273,24 @@ WHERE m.`deleted` = 0
     130, 131, 132, 133, 134,
     140, 141, 142, 143, 144, 145,
     150, 151, 152, 153, 154, 155,
-    160, 162
+    160, 162,
+    3, 300, 301, 302, 303, 304
   );
 
 -- ====================================================================
--- 8. 组织 system_organization (示例)
+-- 8. 社区板块 community_section (示例)
+-- ====================================================================
+INSERT INTO `community_section` (`id`, `name`, `code`, `description`, `cover_url`, `parent_id`, `sort`, `status`, `tenant_id`, `creator`, `updater`)
+VALUES
+    (1, '步行街',   'street',     '日常闲聊、生活经验和社区公共讨论', NULL, 0, 10, 0, 1, 3, 3),
+    (2, '篮球讨论', 'basketball', '篮球赛事、球员、战术和装备讨论',     NULL, 0, 20, 0, 1, 3, 3),
+    (3, '游戏电竞', 'gaming',     '游戏、电竞赛事和玩家交流',           NULL, 0, 30, 0, 1, 3, 3),
+    (4, '数码产品', 'digital',    '手机、电脑、外设和数码消费讨论',     NULL, 0, 40, 0, 1, 3, 3),
+    (5, '步行街',   'street',     '租户B日常闲聊和社区公共讨论',        NULL, 0, 10, 0, 2, 5, 5),
+    (6, '篮球讨论', 'basketball', '租户B篮球赛事与球迷交流',            NULL, 0, 20, 0, 2, 5, 5);
+
+-- ====================================================================
+-- 9. 组织 system_organization (示例)
 -- ====================================================================
 INSERT INTO `system_organization` (`id`, `name`, `org_type`, `parent_id`, `ancestors`, `level`, `contact_name`, `contact_mobile_cipher`, `contact_mobile_hash`, `contact_mobile_mask`, `contact_mobile_key_version`, `status`, `tenant_id`, `creator`, `updater`)
 VALUES
@@ -282,6 +306,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- SET FOREIGN_KEY_CHECKS = 0;
 -- TRUNCATE TABLE `system_role_menu`;
 -- TRUNCATE TABLE `system_user_role`;
+-- TRUNCATE TABLE `community_section`;
 -- TRUNCATE TABLE `system_organization`;
 -- TRUNCATE TABLE `system_users`;
 -- TRUNCATE TABLE `system_role`;

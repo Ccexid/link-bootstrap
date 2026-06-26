@@ -1,12 +1,13 @@
 # Link Bootstrap
 
-`link-bootstrap` 是一个面向 S2P2B2C 平台的 Spring Boot 3 后端脚手架项目。当前项目不再把 DDD 四层结构作为默认生成模板；小体量 CRUD 和平台基础模块统一采用更轻的 Spring Boot 三层结构，减少 `Command`、`Entity`、`Factory`、`Repository`、`Converter` 等重复样板。
+`link-bootstrap` 是一个面向类虎扑社区平台的 Spring Boot 3 后端基础工程。当前项目不再把 DDD 四层结构作为默认生成模板；小体量 CRUD、社区业务模块和平台基础模块统一采用更轻的 Spring Boot 三层结构，减少 `Command`、`Entity`、`Factory`、`Repository`、`Converter` 等重复样板。
 
-旧模块中仍保留部分 DDD 包结构，这是存量代码。后续新增代码必须以本文档为准，除非明确满足“领域模型升级条件”。
+当前主运行链路已移除默认 DDD 包结构。后续新增代码必须以本文档为准，除非明确满足“领域模型升级条件”。
 
 ## 目录
 
 - [项目定位](#项目定位)
+- [社区平台改造方向](#社区平台改造方向)
 - [技术栈](#技术栈)
 - [当前结构](#当前结构)
 - [结构约束](#结构约束)
@@ -22,11 +23,101 @@
 
 ## 项目定位
 
-1. 提供可复用的 Spring Boot 后端基础工程。
+1. 提供类虎扑社区平台的后端基础工程。
 2. 用轻量三层结构支撑快速开发，避免小体量代码被 DDD 样板放大。
-3. 沉淀认证、租户、组织、用户、角色、菜单、操作日志等平台基础模块。
+3. 沉淀认证、租户、组织、用户、角色、菜单、操作日志等平台基础模块，为社区业务提供管理、审计和权限底座。
 4. 提供统一响应、分页排序、参数校验、全局异常、链路追踪、MyBatis-Plus 持久化、接口加解密、限流、幂等和健康检查能力。
-5. 为平台端、供应商端、商家端、用户端业务扩展提供清晰且低样板的生成规则。
+5. 为平台端、运营端、内容审核端和用户端社区业务扩展提供清晰且低样板的生成规则。
+
+## 社区平台改造方向
+
+系统后续以“社区内容 + 用户互动 + 运营治理”为主线演进，当前系统管理能力只作为社区平台的基础设施，不再把租户、角色、菜单等后台管理模块当成最终业务目标。
+
+### 产品边界
+
+目标形态参考类虎扑社区：
+
+- 用户可以浏览板块、话题、帖子、评论和热门内容。
+- 用户可以发帖、回帖、楼中楼回复、点赞、收藏、关注、举报和接收消息通知。
+- 运营可以管理板块、话题、帖子、评论、举报、审核状态、推荐位、热榜和敏感词。
+- 平台可以基于权限、租户、操作日志、限流、幂等、加密和审计能力治理社区内容。
+
+不在当前阶段优先建设的能力：
+
+- 电商交易、供应链、复杂订单、支付和履约。
+- 即时通讯级别的强实时聊天。
+- 复杂推荐算法平台。早期只做可解释的热度、时间、人工置顶和运营推荐。
+
+### 模块演进顺序
+
+社区模块按以下顺序建设，避免先做复杂抽象：
+
+| 优先级 | 模块 | 典型对象 | 说明 |
+|---|---|---|---|
+| P0 | 账号与安全 | 用户、Token、验证码、登录失败锁定 | 已有基础能力，继续服务社区用户体系 |
+| P0 | 社区基础分类 | 板块、频道、话题、标签 | 板块已落地，后续频道、话题、标签继续复用同一轻量链路 |
+| P0 | 内容发布 | 帖子、帖子正文、附件、评论、回复 | 社区核心链路，先保证发布、列表、详情、删除 |
+| P1 | 互动行为 | 点赞、收藏、关注、浏览记录 | 默认按轻量事件表或关系表实现 |
+| P1 | 运营治理 | 举报、审核、屏蔽、置顶、加精、敏感词 | 需要完整操作日志和权限码 |
+| P1 | 内容分发 | 最新、热门、板块流、用户主页 | 早期用数据库排序和缓存，禁止过早引入推荐服务 |
+| P2 | 消息通知 | 评论通知、点赞通知、关注通知、系统通知 | 先做站内通知，再扩展推送渠道 |
+| P2 | 搜索与统计 | 关键词搜索、热榜统计、用户活跃 | 搜索可先用数据库能力，量级上来后再引入专用搜索引擎 |
+
+### 包与接口命名
+
+社区业务默认继续使用当前轻量结构，不新增顶层 DDD 包：
+
+```text
+interfaces/controller/CommunityPostController.java
+interfaces/dto/request/community/post/CommunityPostCreateRequest.java
+interfaces/dto/request/community/post/CommunityPostPageRequest.java
+interfaces/dto/response/vo/CommunityPostResponseVO.java
+
+application/service/CommunityPostApplicationService.java
+
+infrastructure/persistence/po/CommunityPostPO.java
+infrastructure/persistence/mapper/CommunityPostMapper.java
+infrastructure/persistence/internal/CommunityPostInternalService.java
+infrastructure/persistence/internal/impl/CommunityPostInternalServiceImpl.java
+```
+
+接口路径按端划分：
+
+- 用户端社区接口使用 `/api/v1/community/**` 或 `/api/v1/member/**`。
+- 运营/后台治理接口使用 `/api/v1/system/community/**`。
+- 只读公开内容可以放在 `/api/v1/community/**`，写操作必须校验登录态和权限或用户身份。
+- 管理动作使用明确动作路径，例如 `/api/v1/system/community/posts/{id}/audit`、`/api/v1/system/community/posts/{id}/pin`。
+
+权限码按社区语义生成：
+
+```text
+community:post:create
+community:post:delete
+community:comment:create
+system:community:audit
+system:community:report:handle
+```
+
+### 社区数据建模规则
+
+- 帖子、评论、回复、点赞、收藏、关注、举报等对象先使用 `PO + Mapper + InternalService + ApplicationService` 实现。
+- 内容正文和统计字段分离；高频计数如点赞数、评论数、浏览数不得依赖每次全表 count。
+- 用户行为表必须具备唯一约束，例如同一用户对同一帖子只能点赞一次。
+- 删除默认优先逻辑删除；涉及审核、风控、追溯的内容不得物理删除。
+- 内容状态使用明确枚举或状态字段，例如草稿、已发布、审核中、审核拒绝、已删除、已屏蔽。
+- 社区内容必须保留作者 ID、租户 ID 或业务归属字段，后台跨租户治理必须显式说明原因。
+- 敏感内容、举报、审核备注和操作记录禁止返回给普通用户端。
+- 附件、图片、视频只在业务表保存资源标识和元信息，文件存储由独立基础设施能力承接。
+
+### 社区领域模型升级条件
+
+社区模块也默认不生成 DDD 结构。只有出现以下情况，才允许把单个模块升级为领域模型：
+
+- 帖子、评论、审核状态存在多步状态机，并且状态迁移规则在多个用例中复用。
+- 内容发布同时影响积分、等级、通知、风控、热榜等多个一致性边界，需要明确聚合行为。
+- 互动行为需要复杂幂等、撤销、补偿和事件发布，已经无法通过 ApplicationService 私有方法清晰表达。
+
+升级时只升级具体复杂模块，不允许为所有社区模块批量生成 `Entity`、`Factory`、`Repository`。
 
 ## 技术栈
 
@@ -36,7 +127,7 @@
 | 框架 | Spring Boot | 3.5.14 |
 | Web 容器 | Undertow | 替代默认 Tomcat |
 | ORM | MyBatis-Plus | 3.5.16 |
-| 数据库 | H2 / MySQL | dev 默认 H2，test/prod 使用 MySQL |
+| 数据库 | MySQL | 结构和种子数据以 `src/sql/mysql/link-DDL-v0.1.sql`、`src/sql/mysql/link-DML-v0.1.sql` 为准 |
 | 权限框架 | Sa-Token | 1.45.0 |
 | Redis | Redisson | 4.3.0 |
 | Bean 映射 | MapStruct | 仅用于必要响应/对象转换 |
@@ -85,6 +176,8 @@ src/
 │       ├── mapper/
 │       └── logback-spring.xml
 └── sql/mysql/
+    ├── link-DDL-v0.1.sql                  # MySQL 表结构唯一维护入口
+    └── link-DML-v0.1.sql                  # MySQL 菜单、权限和种子数据唯一维护入口
 ```
 
 默认调用链路：
@@ -180,22 +273,22 @@ XxxController
 
 ### 新增小型 CRUD 模块必须生成
 
-以新增 `Product` 为例：
+以新增社区帖子 `CommunityPost` 为例：
 
 ```text
-interfaces/controller/ProductController.java
-interfaces/dto/request/product/ProductCreateRequest.java
-interfaces/dto/request/product/ProductUpdateRequest.java
-interfaces/dto/request/product/ProductPageRequest.java
-interfaces/dto/response/vo/ProductResponseVO.java
+interfaces/controller/CommunityPostController.java
+interfaces/dto/request/community/post/CommunityPostCreateRequest.java
+interfaces/dto/request/community/post/CommunityPostUpdateRequest.java
+interfaces/dto/request/community/post/CommunityPostPageRequest.java
+interfaces/dto/response/vo/CommunityPostResponseVO.java
 
-application/service/ProductApplicationService.java
+application/service/CommunityPostApplicationService.java
 
-infrastructure/persistence/po/ProductPO.java
-infrastructure/persistence/mapper/ProductMapper.java
-infrastructure/persistence/internal/ProductInternalService.java
-infrastructure/persistence/internal/impl/ProductInternalServiceImpl.java
-resources/mapper/ProductMapper.xml               # 仅复杂 SQL 需要
+infrastructure/persistence/po/CommunityPostPO.java
+infrastructure/persistence/mapper/CommunityPostMapper.java
+infrastructure/persistence/internal/CommunityPostInternalService.java
+infrastructure/persistence/internal/impl/CommunityPostInternalServiceImpl.java
+resources/mapper/CommunityPostMapper.xml               # 仅复杂 SQL 需要
 ```
 
 ### 新增小型 CRUD 模块禁止生成
@@ -257,7 +350,7 @@ infrastructure/persistence/repository/XxxRepositoryImpl.java
 
 | 模块 | Controller | 接口路径 | 当前结构 |
 |---|---|---|---|
-| 认证授权 | `AuthController` | `/api/v1/auth` | 存量应用服务 + 安全组件 |
+| 认证授权 | `AuthController` | `/api/v1/auth` | 已迁移轻量结构 + 安全组件 |
 | 租户管理 | `TenantController` | `/api/v1/tenant` | 已迁移轻量结构 |
 | 租户套餐 | `TenantPackageController` | `/api/v1/tenant/package` | 已迁移轻量结构 |
 | 用户管理 | `UserController` | `/api/v1/system/users` | 已迁移轻量结构 |
@@ -267,6 +360,7 @@ infrastructure/persistence/repository/XxxRepositoryImpl.java
 | 用户角色 | `UserRoleController` | `/api/v1/system/user-role` | 已迁移轻量结构 |
 | 角色菜单 | `RoleMenuController` | `/api/v1/system/role-menu` | 已迁移轻量结构 |
 | 操作日志 | `OperateLogController` | `/api/v1/system/operate-log` | 已迁移轻量结构 |
+| 社区板块 | `CommunitySectionController` | `/api/v1/system/community/sections` | 已实现轻量结构 |
 
 ## 接口规范
 
@@ -283,13 +377,15 @@ infrastructure/persistence/repository/XxxRepositoryImpl.java
 - 所有业务 API 必须挂在 `GlobalConstants.API_PREFIX` 下。
 - 系统管理类接口统一使用 `/api/v1/system/**`。
 - 认证类接口统一使用 `/api/v1/auth/**`。
+- 社区用户端接口统一使用 `/api/v1/community/**` 或 `/api/v1/member/**`。
+- 社区运营治理接口统一使用 `/api/v1/system/community/**`。
 - 新增资源路径默认使用单数业务名，例如 `/tenant`、`/system/role`。
 - 创建使用 `POST /resource`。
 - 详情使用 `GET /resource/{id}`。
 - 分页使用 `GET /resource`。
 - 更新使用 `PUT /resource/{id}`。
 - 删除使用 `DELETE /resource/{id}`。
-- 授权、刷新 Token、发送验证码等非 CRUD 动作允许使用动词路径，例如 `/auth/refresh-token`、`/auth/email-code`、`/system/role-menu/authorize`。
+- 授权、刷新 Token、发送验证码、审核、置顶、加精、举报处理等非 CRUD 动作允许使用动词路径，例如 `/auth/refresh-token`、`/auth/email-code`、`/system/role-menu/authorize`、`/system/community/posts/{id}/audit`。
 
 ### Controller
 
@@ -323,6 +419,15 @@ infrastructure/persistence/repository/XxxRepositoryImpl.java
 - JSON 字段需要 `autoResultMap = true`。
 - 数据库关键字字段必须用反引号保护，例如 ``@TableField("`status`")``。
 - PO 禁止包含业务行为方法。
+
+### SQL 脚本
+
+- 数据库结构只允许维护在 `src/sql/mysql/link-DDL-v0.1.sql`。
+- 初始化菜单、权限、角色授权、租户套餐菜单数组和业务种子数据只允许维护在 `src/sql/mysql/link-DML-v0.1.sql`。
+- 新增表时必须同步补齐 DDL、PO、Mapper/InternalService、Response VO、排序映射和必要业务错误码。
+- 新增后台接口权限时必须同步补齐 `system_menu` 种子数据、租户套餐 `menu_ids`、相关角色的 `system_role_menu` 授权。
+- 新增社区业务基础数据时必须写入 `link-DML-v0.1.sql`，不要写入 `schema.sql`、临时 SQL、Java 初始化器或测试专用脚本。
+- `src/main/resources/schema.sql` 不再作为业务表结构维护入口；后续改造不得继续向该文件追加业务表。
 
 ### Mapper
 
@@ -371,7 +476,7 @@ infrastructure/persistence/repository/XxxRepositoryImpl.java
 - 全局登录态由 `SaTokenConfigure` 拦截。
 - 白名单只能放登录、公钥、Actuator、Swagger、错误页等必要入口。
 - 业务写接口必须按权限码添加 `@SaCheckPermission`。
-- 权限码格式使用 `system:resource:action`、`supplier:resource:action`、`merchant:resource:action` 或 `member:resource:action`。
+- 权限码格式使用 `system:resource:action`、`system:community:resource:action`、`community:resource:action` 或 `member:resource:action`。
 - 高频或易被滥用接口必须添加 `@RateLimit`。
 - 登录成功后必须把 `tenantId`、`userType`、`isSuperAdmin` 写入 Sa-Token Session。
 - 密码只允许使用 BCrypt 等单向哈希校验。
@@ -387,13 +492,15 @@ infrastructure/persistence/repository/XxxRepositoryImpl.java
 
 | 访问端 | 身份与会话依据 | 数据访问边界 | 接口与权限边界 |
 |---|---|---|---|
-| 平台端 | 平台用户、平台角色、`isSuperAdmin` | 平台公共数据、租户管理数据 | `/api/v1/tenant/**`、`/api/v1/system/**`，权限码使用 `system:*:*` |
-| 供应商端 | `userType`、`tenantId`、供应商侧角色 | 当前租户内供应商业务数据 | `/api/v1/supplier/**`，权限码使用 `supplier:*:*` |
-| 商家端 | `userType`、`tenantId`、商家侧角色 | 当前租户内商家业务数据 | `/api/v1/merchant/**`，权限码使用 `merchant:*:*` |
-| 用户端 | `userType`、用户 ID | 用户本人数据和明确归属数据 | `/api/v1/member/**`，权限码使用 `member:*:*` |
+| 平台端 | 平台用户、平台角色、`isSuperAdmin` | 平台公共配置、租户管理、全局社区治理数据 | `/api/v1/tenant/**`、`/api/v1/system/**`，权限码使用 `system:*:*` |
+| 运营端 | 运营角色、`tenantId`、社区治理权限 | 当前租户或授权范围内的板块、话题、帖子、评论、举报和推荐位 | `/api/v1/system/community/**`，权限码使用 `system:community:*:*` |
+| 审核端 | 审核角色、数据范围、审核权限 | 待审核内容、举报工单、敏感词命中记录和处理结果 | `/api/v1/system/community/**`，权限码使用 `system:community:audit:*`、`system:community:report:*` |
+| 用户端 | `userType`、用户 ID | 用户本人资料、发帖、评论、点赞、收藏、关注、通知和明确公开内容 | `/api/v1/community/**`、`/api/v1/member/**`，权限码使用 `community:*:*` 或 `member:*:*` |
 
 - 前端菜单隐藏不能作为后端授权依据。
 - 平台普通用户不等同于超级管理员。
+- 用户端公开浏览接口可以匿名访问，但发帖、评论、点赞、收藏、关注、举报、消息通知等接口必须校验登录态。
+- 运营端审核、屏蔽、置顶、加精、推荐等动作必须记录操作日志，并保留处理前后的关键状态。
 - 只有 `isSuperAdmin = true` 或明确标注 `@TenantIgnore` 且有权限码保护的方法，才允许跨租户访问。
 - `@TenantIgnore` 只允许用于平台级公共配置、超级管理员跨租户管理、登录前必要查询和后台治理任务。
 - `@TenantIgnore` 必须贴在最小方法范围，并说明为什么必须绕过租户隔离。
@@ -580,7 +687,7 @@ maven.test.skip=true
 
 ### 已迁移样板
 
-`Tenant`、`TenantPackage`、`User`、`Role`、`Menu`、`Organization`、`UserRole`、`RoleMenu`、`OperateLog` 模块已作为轻量结构样板：
+`Auth`、`Tenant`、`TenantPackage`、`User`、`Role`、`Menu`、`Organization`、`UserRole`、`RoleMenu`、`OperateLog`、`CommunitySection` 模块已作为轻量结构样板：
 
 - Controller 不再组装 `CreateXxxCommand`、`UpdateXxxCommand`、`XxxPageQuery`。
 - ApplicationService 直接接收 Request DTO。
@@ -594,6 +701,7 @@ maven.test.skip=true
 - 用户角色分配、角色菜单授权的覆盖式删除/批量插入和权限缓存失效保留在服务层。
 - 认证模块直接接收登录/邮箱验证码 Request DTO，Token 刷新结果放在 `application/support`，不再保留透传 `LoginCommand`、`EmailLoginCommand`、`SendEmailCodeCommand`。
 - 操作日志写入仍由当前会话补齐租户 ID，自动审计切面直接复用操作日志应用服务。
+- 社区板块模块直接使用 `CommunitySectionPO` 和 `CommunitySectionInternalService`，板块编码同租户唯一、父子板块删除限制、默认排序和状态归一化保留在服务层。
 - 已迁移模块不再保留 `XxxCommand`、`XxxQuery`、`XxxEntity`、`XxxFactory`、`XxxRepository`、`XxxRepositoryImpl`、`XxxConverter` 作为运行链路文件。
 
 ### 旧结构迁移顺序
@@ -604,7 +712,7 @@ maven.test.skip=true
 2. 带租户字段但无跨模块副作用的模块。
 3. 带手机号等敏感字段的模块。
 4. 带权限缓存失效、授权批量写入的模块。
-5. 认证、安全、登录等高风险模块最后迁移或保留现状。
+5. 认证、安全、登录等高风险模块已完成透传 Command 清理；后续只在确有内部语义时新增 `application/support` 结果对象。
 
 ### 迁移步骤
 
@@ -619,8 +727,12 @@ maven.test.skip=true
 
 ### 维护建议
 
-- 新增模块优先复制租户、用户、角色等已迁移模块的轻量链路。
-- 修改数据库表时同步检查 PO、Mapper XML、Response VO、排序映射和服务查询条件。
+- 新增平台基础模块优先复制租户、用户、角色等已迁移模块的轻量链路。
+- 新增社区业务模块优先按“板块/话题 → 帖子 → 评论/回复 → 点赞/收藏/关注 → 举报/审核 → 热榜/通知”的顺序推进。
+- 社区模块第一版先保证清晰表结构、权限边界、状态字段、幂等和审计；不要先引入复杂推荐、事件总线、搜索集群或领域模型。
+- 用户端公开查询和登录后互动要拆开接口，不要在同一个方法里混合匿名浏览、用户状态判断和写行为。
+- 运营端接口必须优先考虑审核状态、操作日志、权限码、数据范围和敏感字段隐藏。
+- 修改数据库表时只更新 `src/sql/mysql/link-DDL-v0.1.sql` 和 `src/sql/mysql/link-DML-v0.1.sql`，并同步检查 PO、Mapper XML、Response VO、排序映射和服务查询条件。
 - 新增排序字段时同步更新 VO 的 `@Sortable` 和服务内字段映射。
 - 新增业务异常时同步补充 `ErrorCode`。
 - 修改代码后建议执行：

@@ -246,3 +246,30 @@ CREATE TABLE `system_operate_log`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT = '操作日志记录';
+
+DROP TABLE IF EXISTS `community_section`;
+
+CREATE TABLE `community_section`
+(
+    `id`          bigint       NOT NULL AUTO_INCREMENT COMMENT '板块ID',
+    `tenant_id`   bigint       NOT NULL DEFAULT 0 COMMENT '租户编号',
+    `name`        varchar(60)  NOT NULL COMMENT '板块名称',
+    `code`        varchar(64)  NOT NULL COMMENT '板块编码，同租户唯一',
+    `description` varchar(500)          DEFAULT NULL COMMENT '板块描述',
+    `cover_url`   varchar(512)          DEFAULT NULL COMMENT '板块封面地址',
+    `parent_id`   bigint       NOT NULL DEFAULT 0 COMMENT '父级板块ID，0表示顶级板块',
+    `sort`        int          NOT NULL DEFAULT 0 COMMENT '排序值',
+    `status`      tinyint      NOT NULL DEFAULT 0 COMMENT '状态（0正常 1停用）',
+    `creator`     bigint                DEFAULT NULL COMMENT '创建者ID',
+    `create_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `updater`     bigint                DEFAULT NULL COMMENT '更新者ID',
+    `update_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `deleted`     tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否删除',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_community_section_tenant_code` (`tenant_id`, `code`),
+    KEY `idx_community_section_tenant_parent` (`tenant_id`, `parent_id`),
+    KEY `idx_community_section_tenant_status` (`tenant_id`, `status`)
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci COMMENT = '社区板块表';
