@@ -131,13 +131,13 @@ public class EmailCodeService {
 
         try {
             MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, false, StandardCharsets.UTF_8.name());
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, StandardCharsets.UTF_8.name());
             setFrom(helper, from, properties.getSenderName());
             helper.setTo(email);
             helper.setSubject(properties.getSubject());
             helper.setText(buildMailText(code, properties), buildMailHtml(code, properties));
             mailSender.send(message);
-        } catch (MailException | MessagingException | UnsupportedEncodingException ex) {
+        } catch (MailException | MessagingException | UnsupportedEncodingException | IllegalStateException ex) {
             log.warn("邮箱验证码发送失败: emailKey={}", emailKey(email), ex);
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "验证码发送失败");
         }
