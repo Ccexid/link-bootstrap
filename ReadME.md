@@ -134,6 +134,7 @@ XxxController
 - 写操作使用 `@Transactional`。
 - 查询操作默认不加事务；复杂一致性读取可使用 `@Transactional(readOnly = true)`。
 - `ApplicationService` 可以直接接收 Request DTO，避免为透传参数生成 Command/Query。
+- 登录、验证码、Token 等平台用例同样遵循该规则；除非存在明确的跨接口内部语义，否则不得为 Request DTO 再包一层 Command。
 - `ApplicationService` 可以返回 `PO` 或 `PageResult<PO>`，Controller 必须转换为 Response VO。
 - 不得在服务中拼接未校验 SQL 排序字段。
 
@@ -591,8 +592,9 @@ maven.test.skip=true
 - 用户密码 BCrypt 哈希、手机号加密/哈希/脱敏、邮箱规范化和登录前最小范围 `@TenantIgnore` 查询保留在服务层。
 - 角色编码同租户唯一校验、分页排序映射和角色变更后的权限缓存失效保留在服务层。
 - 用户角色分配、角色菜单授权的覆盖式删除/批量插入和权限缓存失效保留在服务层。
+- 认证模块直接接收登录/邮箱验证码 Request DTO，Token 刷新结果放在 `application/support`，不再保留透传 `LoginCommand`、`EmailLoginCommand`、`SendEmailCodeCommand`。
 - 操作日志写入仍由当前会话补齐租户 ID，自动审计切面直接复用操作日志应用服务。
-- 已迁移模块不再保留 `XxxEntity`、`XxxFactory`、`XxxRepository`、`XxxRepositoryImpl`、`XxxConverter` 作为运行链路文件。
+- 已迁移模块不再保留 `XxxCommand`、`XxxQuery`、`XxxEntity`、`XxxFactory`、`XxxRepository`、`XxxRepositoryImpl`、`XxxConverter` 作为运行链路文件。
 
 ### 旧结构迁移顺序
 

@@ -1,6 +1,6 @@
 package me.link.bootstrap.interfaces.converter;
 
-import me.link.bootstrap.application.command.TokenRefreshResult;
+import me.link.bootstrap.application.support.TokenRefreshResult;
 import me.link.bootstrap.infrastructure.persistence.po.MenuPO;
 import me.link.bootstrap.infrastructure.persistence.po.OperateLogPO;
 import me.link.bootstrap.infrastructure.persistence.po.OrganizationPO;

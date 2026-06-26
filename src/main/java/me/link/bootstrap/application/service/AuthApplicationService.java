@@ -5,19 +5,19 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.crypto.digest.BCrypt;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import me.link.bootstrap.application.command.EmailLoginCommand;
-import me.link.bootstrap.application.command.LoginCommand;
-import me.link.bootstrap.application.command.SendEmailCodeCommand;
-import me.link.bootstrap.application.command.TokenRefreshResult;
-import me.link.bootstrap.shared.kernel.valueobject.StatusEnum;
+import me.link.bootstrap.application.support.TokenRefreshResult;
 import me.link.bootstrap.infrastructure.persistence.mapper.PermissionMapper;
 import me.link.bootstrap.infrastructure.persistence.po.UserPO;
 import me.link.bootstrap.infrastructure.security.EmailCodeService;
 import me.link.bootstrap.infrastructure.security.HumanVerificationService;
 import me.link.bootstrap.infrastructure.security.LoginAttemptService;
+import me.link.bootstrap.interfaces.dto.request.auth.EmailLoginRequest;
+import me.link.bootstrap.interfaces.dto.request.auth.LoginRequest;
+import me.link.bootstrap.interfaces.dto.request.auth.SendEmailCodeRequest;
 import me.link.bootstrap.shared.kernel.constant.SecurityConstants;
 import me.link.bootstrap.shared.kernel.exception.BusinessException;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
+import me.link.bootstrap.shared.kernel.valueobject.StatusEnum;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -58,24 +58,24 @@ public class AuthApplicationService {
      * 不再覆盖整个 login 方法,避免后续查询角色码时也被绕过(角色码必须按当前租户查)。
      * </p>
      */
-    public void login(LoginCommand command) {
-        humanVerificationService.verify(command.captchaToken());
-        UserPO user = resolveSingleUser(userApplicationService.findByUsernameForLogin(command.username()), ErrorCode.USER_NOT_FOUND);
+    public void login(LoginRequest request) {
+        humanVerificationService.verify(request.getCaptchaToken());
+        UserPO user = resolveSingleUser(userApplicationService.findByUsernameForLogin(request.getUsername()), ErrorCode.USER_NOT_FOUND);
 
         // 锁定前置检查:防止已锁定账号被持续尝试
-        if (loginAttemptService.isLocked(command.username(), user.getTenantId())) {
-            log.warn("登录失败 - 账号已锁定: username={}, tenantId={}", command.username(), user.getTenantId());
+        if (loginAttemptService.isLocked(request.getUsername(), user.getTenantId())) {
+            log.warn("登录失败 - 账号已锁定: username={}, tenantId={}", request.getUsername(), user.getTenantId());
             throw new BusinessException(ErrorCode.USER_LOCKED);
         }
 
-        if (!BCrypt.checkpw(command.password(), user.getPassword())) {
-            long failures = loginAttemptService.recordFailure(command.username(), user.getTenantId());
+        if (!BCrypt.checkpw(request.getPassword(), user.getPassword())) {
+            long failures = loginAttemptService.recordFailure(request.getUsername(), user.getTenantId());
             log.warn("登录失败 - 密码错误: userId={}, tenantId={}, 累计失败次数={}", user.getId(), user.getTenantId(), failures);
             throw new BusinessException(ErrorCode.USER_PASSWORD_ERROR);
         }
 
         // 密码校验通过,重置失败计数防御窗口
-        loginAttemptService.reset(command.username(), user.getTenantId());
+        loginAttemptService.reset(request.getUsername(), user.getTenantId());
         loginResolvedUser(user);
     }
 
@@ -86,9 +86,9 @@ public class AuthApplicationService {
      * 不覆盖后续角色码查询。
      * </p>
      */
-    public void emailLogin(EmailLoginCommand command) {
-        humanVerificationService.verify(command.captchaToken());
-        String email = normalizeEmail(command.email());
+    public void emailLogin(EmailLoginRequest request) {
+        humanVerificationService.verify(request.getCaptchaToken());
+        String email = normalizeEmail(request.getEmail());
         UserPO user = resolveSingleUser(userApplicationService.findByEmailForLogin(email), ErrorCode.USER_NOT_FOUND);
         ensureUserEnabled(user);
 
@@ -98,7 +98,7 @@ public class AuthApplicationService {
         }
 
         try {
-            verifyEmailCode(command);
+            verifyEmailCode(email, request.getCode());
         } catch (BusinessException ex) {
             if (ex.getErrorCode() == ErrorCode.EMAIL_VERIFY_CODE_ERROR) {
                 long failures = loginAttemptService.recordFailure(email, user.getTenantId());
@@ -114,8 +114,8 @@ public class AuthApplicationService {
     /**
      * 发送邮箱验证码。
      */
-    public void sendEmailCode(SendEmailCodeCommand command) {
-        String email = normalizeEmail(command.email());
+    public void sendEmailCode(SendEmailCodeRequest request) {
+        String email = normalizeEmail(request.getEmail());
         UserPO user = resolveSingleUser(userApplicationService.findByEmailForLogin(email), ErrorCode.USER_NOT_FOUND);
         ensureUserEnabled(user);
         emailCodeService.send(email);
@@ -135,8 +135,8 @@ public class AuthApplicationService {
         return email == null ? "" : email.trim();
     }
 
-    private void verifyEmailCode(EmailLoginCommand command) {
-        emailCodeService.verify(command.email(), command.code());
+    private void verifyEmailCode(String email, String code) {
+        emailCodeService.verify(email, code);
     }
 
     private void ensureUserEnabled(UserPO user) {

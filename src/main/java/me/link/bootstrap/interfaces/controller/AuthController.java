@@ -4,9 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import me.link.bootstrap.application.command.EmailLoginCommand;
-import me.link.bootstrap.application.command.LoginCommand;
-import me.link.bootstrap.application.command.SendEmailCodeCommand;
 import me.link.bootstrap.application.service.AuthApplicationService;
 import me.link.bootstrap.infrastructure.crypto.ApiCryptoProperties;
 import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
@@ -44,11 +41,7 @@ public class AuthController {
     @RateLimit(key = "#args[0].username", windowSeconds = 60L, maxRequests = 5L, message = "账号登录尝试过于频繁,请稍后再试")
     @Operation(summary = "用户登录(账号密码登录)", description = "校验账号密码并签发 Token")
     public ResultResponse<TokenResponseVO> login(@Valid @RequestBody LoginRequest request) {
-        authApplicationService.login(new LoginCommand(
-                request.getUsername(),
-                request.getPassword(),
-                request.getCaptchaToken()
-        ));
+        authApplicationService.login(request);
         return ResultResponse.success(responseVOConverter.toResponse(authApplicationService.currentToken()));
     }
 
@@ -56,11 +49,7 @@ public class AuthController {
     @RateLimit(key = "#args[0].email", windowSeconds = 60L, maxRequests = 5L, message = "邮箱登录尝试过于频繁,请稍后再试")
     @Operation(summary = "用户登录(邮箱验证码登录)", description = "校验邮箱验证码并签发 Token")
     public ResultResponse<TokenResponseVO> emailLogin(@Valid @RequestBody EmailLoginRequest request) {
-        authApplicationService.emailLogin(new EmailLoginCommand(
-                request.getEmail(),
-                request.getCode(),
-                request.getCaptchaToken()
-        ));
+        authApplicationService.emailLogin(request);
         return ResultResponse.success(responseVOConverter.toResponse(authApplicationService.currentToken()));
     }
 
@@ -68,7 +57,7 @@ public class AuthController {
     @RateLimit(key = "#args[0].email", windowSeconds = 60L, maxRequests = 1L, message = "验证码发送过于频繁,请稍后再试")
     @Operation(summary = "发送邮箱验证码", description = "向指定邮箱发送登录验证码")
     public ResultResponse<Void> sendEmailCode(@Valid @RequestBody SendEmailCodeRequest request) {
-        authApplicationService.sendEmailCode(new SendEmailCodeCommand(request.getEmail()));
+        authApplicationService.sendEmailCode(request);
         return ResultResponse.success();
     }
 
