@@ -4,11 +4,12 @@ import io.undertow.Undertow;
 import io.undertow.UndertowOptions;
 import io.undertow.server.DefaultByteBufferPool;
 import io.undertow.websockets.jsr.WebSocketDeploymentInfo;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 
@@ -26,23 +27,11 @@ import org.springframework.boot.web.server.WebServerFactoryCustomizer;
  * Undertow 自动配置，集中定义 Web 容器相关参数。
  */
 @ConditionalOnClass({Undertow.class, UndertowServletWebServerFactory.class})
+@EnableConfigurationProperties(LinkUndertowProperties.class)
+@RequiredArgsConstructor
 public class LinkUndertowAutoConfiguration implements WebServerFactoryCustomizer<UndertowServletWebServerFactory> {
 
-    // 默认使用 CPU 核心数，允许通过 yml 配置文件进行精准调优
-    @Value("${server.undertow.io-threads:0}")
-    private int customIoThreads;
-
-    @Value("${server.undertow.worker-threads:0}")
-    private int customWorkerThreads;
-
-    @Value("${server.undertow.no-request-timeout:30000}")
-    private int noRequestTimeout;
-
-    @Value("${server.undertow.buffer-size:16384}")
-    private int bufferSize;
-
-    @Value("${server.undertow.multipart-max-entity-size:16777216}")
-    private long multipartMaxEntitySize;
+    private final LinkUndertowProperties properties;
 
     @Override
     public void customize(UndertowServletWebServerFactory factory) {
@@ -50,11 +39,11 @@ public class LinkUndertowAutoConfiguration implements WebServerFactoryCustomizer
         int cores = Runtime.getRuntime().availableProcessors();
 
         // 如果没有配置，则使用推荐的动态计算公式
-        int ioThreads = customIoThreads > 0 ? customIoThreads : cores;
-        int workerThreads = customWorkerThreads > 0 ? customWorkerThreads : cores * 8;
+        int ioThreads = properties.getIoThreads() > 0 ? properties.getIoThreads() : cores;
+        int workerThreads = properties.getWorkerThreads() > 0 ? properties.getWorkerThreads() : cores * 8;
 
         log.info("初始化 Undertow 核心参数调优 -> IO 线程数: [{}], Worker 线程数: [{}], 请求超时: [{}ms]",
-                ioThreads, workerThreads, noRequestTimeout);
+                ioThreads, workerThreads, properties.getNoRequestTimeout());
 
         factory.addBuilderCustomizers(builder -> {
             // 1. IO 线程数：主要用于处理非阻塞的 TCP 连接
@@ -64,14 +53,14 @@ public class LinkUndertowAutoConfiguration implements WebServerFactoryCustomizer
             builder.setWorkerThreads(workerThreads);
 
             // 3. 设置连接空闲超时时间，防止大批死连接占用连接池资源
-            builder.setServerOption(UndertowOptions.NO_REQUEST_TIMEOUT, noRequestTimeout);
-            builder.setServerOption(UndertowOptions.IDLE_TIMEOUT, noRequestTimeout);
+            builder.setServerOption(UndertowOptions.NO_REQUEST_TIMEOUT, properties.getNoRequestTimeout());
+            builder.setServerOption(UndertowOptions.IDLE_TIMEOUT, properties.getNoRequestTimeout());
 
             // 4. 开启 HTTP/2 支持，提升多路复用性能
             builder.setServerOption(UndertowOptions.ENABLE_HTTP2, true);
 
             // 5. 调整控制缓冲区的分配,稍微激进一点提升吞吐
-            builder.setServerOption(UndertowOptions.MULTIPART_MAX_ENTITY_SIZE, multipartMaxEntitySize);
+            builder.setServerOption(UndertowOptions.MULTIPART_MAX_ENTITY_SIZE, properties.getMultipartMaxEntitySize());
         });
 
         factory.addDeploymentInfoCustomizers(deploymentInfo -> {
@@ -88,7 +77,7 @@ public class LinkUndertowAutoConfiguration implements WebServerFactoryCustomizer
 
             // direct: true 表示使用堆外内存（Direct Memory），规避 JVM 频繁 GC 带来的停顿
             // bufferSize: 生产环境推荐 16KB (16384)
-            wsInfo.setBuffers(new DefaultByteBufferPool(true, bufferSize));
+            wsInfo.setBuffers(new DefaultByteBufferPool(true, properties.getBufferSize()));
         });
     }
 }

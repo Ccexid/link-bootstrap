@@ -37,7 +37,6 @@ spring:
   sql:
     init:
       mode: never
-      schema-locations: classpath*:schema.sql
 
 # Sa-Token配置 (开发环境)
 sa-token:

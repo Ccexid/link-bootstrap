@@ -2,6 +2,8 @@ package me.link.bootstrap.infrastructure.config;
 
 import lombok.RequiredArgsConstructor;
 import me.link.bootstrap.shared.kernel.constant.GlobalConstants;
+import me.link.bootstrap.shared.kernel.exception.BusinessException;
+import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -60,7 +62,7 @@ public class LinkCorsAutoConfiguration {
         LinkSecurityProperties.Cors cors = linkSecurityProperties.getCors();
         List<String> allowedOriginPatterns = normalize(cors.getAllowedOriginPatterns());
         if (cors.isAllowCredentials() && containsGlobalWildcard(allowedOriginPatterns)) {
-            throw new IllegalStateException(
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR,
                     "link.security.cors.allow-credentials=true cannot be used with wildcard origin pattern '*'. "
                             + "Configure link.security.cors.allowed-origin-patterns with explicit domains.");
         }

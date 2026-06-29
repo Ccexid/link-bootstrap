@@ -14,7 +14,7 @@
 -- 所有种子用户的初始密码统一为:Admin@123456
 -- system_users 表 INSERT 时已经填好对应的 BCrypt 哈希:
 --     $2a$10$fl.Cigg977fX.8rT/XtmEuKBtaYFJN/A.G7UMewQH0C2.ymOOSvJC
--- (满足 UserFactory.validate 的 8-64 字符规则,兼容 hutool 内置 jBCrypt 实现)
+-- (满足当前用户服务的 8-64 字符密码规则,兼容 hutool 内置 jBCrypt 实现)
 --
 -- 手机号说明:
 -- system_users/system_tenant/system_organization 不再保存明文手机号。

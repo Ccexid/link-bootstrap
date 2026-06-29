@@ -25,7 +25,7 @@ import org.mapstruct.*;
         // 原因：业务扩展增删字段时，开发人员极其容易漏掉转换逻辑。设为 ERROR 可以在编译期直接拦截，保障核心数据不丢失。
         unmappedTargetPolicy = ReportingPolicy.ERROR,
 
-        // 3. 源字段（Source）多出来的字段通常是由于 DTO 或 Entity 字段不一致，可以安全忽略
+        // 3. 源字段（Source）多出来的字段通常是由于 DTO、PO 或 VO 字段不一致，可以安全忽略
         unmappedSourcePolicy = ReportingPolicy.IGNORE,
 
         // 4. 当集合或列表为 null 时，自动返回空列表（如 Collections.emptyList()）而不是返回 null，规避下游 NPE 崩溃

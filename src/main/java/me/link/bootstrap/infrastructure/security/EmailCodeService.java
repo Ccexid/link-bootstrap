@@ -12,7 +12,7 @@ import org.redisson.api.RAtomicLong;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -48,9 +48,7 @@ public class EmailCodeService {
     private final RedissonClient redissonClient;
     private final LinkSecurityProperties securityProperties;
     private final ObjectProvider<JavaMailSender> mailSenderProvider;
-
-    @Value("${spring.mail.username:}")
-    private String mailUsername;
+    private final MailProperties mailProperties;
 
     /**
      * 生成验证码并发送到指定邮箱。
@@ -124,7 +122,9 @@ public class EmailCodeService {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "邮件服务未配置");
         }
 
-        String from = StringUtils.defaultIfBlank(StringUtils.trimToNull(properties.getFrom()), StringUtils.trimToNull(mailUsername));
+        String from = StringUtils.defaultIfBlank(
+                StringUtils.trimToNull(properties.getFrom()),
+                StringUtils.trimToNull(mailProperties.getUsername()));
         if (StringUtils.isBlank(from)) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "邮箱发件人未配置");
         }
