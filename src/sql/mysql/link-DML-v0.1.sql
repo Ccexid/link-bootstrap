@@ -308,8 +308,8 @@ VALUES
 -- ====================================================================
 INSERT INTO `community_post` (`id`, `section_id`, `topic_id`, `author_id`, `title`, `summary`, `content`, `cover_url`, `view_count`, `like_count`, `comment_count`, `collect_count`, `pinned`, `featured`, `status`, `tenant_id`, `creator`, `updater`)
 VALUES
-    (1, 1, 1, 4, '步行街每日闲聊帖', '示例租户A的步行街闲聊帖子', '这里是步行街每日闲聊帖正文，用于本地联调帖子列表和详情。', NULL, 120, 12, 2, 3, 1, 0, 0, 1, 4, 4),
-    (2, 2, 2, 4, '今天的 NBA 比赛怎么看', '示例租户A的篮球讨论帖子', '这里是 NBA 比赛讨论正文，后续可接入评论、点赞和收藏。', NULL, 80, 8, 1, 1, 0, 1, 0, 1, 4, 4),
+    (1, 1, 1, 4, '步行街每日闲聊帖', '示例租户A的步行街闲聊帖子', '这里是步行街每日闲聊帖正文，用于本地联调帖子列表和详情。', NULL, 120, 1, 2, 1, 1, 0, 0, 1, 4, 4),
+    (2, 2, 2, 4, '今天的 NBA 比赛怎么看', '示例租户A的篮球讨论帖子', '这里是 NBA 比赛讨论正文，后续可接入评论、点赞和收藏。', NULL, 80, 1, 1, 0, 0, 1, 0, 1, 4, 4),
     (3, 5, 5, 5, '租户B步行街开帖', '示例租户B的步行街闲聊帖子', '这里是租户B社区帖子正文，用于验证租户隔离。', NULL, 20, 1, 0, 0, 0, 0, 0, 2, 5, 5);
 
 -- ====================================================================
@@ -322,7 +322,19 @@ VALUES
     (3, 2, 0, 0, 4, NULL, '这场比赛第四节很关键。', 2, 0, 0, 1, 4, 4);
 
 -- ====================================================================
--- 12. 组织 system_organization (示例)
+-- 12. 社区帖子互动 community_post_like / community_post_collect (示例)
+-- ====================================================================
+INSERT INTO `community_post_like` (`id`, `post_id`, `user_id`, `tenant_id`, `creator`, `updater`)
+VALUES
+    (1, 1, 4, 1, 4, 4),
+    (2, 2, 4, 1, 4, 4);
+
+INSERT INTO `community_post_collect` (`id`, `post_id`, `user_id`, `tenant_id`, `creator`, `updater`)
+VALUES
+    (1, 1, 4, 1, 4, 4);
+
+-- ====================================================================
+-- 13. 组织 system_organization (示例)
 -- ====================================================================
 INSERT INTO `system_organization` (`id`, `name`, `org_type`, `parent_id`, `ancestors`, `level`, `contact_name`, `contact_mobile_cipher`, `contact_mobile_hash`, `contact_mobile_mask`, `contact_mobile_key_version`, `status`, `tenant_id`, `creator`, `updater`)
 VALUES

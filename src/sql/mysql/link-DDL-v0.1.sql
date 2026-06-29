@@ -255,6 +255,8 @@ DROP TABLE IF EXISTS `community_section`;
 DROP TABLE IF EXISTS `community_topic`;
 DROP TABLE IF EXISTS `community_post`;
 DROP TABLE IF EXISTS `community_comment`;
+DROP TABLE IF EXISTS `community_post_like`;
+DROP TABLE IF EXISTS `community_post_collect`;
 
 CREATE TABLE `community_section`
 (
@@ -365,3 +367,41 @@ CREATE TABLE `community_comment`
   AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT = '社区评论表';
+
+CREATE TABLE `community_post_like`
+(
+    `id`          bigint     NOT NULL AUTO_INCREMENT COMMENT '帖子点赞ID',
+    `tenant_id`   bigint     NOT NULL DEFAULT 0 COMMENT '租户编号',
+    `post_id`     bigint     NOT NULL COMMENT '帖子ID',
+    `user_id`     bigint     NOT NULL COMMENT '用户ID',
+    `creator`     bigint              DEFAULT NULL COMMENT '创建者ID',
+    `create_time` datetime   NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `updater`     bigint              DEFAULT NULL COMMENT '更新者ID',
+    `update_time` datetime   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `deleted`     tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_community_post_like_user` (`tenant_id`, `post_id`, `user_id`),
+    KEY `idx_community_post_like_user` (`tenant_id`, `user_id`, `create_time`)
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci COMMENT = '社区帖子点赞表';
+
+CREATE TABLE `community_post_collect`
+(
+    `id`          bigint     NOT NULL AUTO_INCREMENT COMMENT '帖子收藏ID',
+    `tenant_id`   bigint     NOT NULL DEFAULT 0 COMMENT '租户编号',
+    `post_id`     bigint     NOT NULL COMMENT '帖子ID',
+    `user_id`     bigint     NOT NULL COMMENT '用户ID',
+    `creator`     bigint              DEFAULT NULL COMMENT '创建者ID',
+    `create_time` datetime   NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `updater`     bigint              DEFAULT NULL COMMENT '更新者ID',
+    `update_time` datetime   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `deleted`     tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_community_post_collect_user` (`tenant_id`, `post_id`, `user_id`),
+    KEY `idx_community_post_collect_user` (`tenant_id`, `user_id`, `create_time`)
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci COMMENT = '社区帖子收藏表';

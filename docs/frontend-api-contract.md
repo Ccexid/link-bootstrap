@@ -421,6 +421,20 @@
 
 响应字段：`id`、`section_id`、`topic_id`、`author_id`、`title`、`summary`、`content`、`cover_url`、`view_count`、`like_count`、`comment_count`、`collect_count`、`pinned`、`featured`、`status`、`created_at`、`updated_at`。
 
+## 社区帖子互动用户端
+
+基础路径：`/api/v1/community/posts`。点赞和收藏接口为幂等语义，重复点赞/收藏不会报错；取消未点赞/未收藏状态也不会报错。
+
+| 方法 | 路径 | 权限码 | 请求 | 响应 |
+|---|---|---|---|---|
+| POST | `/api/v1/community/posts/{id}/like` | 登录即可 | path: `id` | `CommunityPostInteractionResponseVO` |
+| DELETE | `/api/v1/community/posts/{id}/like` | 登录即可 | path: `id` | `CommunityPostInteractionResponseVO` |
+| POST | `/api/v1/community/posts/{id}/collect` | 登录即可 | path: `id` | `CommunityPostInteractionResponseVO` |
+| DELETE | `/api/v1/community/posts/{id}/collect` | 登录即可 | path: `id` | `CommunityPostInteractionResponseVO` |
+| GET | `/api/v1/community/posts/{id}/interaction` | 登录即可 | path: `id` | `CommunityPostInteractionResponseVO` |
+
+`CommunityPostInteractionResponseVO` 字段：`liked`、`collected`、`like_count`、`collect_count`。
+
 ## 社区评论用户端
 
 基础路径：`/api/v1/community/comments`。当前版本受全局登录拦截保护，需要登录后访问；如后续开放只读评论列表，应同步调整登录白名单。

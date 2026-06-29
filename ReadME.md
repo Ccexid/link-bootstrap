@@ -373,6 +373,7 @@ infrastructure/persistence/repository/XxxRepositoryImpl.java
 | 社区话题 | `CommunityTopicController` | `/api/v1/system/community/topics` | 已实现轻量结构 |
 | 社区帖子 | `CommunityPostController` | `/api/v1/community/posts` | 已实现轻量结构 |
 | 社区评论 | `CommunityCommentController` | `/api/v1/community/comments` | 已实现轻量结构 |
+| 帖子互动 | `CommunityPostInteractionController` | `/api/v1/community/posts/{id}/like|collect|interaction` | 已实现轻量结构 |
 
 ## 接口规范
 
@@ -722,6 +723,7 @@ maven.test.skip=true
 - 社区话题模块直接使用 `CommunityTopicPO` 和 `CommunityTopicInternalService`，话题编码同租户唯一、所属板块必须归属当前租户、默认排序和状态归一化保留在服务层。
 - 社区帖子模块直接使用 `CommunityPostPO` 和 `CommunityPostInternalService`，发帖、本人编辑删除、板块/话题租户归属校验和高频计数字段保留在服务层。
 - 社区评论模块直接使用 `CommunityCommentPO` 和 `CommunityCommentInternalService`，一级评论/回复层级、本人编辑删除、帖子归属校验和帖子/父评论计数维护保留在服务层。
+- 帖子互动模块直接使用点赞/收藏关系 PO 和 InternalService，用户-帖子唯一约束、幂等点击语义和帖子计数字段维护保留在服务层。
 - 已迁移模块不再保留 `XxxCommand`、`XxxQuery`、`XxxEntity`、`XxxFactory`、`XxxRepository`、`XxxRepositoryImpl`、`XxxConverter` 作为运行链路文件。
 
 ### 旧结构迁移顺序
