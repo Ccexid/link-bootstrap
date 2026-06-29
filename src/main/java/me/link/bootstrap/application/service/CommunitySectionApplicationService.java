@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 社区板块服务，直接编排板块校验、分页查询和持久化。
@@ -43,11 +44,13 @@ public class CommunitySectionApplicationService {
 
     @Transactional
     public CommunitySectionPO create(CommunitySectionCreateRequest request) {
+        Long tenantId = SecurityHelper.getRequiredTenantId();
         String code = normalizeCode(request.getCode());
         ensureCodeUnique(code, null);
+        validateParent(request.getParentId(), null, tenantId);
         CommunitySectionPO section = new CommunitySectionPO();
         applyMutableFields(section, request.getName(), code, request.getDescription(), request.getCoverUrl(), request.getParentId(), request.getSort(), request.getStatus());
-        section.setTenantId(SecurityHelper.getRequiredTenantId());
+        section.setTenantId(tenantId);
         communitySectionInternalService.save(section);
         return section;
     }
@@ -74,10 +77,12 @@ public class CommunitySectionApplicationService {
     @Transactional
     public CommunitySectionPO update(Long id, CommunitySectionUpdateRequest request) {
         CommunitySectionPO section = get(id);
+        Long tenantId = SecurityHelper.getRequiredTenantId();
         String code = normalizeCode(request.getCode());
         ensureCodeUnique(code, id);
+        validateParent(request.getParentId(), id, tenantId);
         applyMutableFields(section, request.getName(), code, request.getDescription(), request.getCoverUrl(), request.getParentId(), request.getSort(), request.getStatus());
-        section.setTenantId(SecurityHelper.getRequiredTenantId());
+        section.setTenantId(tenantId);
         ApplicationAssert.requireSuccess(communitySectionInternalService.updateById(section), ErrorCode.COMMUNITY_SECTION_NOT_FOUND);
         return get(id);
     }
@@ -119,6 +124,22 @@ public class CommunitySectionApplicationService {
                 .ne(ignoredId != null, CommunitySectionPO::getId, ignoredId));
         if (count > 0) {
             throw new BusinessException(ErrorCode.COMMUNITY_SECTION_CODE_DUPLICATE);
+        }
+    }
+
+    private void validateParent(Long parentId, Long selfId, Long tenantId) {
+        if (parentId == null || parentId == 0L) {
+            return;
+        }
+        if (parentId < 0) {
+            ApplicationAssert.invalidParam("社区板块parentId不能小于0");
+        }
+        if (Objects.equals(parentId, selfId)) {
+            ApplicationAssert.invalidParam("社区板块不能设置自身为父板块");
+        }
+        CommunitySectionPO parent = communitySectionInternalService.getById(parentId);
+        if (parent == null || !Objects.equals(parent.getTenantId(), tenantId)) {
+            throw new BusinessException(ErrorCode.COMMUNITY_SECTION_NOT_FOUND);
         }
     }
 

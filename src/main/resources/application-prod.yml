@@ -11,7 +11,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://${DB_HOST:127.0.0.1}:${DB_PORT:3306}/${DB_NAME:link-pro}?useSSL=true&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:admin3306}
+    password: ${DB_PASSWORD:}
     hikari:
       maximum-pool-size: 30
       minimum-idle: 10
@@ -41,7 +41,7 @@ spring:
 sa-token:
   is-log: false
   is-color-log: false
-  jwt-secret-key: ${JWT_SECRET:must-change-this-in-production}
+  jwt-secret-key: ${JWT_SECRET:}
   timeout: 7200
   active-timeout: 3600
 

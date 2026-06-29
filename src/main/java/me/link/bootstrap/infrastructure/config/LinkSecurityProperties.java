@@ -57,8 +57,8 @@ public class LinkSecurityProperties {
         /** 同一验证码允许的最大错误校验次数。 */
         private int maxVerifyAttempts = 5;
 
-        /** Redis 摘要签名密钥,生产环境必须通过环境变量或配置中心覆盖。 */
-        private String secret = "link-bootstrap-dev-email-code-secret";
+        /** Redis 摘要签名密钥,必须通过环境变量或配置中心注入。 */
+        private String secret;
 
         /** 发件人地址。为空时使用 spring.mail.username。 */
         private String from;

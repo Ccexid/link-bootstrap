@@ -45,6 +45,7 @@ public class MenuApplicationService {
         MenuPO menu = new MenuPO();
         applyMutableFields(menu, request.getName(), request.getPermission(), request.getType(), request.getSort(), request.getParentId(), request.getPath(), request.getIcon(), request.getComponent(), request.getComponentName(), request.getStatus(), request.getVisible(), request.getKeepAlive(), request.getAlwaysShow());
         menuInternalService.save(menu);
+        permissionCacheService.evictAll();
         return menu;
     }
 

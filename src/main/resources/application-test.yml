@@ -9,7 +9,7 @@ spring:
     driver-class-name: com.p6spy.engine.spy.P6SpyDriver
     url: jdbc:p6spy:mysql://192.168.0.245:3306/7link-pro?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&allowPublicKeyRetrieval=true
     username: root
-    password: ${DB_PASSWORD:mysql_5rpkQb}
+    password: ${DB_PASSWORD:}
     hikari:
       maximum-pool-size: 15
       minimum-idle: 3
@@ -24,7 +24,7 @@ spring:
       port: 6379
       database: 1
       timeout: 5000ms
-      password: ${REDIS_PASSWORD:redis_FtTapD}
+      password: ${REDIS_PASSWORD:}
       lettuce:
         pool:
           max-active: 12
@@ -36,7 +36,7 @@ spring:
 sa-token:
   is-log: true
   is-color-log: false
-  jwt-secret-key: test-secret-key-change-in-prod
+  jwt-secret-key: ${JWT_SECRET:}
 
 # MyBatis配置 (关闭SQL打印)
 mybatis-plus:
