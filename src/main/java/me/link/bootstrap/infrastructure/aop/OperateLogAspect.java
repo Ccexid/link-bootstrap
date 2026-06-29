@@ -24,9 +24,12 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import static me.link.bootstrap.shared.kernel.constant.GlobalConstants.SYSTEM_USER;
 
@@ -65,6 +68,31 @@ public class OperateLogAspect {
 
     /** 写入 extra 字段的内容长度上限，避免大请求体导致日志过大。 */
     private static final int MAX_EXTRA_LENGTH = 2000;
+
+    /** 完全匹配才脱敏的字段名，避免误伤业务 code 类字段以外的命名。 */
+    private static final Set<String> EXACT_SENSITIVE_NAMES = Set.of(
+            "code",
+            "captcha"
+    );
+
+    /** 包含以下片段的字段名一律脱敏。字段名会先移除下划线、连字符和空格并转小写。 */
+    private static final List<String> SENSITIVE_NAME_FRAGMENTS = List.of(
+            "password",
+            "token",
+            "authorization",
+            "secret",
+            "credential",
+            "captcha",
+            "verifycode",
+            "verificationcode",
+            "emailcode",
+            "smscode",
+            "authcode",
+            "securitycode",
+            "totp",
+            "otp",
+            "mfa"
+    );
 
     private final OperateLogApplicationService operateLogApplicationService;
     private final ObjectMapper objectMapper;
@@ -396,13 +424,23 @@ public class OperateLogAspect {
             Object value = entry.getValue();
             if (isSensitiveName(key)) {
                 result.put(key, "******");
-            } else if (value instanceof Map<?, ?> nested) {
-                result.put(key, sanitizeMap(nested));
             } else {
-                result.put(key, value);
+                result.put(key, sanitizeNestedValue(value));
             }
         }
         return result;
+    }
+
+    private Object sanitizeNestedValue(Object value) {
+        if (value instanceof Map<?, ?> nested) {
+            return sanitizeMap(nested);
+        }
+        if (value instanceof Collection<?> collection) {
+            return collection.stream()
+                    .map(this::sanitizeNestedValue)
+                    .toList();
+        }
+        return value;
     }
 
     /**
@@ -412,12 +450,19 @@ public class OperateLogAspect {
      * @return true 表示需要脱敏
      */
     private boolean isSensitiveName(String name) {
-        String lowerName = name == null ? "" : name.toLowerCase(Locale.ROOT);
-        return lowerName.contains("password")
-                || lowerName.contains("token")
-                || lowerName.contains("authorization")
-                || lowerName.contains("secret")
-                || lowerName.contains("credential");
+        String normalizedName = normalizeSensitiveName(name);
+        return EXACT_SENSITIVE_NAMES.contains(normalizedName)
+                || SENSITIVE_NAME_FRAGMENTS.stream().anyMatch(normalizedName::contains);
+    }
+
+    private String normalizeSensitiveName(String name) {
+        if (name == null) {
+            return "";
+        }
+        return name.replace("_", "")
+                .replace("-", "")
+                .replace(" ", "")
+                .toLowerCase(Locale.ROOT);
     }
 
     /**

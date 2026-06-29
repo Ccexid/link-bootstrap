@@ -16,4 +16,7 @@ public class SendEmailCodeRequest {
     @Email(message = "邮箱格式不正确")
     @Schema(description = "邮箱", example = "admin@example.com")
     private String email;
+
+    @Schema(description = "人机校验 Token,开启人机校验后必填")
+    private String captchaToken;
 }

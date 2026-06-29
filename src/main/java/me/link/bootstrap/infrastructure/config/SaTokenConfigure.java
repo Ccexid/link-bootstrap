@@ -33,6 +33,7 @@ public class SaTokenConfigure implements WebMvcConfigurer {
      *   <li>{@code /api/v1/auth/tokens} - 创建 Token 入口本身必须放行,否则前端无法首次取得 Token</li>
      *   <li>{@code /api/v1/auth/email-code-tokens} - 邮箱验证码创建 Token 入口必须放行</li>
      *   <li>{@code /api/v1/auth/email-verification-codes} - 创建邮箱验证码入口必须放行</li>
+     *   <li>{@code /api/v1/auth/public-keys/current} - 接口加密首次握手需要未登录获取公钥</li>
      *   <li>{@code /actuator/**} - 健康检查与监控端点(prod 已限制只暴露 health/info)</li>
      *   <li>{@code /error} - Spring Boot 默认错误页转发路径</li>
      *   <li>Swagger/SpringDoc - dev/test 环境调试,prod 已通过 enabled=false 关闭暴露</li>
@@ -42,6 +43,7 @@ public class SaTokenConfigure implements WebMvcConfigurer {
             GlobalConstants.API_PREFIX + "/auth/tokens",
             GlobalConstants.API_PREFIX + "/auth/email-code-tokens",
             GlobalConstants.API_PREFIX + "/auth/email-verification-codes",
+            GlobalConstants.API_PREFIX + "/auth/public-keys/current",
             "/actuator/**",
             "/error",
             "/swagger-ui/**",

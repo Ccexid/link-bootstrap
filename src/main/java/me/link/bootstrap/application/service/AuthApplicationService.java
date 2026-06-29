@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.link.bootstrap.application.support.TokenRefreshResult;
 import me.link.bootstrap.infrastructure.persistence.mapper.PermissionMapper;
 import me.link.bootstrap.infrastructure.persistence.po.UserPO;
+import me.link.bootstrap.infrastructure.security.EmailCodeSendRateLimitService;
 import me.link.bootstrap.infrastructure.security.EmailCodeService;
 import me.link.bootstrap.infrastructure.security.HumanVerificationService;
 import me.link.bootstrap.infrastructure.security.LoginAttemptService;
@@ -45,6 +46,7 @@ public class AuthApplicationService {
     private final LoginAttemptService loginAttemptService;
     private final EmailCodeService emailCodeService;
     private final HumanVerificationService humanVerificationService;
+    private final EmailCodeSendRateLimitService emailCodeSendRateLimitService;
 
     /**
      * 账号密码登录。
@@ -117,9 +119,24 @@ public class AuthApplicationService {
      * 发送邮箱验证码。
      */
     public void sendEmailCode(SendEmailCodeRequest request) {
+        humanVerificationService.verify(request.getCaptchaToken());
         String email = normalizeEmail(request.getEmail());
-        UserPO user = resolveSingleUser(userApplicationService.findByEmailForLogin(email), ErrorCode.USER_NOT_FOUND);
-        ensureUserEnabled(user);
+        emailCodeSendRateLimitService.check(email);
+
+        List<UserPO> users = userApplicationService.findByEmailForLogin(email);
+        if (users == null || users.isEmpty()) {
+            log.warn("邮箱验证码发送请求未匹配用户: email={}", maskEmail(email));
+            return;
+        }
+        if (users.size() > 1) {
+            log.warn("邮箱验证码发送请求匹配到多个租户: email={}", maskEmail(email));
+            return;
+        }
+        UserPO user = users.get(0);
+        if (user.getStatus() == StatusEnum.DISABLE) {
+            log.warn("邮箱验证码发送请求命中禁用账号: userId={}, tenantId={}", user.getId(), user.getTenantId());
+            return;
+        }
         emailCodeService.send(email);
     }
 
@@ -135,6 +152,20 @@ public class AuthApplicationService {
 
     private String normalizeEmail(String email) {
         return email == null ? "" : email.trim();
+    }
+
+    private String maskEmail(String email) {
+        String normalizedEmail = normalizeEmail(email);
+        int atIndex = normalizedEmail.indexOf('@');
+        if (atIndex <= 0) {
+            return "***";
+        }
+        String localPart = normalizedEmail.substring(0, atIndex);
+        String domain = normalizedEmail.substring(atIndex);
+        if (localPart.length() == 1) {
+            return "*" + domain;
+        }
+        return localPart.charAt(0) + "***" + domain;
     }
 
     private void verifyEmailCode(String email, String code) {

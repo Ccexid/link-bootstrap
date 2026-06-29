@@ -84,6 +84,24 @@ link:
       - /swagger-ui/**
       - /swagger-ui.html
   security:
+    cors:
+      # 默认仅允许本地开发前端携带凭证跨域。生产环境请在 application-prod.yml 中通过环境变量配置明确域名。
+      allowed-origin-patterns:
+        - http://localhost:*
+        - http://127.0.0.1:*
+      allowed-methods:
+        - GET
+        - POST
+        - PUT
+        - PATCH
+        - DELETE
+        - OPTIONS
+      allowed-headers:
+        - "*"
+      exposed-headers:
+        - X-Trace-Id
+      allow-credentials: ${LINK_CORS_ALLOW_CREDENTIALS:true}
+      max-age: ${LINK_CORS_MAX_AGE:1h}
     human-verification:
       enabled: ${LINK_HUMAN_VERIFICATION_ENABLED:false}
       verify-url: ${LINK_HUMAN_VERIFICATION_VERIFY_URL:https://challenges.cloudflare.com/turnstile/v0/siteverify}
@@ -102,6 +120,8 @@ link:
       system-name: ${LINK_EMAIL_CODE_SYSTEM_NAME:Link Platform}
       company-name: ${LINK_EMAIL_CODE_COMPANY_NAME:Link Platform}
       subject: ${LINK_EMAIL_CODE_SUBJECT:登录验证码}
+      send-ip-email-window: ${LINK_EMAIL_CODE_SEND_IP_EMAIL_WINDOW:10m}
+      send-ip-email-max-requests: ${LINK_EMAIL_CODE_SEND_IP_EMAIL_MAX_REQUESTS:3}
     client-ip:
       trust-forward-headers: false
       forward-headers:

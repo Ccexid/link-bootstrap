@@ -1,19 +1,23 @@
 package me.link.bootstrap.infrastructure.config;
 
+import lombok.RequiredArgsConstructor;
 import me.link.bootstrap.shared.kernel.constant.GlobalConstants;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.Ordered;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-import org.springframework.core.Ordered;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 
-import java.util.Collections;
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * 跨域资源共享 (CORS) 自动配置中心
@@ -30,7 +34,10 @@ import java.util.Collections;
  */
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass(CorsFilter.class)
+@RequiredArgsConstructor
 public class LinkCorsAutoConfiguration {
+
+    private final LinkSecurityProperties linkSecurityProperties;
 
     @SuppressWarnings("null")
     @Bean
@@ -49,31 +56,52 @@ public class LinkCorsAutoConfiguration {
         return bean;
     }
 
-    private static @NonNull CorsConfiguration getCorsConfiguration() {
+    private @NonNull CorsConfiguration getCorsConfiguration() {
+        LinkSecurityProperties.Cors cors = linkSecurityProperties.getCors();
+        List<String> allowedOriginPatterns = normalize(cors.getAllowedOriginPatterns());
+        if (cors.isAllowCredentials() && containsGlobalWildcard(allowedOriginPatterns)) {
+            throw new IllegalStateException(
+                    "link.security.cors.allow-credentials=true cannot be used with wildcard origin pattern '*'. "
+                            + "Configure link.security.cors.allowed-origin-patterns with explicit domains.");
+        }
+
         CorsConfiguration config = new CorsConfiguration();
 
-        // 1. 允许的源模式（生产环境建议在 application.yml 里通过属性注入指定域名）
-        config.setAllowedOriginPatterns(Collections.singletonList("*"));
+        // 1. 允许的源模式。生产环境必须通过配置指定明确域名白名单。
+        config.setAllowedOriginPatterns(allowedOriginPatterns);
 
         // 2. 允许的标准 HTTP 请求方法
-        config.addAllowedMethod("GET");
-        config.addAllowedMethod("POST");
-        config.addAllowedMethod("PUT");
-        config.addAllowedMethod("PATCH");
-        config.addAllowedMethod("DELETE");
-        config.addAllowedMethod("OPTIONS");
+        config.setAllowedMethods(normalize(cors.getAllowedMethods()));
 
         // 3. 允许的请求头
-        config.addAllowedHeader("*");
+        config.setAllowedHeaders(normalize(cors.getAllowedHeaders()));
 
         // 4. 显式暴露给前端能够拿到的 Response Header（主要是链路追踪 ID）
-        config.addExposedHeader(GlobalConstants.TRACE_ID_HEADER);
+        config.setExposedHeaders(normalize(cors.getExposedHeaders()));
 
         // 5. 是否允许携带 Cookie 等凭证信息
-        config.setAllowCredentials(true);
+        config.setAllowCredentials(cors.isAllowCredentials());
 
         // 6. 预检请求（OPTIONS）的缓存时间，单位为秒（1小时内无需重复发送 OPTIONS 探测请求）
-        config.setMaxAge(3600L);
+        Duration maxAge = cors.getMaxAge();
+        config.setMaxAge(maxAge == null ? 3600L : maxAge.getSeconds());
         return config;
+    }
+
+    private static List<String> normalize(List<String> values) {
+        if (values == null) {
+            return List.of();
+        }
+        return values.stream()
+                .filter(Objects::nonNull)
+                .flatMap(value -> Arrays.stream(value.split(",")))
+                .map(String::trim)
+                .filter(value -> !value.isEmpty())
+                .distinct()
+                .toList();
+    }
+
+    private static boolean containsGlobalWildcard(List<String> allowedOriginPatterns) {
+        return allowedOriginPatterns.stream().anyMatch("*"::equals);
     }
 }

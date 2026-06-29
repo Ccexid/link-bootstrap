@@ -57,6 +57,15 @@ springdoc:
   swagger-ui:
     enabled: false
 
+# Link 安全配置 (生产环境)
+link:
+  security:
+    cors:
+      # 生产环境必须配置为明确域名白名单，例如:
+      # LINK_CORS_ALLOWED_ORIGIN_PATTERNS=https://admin.example.com,https://app.example.com
+      allowed-origin-patterns: ${LINK_CORS_ALLOWED_ORIGIN_PATTERNS:}
+      allow-credentials: ${LINK_CORS_ALLOW_CREDENTIALS:true}
+
 # 监控配置 (生产环境限制暴露)
 management:
   endpoints:
