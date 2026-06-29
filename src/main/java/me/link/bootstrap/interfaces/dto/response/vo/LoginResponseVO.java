@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * 登录响应 VO，返回客户端登录后需要保存的 Token 信息。
  */
@@ -12,7 +15,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "登录响应")
-public class LoginResponseVO {
+public class LoginResponseVO implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Schema(description = "令牌名称(请求头键,默认授权头)", example = "Authorization")
     private String tokenName;

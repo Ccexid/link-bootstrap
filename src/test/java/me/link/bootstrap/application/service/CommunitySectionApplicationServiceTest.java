@@ -80,6 +80,46 @@ class CommunitySectionApplicationServiceTest {
         verify(communitySectionInternalService, never()).updateById(any(CommunitySectionPO.class));
     }
 
+    @Test
+    void shouldRejectSectionOutsideCurrentTenantWhenUpdatingSection() {
+        CommunitySectionPO section = new CommunitySectionPO();
+        section.setId(1L);
+        section.setTenantId(20L);
+        section.setName("旧板块");
+        section.setCode("old");
+        when(communitySectionInternalService.getById(1L)).thenReturn(section);
+
+        try (MockedStatic<SecurityHelper> securityHelper = mockStatic(SecurityHelper.class)) {
+            securityHelper.when(SecurityHelper::getRequiredTenantId).thenReturn(10L);
+
+            assertThatThrownBy(() -> communitySectionApplicationService.update(1L, updateRequest(0L)))
+                    .isInstanceOf(BusinessException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(ErrorCode.COMMUNITY_SECTION_NOT_FOUND);
+        }
+
+        verify(communitySectionInternalService, never()).updateById(any(CommunitySectionPO.class));
+    }
+
+    @Test
+    void shouldRejectSectionOutsideCurrentTenantWhenDeletingSection() {
+        CommunitySectionPO section = new CommunitySectionPO();
+        section.setId(1L);
+        section.setTenantId(20L);
+        when(communitySectionInternalService.getById(1L)).thenReturn(section);
+
+        try (MockedStatic<SecurityHelper> securityHelper = mockStatic(SecurityHelper.class)) {
+            securityHelper.when(SecurityHelper::getRequiredTenantId).thenReturn(10L);
+
+            assertThatThrownBy(() -> communitySectionApplicationService.delete(1L))
+                    .isInstanceOf(BusinessException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(ErrorCode.COMMUNITY_SECTION_NOT_FOUND);
+        }
+
+        verify(communitySectionInternalService, never()).removeById(1L);
+    }
+
     private CommunitySectionCreateRequest createRequest(Long parentId) {
         CommunitySectionCreateRequest request = new CommunitySectionCreateRequest();
         request.setName("推荐");

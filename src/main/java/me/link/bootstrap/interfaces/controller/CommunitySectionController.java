@@ -79,8 +79,8 @@ public class CommunitySectionController {
     @DeleteMapping("/{id}")
     @SaCheckPermission("system:community:section:delete")
     @Operation(summary = "删除社区板块")
-    public ResultResponse<Boolean> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
+    public ResultResponse<Void> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         communitySectionApplicationService.delete(id);
-        return ResultResponse.success(true);
+        return ResultResponse.success();
     }
 }

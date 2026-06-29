@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * API 加密公钥响应。
  */
@@ -12,7 +15,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "API 加密公钥响应")
-public class ApiCryptoPublicKeyResponseVO {
+public class ApiCryptoPublicKeyResponseVO implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Schema(description = "RSA 公钥，Base64 DER 格式")
     private String publicKey;

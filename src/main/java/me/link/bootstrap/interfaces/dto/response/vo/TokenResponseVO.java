@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * Token 响应 VO，返回当前登录凭证及有效期信息。
  */
@@ -12,7 +15,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "令牌响应")
-public class TokenResponseVO {
+public class TokenResponseVO implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Schema(description = "令牌名称(请求头键,默认授权头)", example = "Authorization")
     private String tokenName;

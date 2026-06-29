@@ -6,6 +6,8 @@ import lombok.Data;
 import me.link.bootstrap.shared.kernel.annotation.Sortable;
 import me.link.bootstrap.shared.kernel.valueobject.StatusEnum;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -13,7 +15,9 @@ import java.time.LocalDateTime;
  */
 @Data
 @Schema(description = "社区板块响应")
-public class CommunitySectionResponseVO {
+public class CommunitySectionResponseVO implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Sortable("id")
     @Schema(description = "板块ID")

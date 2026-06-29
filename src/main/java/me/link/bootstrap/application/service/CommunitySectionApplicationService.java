@@ -78,18 +78,19 @@ public class CommunitySectionApplicationService {
     public CommunitySectionPO update(Long id, CommunitySectionUpdateRequest request) {
         CommunitySectionPO section = get(id);
         Long tenantId = SecurityHelper.getRequiredTenantId();
+        ensureCurrentTenant(section, tenantId);
         String code = normalizeCode(request.getCode());
         ensureCodeUnique(code, id);
         validateParent(request.getParentId(), id, tenantId);
         applyMutableFields(section, request.getName(), code, request.getDescription(), request.getCoverUrl(), request.getParentId(), request.getSort(), request.getStatus());
-        section.setTenantId(tenantId);
         ApplicationAssert.requireSuccess(communitySectionInternalService.updateById(section), ErrorCode.COMMUNITY_SECTION_NOT_FOUND);
         return get(id);
     }
 
     @Transactional
     public void delete(Long id) {
-        get(id);
+        CommunitySectionPO section = get(id);
+        ensureCurrentTenant(section, SecurityHelper.getRequiredTenantId());
         long children = communitySectionInternalService.count(new LambdaQueryWrapper<CommunitySectionPO>()
                 .eq(CommunitySectionPO::getParentId, id));
         if (children > 0) {
@@ -139,6 +140,12 @@ public class CommunitySectionApplicationService {
         }
         CommunitySectionPO parent = communitySectionInternalService.getById(parentId);
         if (parent == null || !Objects.equals(parent.getTenantId(), tenantId)) {
+            throw new BusinessException(ErrorCode.COMMUNITY_SECTION_NOT_FOUND);
+        }
+    }
+
+    private static void ensureCurrentTenant(CommunitySectionPO section, Long tenantId) {
+        if (!Objects.equals(section.getTenantId(), tenantId)) {
             throw new BusinessException(ErrorCode.COMMUNITY_SECTION_NOT_FOUND);
         }
     }
