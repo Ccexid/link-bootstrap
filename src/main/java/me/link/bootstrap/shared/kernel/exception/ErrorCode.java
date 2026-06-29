@@ -73,6 +73,12 @@ public enum ErrorCode {
     COMMUNITY_SECTION_CODE_DUPLICATE(500_010_002, "社区板块编码已存在"),
     /** 业务错误: 社区板块存在子板块,不允许直接删除 */
     COMMUNITY_SECTION_HAS_CHILDREN(500_010_003, "存在子板块,不能删除"),
+    /** 业务错误: 根据社区话题ID未查询到话题记录 */
+    COMMUNITY_TOPIC_NOT_FOUND(500_011_001, "社区话题不存在"),
+    /** 业务错误: 社区话题编码在同一租户下已存在 */
+    COMMUNITY_TOPIC_CODE_DUPLICATE(500_011_002, "社区话题编码已存在"),
+    /** 业务错误: 根据社区帖子ID未查询到帖子记录 */
+    COMMUNITY_POST_NOT_FOUND(500_012_001, "社区帖子不存在"),
     /** 业务错误: 系统内部发生未预期异常,需查看日志定位 */
     SYSTEM_ERROR(500_999_999, "系统内部错误");
 

@@ -40,21 +40,21 @@ public class AuthController {
     private final ApiCryptoProperties apiCryptoProperties;
 
     @PostMapping("/tokens")
-    @RateLimit(key = "#args[0].username", windowSeconds = 60L, maxRequests = 5L, message = "账号登录尝试过于频繁,请稍后再试")
+    @RateLimit(key = "#args[0].username", includeClientIp = true, windowSeconds = 60L, maxRequests = 5L, message = "账号登录尝试过于频繁,请稍后再试")
     @Operation(summary = "创建 Token(账号密码)", description = "校验账号密码并签发 Token")
     public ResultResponse<TokenResponseVO> login(@Valid @RequestBody LoginRequest request) {
         return ResultResponse.success(responseVOConverter.toResponse(authApplicationService.login(request)));
     }
 
     @PostMapping("/email-code-tokens")
-    @RateLimit(key = "#args[0].email", windowSeconds = 60L, maxRequests = 5L, message = "邮箱登录尝试过于频繁,请稍后再试")
+    @RateLimit(key = "#args[0].email", includeClientIp = true, windowSeconds = 60L, maxRequests = 5L, message = "邮箱登录尝试过于频繁,请稍后再试")
     @Operation(summary = "创建 Token(邮箱验证码)", description = "校验邮箱验证码并签发 Token")
     public ResultResponse<TokenResponseVO> emailLogin(@Valid @RequestBody EmailLoginRequest request) {
         return ResultResponse.success(responseVOConverter.toResponse(authApplicationService.emailLogin(request)));
     }
 
     @PostMapping("/email-verification-codes")
-    @RateLimit(key = "#args[0].email", windowSeconds = 60L, maxRequests = 1L, message = "验证码发送过于频繁,请稍后再试")
+    @RateLimit(key = "#args[0].email", includeClientIp = true, windowSeconds = 60L, maxRequests = 1L, message = "验证码发送过于频繁,请稍后再试")
     @Operation(summary = "创建邮箱验证码", description = "向指定邮箱发送登录验证码")
     public ResultResponse<Void> sendEmailCode(@Valid @RequestBody SendEmailCodeRequest request) {
         authApplicationService.sendEmailCode(request);

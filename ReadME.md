@@ -361,6 +361,8 @@ infrastructure/persistence/repository/XxxRepositoryImpl.java
 | 角色菜单 | `RoleMenuController` | `/api/v1/system/role-menu` | 已迁移轻量结构 |
 | 操作日志 | `OperateLogController` | `/api/v1/system/operate-log` | 已迁移轻量结构 |
 | 社区板块 | `CommunitySectionController` | `/api/v1/system/community/sections` | 已实现轻量结构 |
+| 社区话题 | `CommunityTopicController` | `/api/v1/system/community/topics` | 已实现轻量结构 |
+| 社区帖子 | `CommunityPostController` | `/api/v1/community/posts` | 已实现轻量结构 |
 
 ## 接口规范
 
@@ -513,6 +515,7 @@ infrastructure/persistence/repository/XxxRepositoryImpl.java
 - `@Idempotent` 只贴在会改变系统状态的接口或应用服务方法上。
 - 幂等键、限流键统一由切面写入 Redis / Redisson。
 - `@RateLimit` 的 key 不得直接暴露手机号、邮箱、Token 等敏感值。
+- 登录、验证码等公开入口使用账号、邮箱等业务维度限流时，必须开启 `includeClientIp = true`；限流切面会对业务 key 和 IP 先摘要化，再生成 Redis key。
 - 操作日志由 `OperateLogAspect` 自动覆盖 Controller 公共方法。
 - 操作日志作为审计数据只允许后台查询，不对前端开放 create/update/delete 接口；需要写入日志时只能通过 `OperateLogAspect` 或应用内部专用入口。
 - 操作日志 extra 字段只记录必要上下文，禁止记录密码、Token、验证码、私钥和完整敏感请求体。
@@ -706,6 +709,8 @@ maven.test.skip=true
 - 认证模块直接接收登录/邮箱验证码 Request DTO，Token 刷新结果放在 `application/support`，不再保留透传 `LoginCommand`、`EmailLoginCommand`、`SendEmailCodeCommand`。
 - 操作日志写入由自动审计切面复用操作日志应用服务；已登录请求使用当前租户 ID，匿名公开请求统一落到平台租户 0。
 - 社区板块模块直接使用 `CommunitySectionPO` 和 `CommunitySectionInternalService`，板块编码同租户唯一、父子板块删除限制、默认排序和状态归一化保留在服务层。
+- 社区话题模块直接使用 `CommunityTopicPO` 和 `CommunityTopicInternalService`，话题编码同租户唯一、所属板块必须归属当前租户、默认排序和状态归一化保留在服务层。
+- 社区帖子模块直接使用 `CommunityPostPO` 和 `CommunityPostInternalService`，发帖、本人编辑删除、板块/话题租户归属校验和高频计数字段保留在服务层。
 - 已迁移模块不再保留 `XxxCommand`、`XxxQuery`、`XxxEntity`、`XxxFactory`、`XxxRepository`、`XxxRepositoryImpl`、`XxxConverter` 作为运行链路文件。
 
 ### 旧结构迁移顺序

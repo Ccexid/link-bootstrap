@@ -53,8 +53,8 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ====================================================================
 INSERT INTO `system_tenant_package` (`id`, `name`, `status`, `remark`, `menu_ids`, `creator`, `updater`)
 VALUES
-    (1, '基础套餐',   0, '默认套餐,包含用户/角色/菜单/组织/操作日志/社区板块', JSON_ARRAY(100,110,120,130,140,150,160,300), 1, 1),
-    (2, '高级套餐',   0, '高级套餐,额外含租户管理菜单',                     JSON_ARRAY(100,110,120,130,140,150,160,200,210,300), 1, 1);
+    (1, '基础套餐',   0, '默认套餐,包含用户/角色/菜单/组织/操作日志/社区基础内容', JSON_ARRAY(100,110,120,130,140,150,160,300,310), 1, 1),
+    (2, '高级套餐',   0, '高级套餐,额外含租户管理菜单',                         JSON_ARRAY(100,110,120,130,140,150,160,200,210,300,310), 1, 1);
 
 -- ====================================================================
 -- 2. 租户 system_tenant
@@ -169,7 +169,12 @@ VALUES
     (301, '板块创建', 'system:community:section:create', 3, 10, 300, '',         '',          NULL,                       NULL,               0, 0, 0, 0, 1, 1),
     (302, '板块查询', 'system:community:section:query',  3, 20, 300, '',         '',          NULL,                       NULL,               0, 0, 0, 0, 1, 1),
     (303, '板块更新', 'system:community:section:update', 3, 30, 300, '',         '',          NULL,                       NULL,               0, 0, 0, 0, 1, 1),
-    (304, '板块删除', 'system:community:section:delete', 3, 40, 300, '',         '',          NULL,                       NULL,               0, 0, 0, 0, 1, 1);
+    (304, '板块删除', 'system:community:section:delete', 3, 40, 300, '',         '',          NULL,                       NULL,               0, 0, 0, 0, 1, 1),
+    (310, '话题管理', 'system:community:topic:list',     2, 20, 3,   'topics',     'topic',     'community/topic/index',    'CommunityTopic',   0, 0, 0, 0, 1, 1),
+    (311, '话题创建', 'system:community:topic:create',   3, 10, 310, '',          '',          NULL,                       NULL,               0, 0, 0, 0, 1, 1),
+    (312, '话题查询', 'system:community:topic:query',    3, 20, 310, '',          '',          NULL,                       NULL,               0, 0, 0, 0, 1, 1),
+    (313, '话题更新', 'system:community:topic:update',   3, 30, 310, '',          '',          NULL,                       NULL,               0, 0, 0, 0, 1, 1),
+    (314, '话题删除', 'system:community:topic:delete',   3, 40, 310, '',          '',          NULL,                       NULL,               0, 0, 0, 0, 1, 1);
 
 -- ====================================================================
 -- 4. 角色 system_role
@@ -249,14 +254,14 @@ WHERE m.`deleted` = 0
     140, 141, 142, 143, 144, 145,
     150, 151, 152, 153, 154, 155,
     160, 162,
-    3, 300, 301, 302, 303, 304
+    3, 300, 301, 302, 303, 304, 310, 311, 312, 313, 314
   );
 
 -- 7.4 tenant_user (role=4, tenant=1) 仅查看类菜单
 INSERT INTO `system_role_menu` (`role_id`, `menu_id`, `tenant_id`, `creator`, `updater`)
 SELECT 4, m.`id`, 1, 1, 1 FROM `system_menu` m
 WHERE m.`deleted` = 0
-  AND m.`id` IN (1, 100, 102, 110, 112, 120, 122, 130, 132, 160, 162, 3, 300, 302);
+  AND m.`id` IN (1, 100, 102, 110, 112, 120, 122, 130, 132, 160, 162, 3, 300, 302, 310, 312);
 
 -- 7.5 tenant_admin (role=5, tenant=2) 同 role=3
 INSERT INTO `system_role_menu` (`role_id`, `menu_id`, `tenant_id`, `creator`, `updater`)
@@ -271,7 +276,7 @@ WHERE m.`deleted` = 0
     140, 141, 142, 143, 144, 145,
     150, 151, 152, 153, 154, 155,
     160, 162,
-    3, 300, 301, 302, 303, 304
+    3, 300, 301, 302, 303, 304, 310, 311, 312, 313, 314
   );
 
 -- ====================================================================
@@ -287,7 +292,28 @@ VALUES
     (6, '篮球讨论', 'basketball', '租户B篮球赛事与球迷交流',            NULL, 0, 20, 0, 2, 5, 5);
 
 -- ====================================================================
--- 9. 组织 system_organization (示例)
+-- 9. 社区话题 community_topic (示例)
+-- ====================================================================
+INSERT INTO `community_topic` (`id`, `section_id`, `name`, `code`, `description`, `cover_url`, `sort`, `status`, `tenant_id`, `creator`, `updater`)
+VALUES
+    (1, 1, '每日闲聊', 'daily-chat', '步行街日常交流话题',        NULL, 10, 0, 1, 3, 3),
+    (2, 2, 'NBA',      'nba',        'NBA 赛事与球员讨论',        NULL, 10, 0, 1, 3, 3),
+    (3, 2, 'CBA',      'cba',        'CBA 赛事与本土篮球讨论',    NULL, 20, 0, 1, 3, 3),
+    (4, 3, '英雄联盟', 'lol',        '英雄联盟赛事和玩家讨论',    NULL, 10, 0, 1, 3, 3),
+    (5, 5, '每日闲聊', 'daily-chat', '租户B步行街日常交流话题',   NULL, 10, 0, 2, 5, 5),
+    (6, 6, 'NBA',      'nba',        '租户B NBA 赛事与球员讨论',  NULL, 10, 0, 2, 5, 5);
+
+-- ====================================================================
+-- 10. 社区帖子 community_post (示例)
+-- ====================================================================
+INSERT INTO `community_post` (`id`, `section_id`, `topic_id`, `author_id`, `title`, `summary`, `content`, `cover_url`, `view_count`, `like_count`, `comment_count`, `collect_count`, `pinned`, `featured`, `status`, `tenant_id`, `creator`, `updater`)
+VALUES
+    (1, 1, 1, 4, '步行街每日闲聊帖', '示例租户A的步行街闲聊帖子', '这里是步行街每日闲聊帖正文，用于本地联调帖子列表和详情。', NULL, 120, 12, 5, 3, 1, 0, 0, 1, 4, 4),
+    (2, 2, 2, 4, '今天的 NBA 比赛怎么看', '示例租户A的篮球讨论帖子', '这里是 NBA 比赛讨论正文，后续可接入评论、点赞和收藏。', NULL, 80, 8, 2, 1, 0, 1, 0, 1, 4, 4),
+    (3, 5, 5, 5, '租户B步行街开帖', '示例租户B的步行街闲聊帖子', '这里是租户B社区帖子正文，用于验证租户隔离。', NULL, 20, 1, 0, 0, 0, 0, 0, 2, 5, 5);
+
+-- ====================================================================
+-- 11. 组织 system_organization (示例)
 -- ====================================================================
 INSERT INTO `system_organization` (`id`, `name`, `org_type`, `parent_id`, `ancestors`, `level`, `contact_name`, `contact_mobile_cipher`, `contact_mobile_hash`, `contact_mobile_mask`, `contact_mobile_key_version`, `status`, `tenant_id`, `creator`, `updater`)
 VALUES

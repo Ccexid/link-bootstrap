@@ -252,6 +252,8 @@ CREATE TABLE `system_operate_log`
   COLLATE = utf8mb4_unicode_ci COMMENT = '操作日志记录';
 
 DROP TABLE IF EXISTS `community_section`;
+DROP TABLE IF EXISTS `community_topic`;
+DROP TABLE IF EXISTS `community_post`;
 
 CREATE TABLE `community_section`
 (
@@ -277,3 +279,61 @@ CREATE TABLE `community_section`
   AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT = '社区板块表';
+
+CREATE TABLE `community_topic`
+(
+    `id`          bigint       NOT NULL AUTO_INCREMENT COMMENT '话题ID',
+    `tenant_id`   bigint       NOT NULL DEFAULT 0 COMMENT '租户编号',
+    `section_id`  bigint       NOT NULL COMMENT '所属板块ID',
+    `name`        varchar(80)  NOT NULL COMMENT '话题名称',
+    `code`        varchar(80)  NOT NULL COMMENT '话题编码，同租户唯一',
+    `description` varchar(500)          DEFAULT NULL COMMENT '话题描述',
+    `cover_url`   varchar(512)          DEFAULT NULL COMMENT '话题封面地址',
+    `sort`        int          NOT NULL DEFAULT 0 COMMENT '排序值',
+    `status`      tinyint      NOT NULL DEFAULT 0 COMMENT '状态（0正常 1停用）',
+    `creator`     bigint                DEFAULT NULL COMMENT '创建者ID',
+    `create_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `updater`     bigint                DEFAULT NULL COMMENT '更新者ID',
+    `update_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `deleted`     tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否删除',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_community_topic_tenant_code` (`tenant_id`, `code`),
+    KEY `idx_community_topic_tenant_section` (`tenant_id`, `section_id`),
+    KEY `idx_community_topic_tenant_status` (`tenant_id`, `status`)
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci COMMENT = '社区话题表';
+
+CREATE TABLE `community_post`
+(
+    `id`            bigint        NOT NULL AUTO_INCREMENT COMMENT '帖子ID',
+    `tenant_id`     bigint        NOT NULL DEFAULT 0 COMMENT '租户编号',
+    `section_id`    bigint        NOT NULL COMMENT '所属板块ID',
+    `topic_id`      bigint                 DEFAULT NULL COMMENT '所属话题ID',
+    `author_id`     bigint        NOT NULL COMMENT '作者用户ID',
+    `title`         varchar(120)  NOT NULL COMMENT '帖子标题',
+    `summary`       varchar(300)           DEFAULT NULL COMMENT '帖子摘要',
+    `content`       mediumtext    NOT NULL COMMENT '帖子正文',
+    `cover_url`     varchar(512)           DEFAULT NULL COMMENT '封面地址',
+    `view_count`    bigint        NOT NULL DEFAULT 0 COMMENT '浏览数',
+    `like_count`    bigint        NOT NULL DEFAULT 0 COMMENT '点赞数',
+    `comment_count` bigint        NOT NULL DEFAULT 0 COMMENT '评论数',
+    `collect_count` bigint        NOT NULL DEFAULT 0 COMMENT '收藏数',
+    `pinned`        tinyint(1)    NOT NULL DEFAULT 0 COMMENT '是否置顶',
+    `featured`      tinyint(1)    NOT NULL DEFAULT 0 COMMENT '是否加精',
+    `status`        tinyint       NOT NULL DEFAULT 0 COMMENT '状态（0正常 1停用）',
+    `creator`       bigint                 DEFAULT NULL COMMENT '创建者ID',
+    `create_time`   datetime      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `updater`       bigint                 DEFAULT NULL COMMENT '更新者ID',
+    `update_time`   datetime      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `deleted`       tinyint(1)    NOT NULL DEFAULT 0 COMMENT '是否删除',
+    PRIMARY KEY (`id`),
+    KEY `idx_community_post_tenant_section` (`tenant_id`, `section_id`, `status`, `create_time`),
+    KEY `idx_community_post_tenant_topic` (`tenant_id`, `topic_id`, `status`, `create_time`),
+    KEY `idx_community_post_tenant_author` (`tenant_id`, `author_id`, `create_time`),
+    KEY `idx_community_post_tenant_hot` (`tenant_id`, `status`, `pinned`, `featured`, `like_count`, `comment_count`)
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci COMMENT = '社区帖子表';

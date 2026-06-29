@@ -56,7 +56,9 @@ public class CommunitySectionApplicationService {
     }
 
     public CommunitySectionPO get(Long id) {
-        return ApplicationAssert.requireFound(communitySectionInternalService.getById(id), ErrorCode.COMMUNITY_SECTION_NOT_FOUND);
+        CommunitySectionPO section = ApplicationAssert.requireFound(communitySectionInternalService.getById(id), ErrorCode.COMMUNITY_SECTION_NOT_FOUND);
+        ensureCurrentTenant(section, SecurityHelper.getRequiredTenantId());
+        return section;
     }
 
     public PageResult<CommunitySectionPO> page(CommunitySectionPageRequest request) {
@@ -78,7 +80,6 @@ public class CommunitySectionApplicationService {
     public CommunitySectionPO update(Long id, CommunitySectionUpdateRequest request) {
         CommunitySectionPO section = get(id);
         Long tenantId = SecurityHelper.getRequiredTenantId();
-        ensureCurrentTenant(section, tenantId);
         String code = normalizeCode(request.getCode());
         ensureCodeUnique(code, id);
         validateParent(request.getParentId(), id, tenantId);
@@ -90,7 +91,6 @@ public class CommunitySectionApplicationService {
     @Transactional
     public void delete(Long id) {
         CommunitySectionPO section = get(id);
-        ensureCurrentTenant(section, SecurityHelper.getRequiredTenantId());
         long children = communitySectionInternalService.count(new LambdaQueryWrapper<CommunitySectionPO>()
                 .eq(CommunitySectionPO::getParentId, id));
         if (children > 0) {

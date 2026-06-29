@@ -130,7 +130,7 @@ link:
 # MyBatis Plus 增强配置
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
-  type-aliases-package: me.link.**.domain
+  type-aliases-package: me.link.bootstrap.infrastructure.persistence.po
   global-config:
     db-config:
       id-type: auto

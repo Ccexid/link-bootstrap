@@ -14,8 +14,15 @@ public @interface RateLimit {
 
     /**
      * 限流 key 的 SpEL 表达式。为空时默认按请求路径和客户端 IP 限流。
+     * <p>表达式结果可能来自账号、邮箱等敏感字段，切面会先摘要化再拼接 Redis key。</p>
      */
     String key() default "";
+
+    /**
+     * 使用自定义业务 key 时，是否同时纳入客户端 IP。
+     * <p>公开登录、验证码等接口建议开启，避免单个账号维度和单个 IP 维度互相绕过。</p>
+     */
+    boolean includeClientIp() default false;
 
     /**
      * 时间窗口长度，单位秒。

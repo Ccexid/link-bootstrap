@@ -84,12 +84,13 @@ public class RateLimitAspect {
     private String rawKey(ProceedingJoinPoint joinPoint, Method method, HttpServletRequest request, RateLimit rateLimit) {
         String businessKey = trimToNull(rateLimit.key());
         if (businessKey != null) {
-            return method.toGenericString() + ":spel=" + parseKey(businessKey, method, joinPoint.getArgs());
+            String parsedKeyHash = sha256(parseKey(businessKey, method, joinPoint.getArgs()));
+            String ipPart = rateLimit.includeClientIp() ? ":ipHash=" + sha256(clientIp(request)) : "";
+            return method.toGenericString() + ":spelHash=" + parsedKeyHash + ipPart;
         }
         String httpMethod = request == null ? "" : request.getMethod();
         String uri = request == null ? method.toGenericString() : request.getRequestURI();
-        String clientIp = request == null ? "" : clientIp(request);
-        return httpMethod + ":" + uri + ":ip=" + clientIp;
+        return httpMethod + ":" + uri + ":ipHash=" + sha256(clientIp(request));
     }
 
     private String parseKey(String expression, Method method, Object[] args) {
@@ -106,6 +107,9 @@ public class RateLimitAspect {
     }
 
     private String clientIp(HttpServletRequest request) {
+        if (request == null) {
+            return "";
+        }
         String ip = null;
         if (clientIpProperties.isTrustForwardHeaders()) {
             for (String headerName : clientIpProperties.getForwardHeaders()) {
