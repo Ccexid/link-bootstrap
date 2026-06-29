@@ -79,6 +79,8 @@ public enum ErrorCode {
     COMMUNITY_TOPIC_CODE_DUPLICATE(500_011_002, "社区话题编码已存在"),
     /** 业务错误: 根据社区帖子ID未查询到帖子记录 */
     COMMUNITY_POST_NOT_FOUND(500_012_001, "社区帖子不存在"),
+    /** 业务错误: 根据社区评论ID未查询到评论记录 */
+    COMMUNITY_COMMENT_NOT_FOUND(500_013_001, "社区评论不存在"),
     /** 业务错误: 系统内部发生未预期异常,需查看日志定位 */
     SYSTEM_ERROR(500_999_999, "系统内部错误");
 

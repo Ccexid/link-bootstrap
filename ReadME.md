@@ -72,13 +72,22 @@ interfaces/controller/CommunityPostController.java
 interfaces/dto/request/community/post/CommunityPostCreateRequest.java
 interfaces/dto/request/community/post/CommunityPostPageRequest.java
 interfaces/dto/response/vo/CommunityPostResponseVO.java
+interfaces/controller/CommunityCommentController.java
+interfaces/dto/request/community/comment/CommunityCommentCreateRequest.java
+interfaces/dto/request/community/comment/CommunityCommentPageRequest.java
+interfaces/dto/response/vo/CommunityCommentResponseVO.java
 
 application/service/CommunityPostApplicationService.java
+application/service/CommunityCommentApplicationService.java
 
 infrastructure/persistence/po/CommunityPostPO.java
 infrastructure/persistence/mapper/CommunityPostMapper.java
 infrastructure/persistence/internal/CommunityPostInternalService.java
 infrastructure/persistence/internal/impl/CommunityPostInternalServiceImpl.java
+infrastructure/persistence/po/CommunityCommentPO.java
+infrastructure/persistence/mapper/CommunityCommentMapper.java
+infrastructure/persistence/internal/CommunityCommentInternalService.java
+infrastructure/persistence/internal/impl/CommunityCommentInternalServiceImpl.java
 ```
 
 接口路径按端划分：
@@ -363,6 +372,7 @@ infrastructure/persistence/repository/XxxRepositoryImpl.java
 | 社区板块 | `CommunitySectionController` | `/api/v1/system/community/sections` | 已实现轻量结构 |
 | 社区话题 | `CommunityTopicController` | `/api/v1/system/community/topics` | 已实现轻量结构 |
 | 社区帖子 | `CommunityPostController` | `/api/v1/community/posts` | 已实现轻量结构 |
+| 社区评论 | `CommunityCommentController` | `/api/v1/community/comments` | 已实现轻量结构 |
 
 ## 接口规范
 
@@ -711,6 +721,7 @@ maven.test.skip=true
 - 社区板块模块直接使用 `CommunitySectionPO` 和 `CommunitySectionInternalService`，板块编码同租户唯一、父子板块删除限制、默认排序和状态归一化保留在服务层。
 - 社区话题模块直接使用 `CommunityTopicPO` 和 `CommunityTopicInternalService`，话题编码同租户唯一、所属板块必须归属当前租户、默认排序和状态归一化保留在服务层。
 - 社区帖子模块直接使用 `CommunityPostPO` 和 `CommunityPostInternalService`，发帖、本人编辑删除、板块/话题租户归属校验和高频计数字段保留在服务层。
+- 社区评论模块直接使用 `CommunityCommentPO` 和 `CommunityCommentInternalService`，一级评论/回复层级、本人编辑删除、帖子归属校验和帖子/父评论计数维护保留在服务层。
 - 已迁移模块不再保留 `XxxCommand`、`XxxQuery`、`XxxEntity`、`XxxFactory`、`XxxRepository`、`XxxRepositoryImpl`、`XxxConverter` 作为运行链路文件。
 
 ### 旧结构迁移顺序

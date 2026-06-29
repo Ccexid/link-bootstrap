@@ -1,6 +1,7 @@
 package me.link.bootstrap.interfaces.converter;
 
 import me.link.bootstrap.application.support.TokenRefreshResult;
+import me.link.bootstrap.infrastructure.persistence.po.CommunityCommentPO;
 import me.link.bootstrap.infrastructure.persistence.po.CommunityPostPO;
 import me.link.bootstrap.infrastructure.persistence.po.CommunitySectionPO;
 import me.link.bootstrap.infrastructure.persistence.po.CommunityTopicPO;
@@ -14,6 +15,7 @@ import me.link.bootstrap.infrastructure.persistence.po.TenantPO;
 import me.link.bootstrap.infrastructure.persistence.po.UserPO;
 import me.link.bootstrap.infrastructure.persistence.po.UserRolePO;
 import me.link.bootstrap.interfaces.dto.response.vo.CommunitySectionResponseVO;
+import me.link.bootstrap.interfaces.dto.response.vo.CommunityCommentResponseVO;
 import me.link.bootstrap.interfaces.dto.response.vo.CommunityPostResponseVO;
 import me.link.bootstrap.interfaces.dto.response.vo.CommunityTopicResponseVO;
 import me.link.bootstrap.interfaces.dto.response.vo.MenuResponseVO;
@@ -39,6 +41,10 @@ public interface ResponseVOConverter {
     @Mapping(target = "createdAt", source = "createTime")
     @Mapping(target = "updatedAt", source = "updateTime")
     CommunitySectionResponseVO toResponse(CommunitySectionPO section);
+
+    @Mapping(target = "createdAt", source = "createTime")
+    @Mapping(target = "updatedAt", source = "updateTime")
+    CommunityCommentResponseVO toResponse(CommunityCommentPO comment);
 
     @Mapping(target = "createdAt", source = "createTime")
     @Mapping(target = "updatedAt", source = "updateTime")

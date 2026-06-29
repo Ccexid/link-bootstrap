@@ -421,6 +421,36 @@
 
 响应字段：`id`、`section_id`、`topic_id`、`author_id`、`title`、`summary`、`content`、`cover_url`、`view_count`、`like_count`、`comment_count`、`collect_count`、`pinned`、`featured`、`status`、`created_at`、`updated_at`。
 
+## 社区评论用户端
+
+基础路径：`/api/v1/community/comments`。当前版本受全局登录拦截保护，需要登录后访问；如后续开放只读评论列表，应同步调整登录白名单。
+
+| 方法 | 路径 | 权限码 | 请求 | 响应 |
+|---|---|---|---|---|
+| POST | `/api/v1/community/comments` | 登录即可 | `CommunityCommentCreateRequest` | `CommunityCommentResponseVO` |
+| GET | `/api/v1/community/comments/{id}` | 登录即可 | path: `id` | `CommunityCommentResponseVO` |
+| GET | `/api/v1/community/comments` | 登录即可 | `CommunityCommentPageRequest` query | 分页 |
+| PUT | `/api/v1/community/comments/{id}` | 本人评论 | `CommunityCommentUpdateRequest` | `CommunityCommentResponseVO` |
+| DELETE | `/api/v1/community/comments/{id}` | 本人评论 | path: `id` | 无数据 |
+
+`CommunityCommentCreateRequest`
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `post_id` | string | 是 | 所属帖子 ID，必须大于 0 且归属当前租户 |
+| `parent_id` | string | 否 | 父评论 ID；0 或空表示一级评论，传入时必须属于同一帖子 |
+| `content` | string | 是 | 评论内容，最长 2000 |
+
+`CommunityCommentUpdateRequest`
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `content` | string | 是 | 评论内容，最长 2000 |
+
+`CommunityCommentPageRequest`: 通用分页参数 + `post_id`、`root_id`、`author_id`、`status`。查询一级评论传 `root_id=0`；查询某条一级评论下的回复传 `root_id=一级评论ID`。
+
+响应字段：`id`、`post_id`、`parent_id`、`root_id`、`author_id`、`reply_to_id`、`content`、`like_count`、`reply_count`、`status`、`created_at`、`updated_at`。
+
 ## 前端联调建议
 
 1. 登录后保存 `token_name`、`token_prefix`、`token_value`，所有非匿名接口按返回值组装认证头。

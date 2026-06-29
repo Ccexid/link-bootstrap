@@ -254,6 +254,7 @@ CREATE TABLE `system_operate_log`
 DROP TABLE IF EXISTS `community_section`;
 DROP TABLE IF EXISTS `community_topic`;
 DROP TABLE IF EXISTS `community_post`;
+DROP TABLE IF EXISTS `community_comment`;
 
 CREATE TABLE `community_section`
 (
@@ -337,3 +338,30 @@ CREATE TABLE `community_post`
   AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT = '社区帖子表';
+
+CREATE TABLE `community_comment`
+(
+    `id`          bigint      NOT NULL AUTO_INCREMENT COMMENT '评论ID',
+    `tenant_id`   bigint      NOT NULL DEFAULT 0 COMMENT '租户编号',
+    `post_id`     bigint      NOT NULL COMMENT '所属帖子ID',
+    `parent_id`   bigint      NOT NULL DEFAULT 0 COMMENT '父评论ID，0表示一级评论',
+    `root_id`     bigint      NOT NULL DEFAULT 0 COMMENT '根评论ID，0表示一级评论',
+    `author_id`   bigint      NOT NULL COMMENT '评论作者用户ID',
+    `reply_to_id` bigint               DEFAULT NULL COMMENT '被回复用户ID',
+    `content`     varchar(2000) NOT NULL COMMENT '评论内容',
+    `like_count`  bigint      NOT NULL DEFAULT 0 COMMENT '点赞数',
+    `reply_count` bigint      NOT NULL DEFAULT 0 COMMENT '回复数',
+    `status`      tinyint     NOT NULL DEFAULT 0 COMMENT '状态（0正常 1停用）',
+    `creator`     bigint               DEFAULT NULL COMMENT '创建者ID',
+    `create_time` datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `updater`     bigint               DEFAULT NULL COMMENT '更新者ID',
+    `update_time` datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `deleted`     tinyint(1)  NOT NULL DEFAULT 0 COMMENT '是否删除',
+    PRIMARY KEY (`id`),
+    KEY `idx_community_comment_tenant_post` (`tenant_id`, `post_id`, `status`, `create_time`),
+    KEY `idx_community_comment_tenant_root` (`tenant_id`, `root_id`, `create_time`),
+    KEY `idx_community_comment_tenant_author` (`tenant_id`, `author_id`, `create_time`)
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci COMMENT = '社区评论表';
