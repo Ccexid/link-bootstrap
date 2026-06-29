@@ -26,10 +26,8 @@ public class UserUpdateRequest implements Serializable {
     @Size(min = 2, max = 30, message = "用户账号长度必须在 2 到 30 之间")
     private String username;
 
-    @Schema(description = "用户密码(明文,服务端加密后落库;每次更新都会被重新加密)",
-            requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "用户密码不能为空")
-    @Size(min = 8, max = 64, message = "用户密码长度必须在 8 到 64 之间")
+    @Schema(description = "用户密码(可选;为空时保留原密码,传入时服务端加密后落库)",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String password;
 
     @Schema(description = "用户昵称", requiredMode = Schema.RequiredMode.REQUIRED)

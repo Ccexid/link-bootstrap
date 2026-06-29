@@ -183,7 +183,9 @@ CREATE TABLE `system_role_menu`
     `update_time` datetime   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `deleted`     tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
     `tenant_id`   bigint     NOT NULL DEFAULT 0 COMMENT '租户编号',
+    `active_key`   tinyint GENERATED ALWAYS AS (IF(`deleted` = 0, 0, NULL)) STORED COMMENT '未删除唯一约束辅助列',
     PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_role_menu_active` (`tenant_id`, `role_id`, `menu_id`, `active_key`),
     INDEX `idx_role_id` (`role_id`),
     INDEX `idx_tenant_id` (`tenant_id`)
 ) ENGINE = InnoDB
@@ -204,7 +206,9 @@ CREATE TABLE `system_user_role`
     `update_time` datetime   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `deleted`     tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
     `tenant_id`   bigint     NOT NULL DEFAULT 0 COMMENT '租户编号',
+    `active_key`   tinyint GENERATED ALWAYS AS (IF(`deleted` = 0, 0, NULL)) STORED COMMENT '未删除唯一约束辅助列',
     PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_user_role_active` (`tenant_id`, `user_id`, `role_id`, `active_key`),
     INDEX `idx_user_id` (`user_id`),
     INDEX `idx_role_id` (`role_id`),
     INDEX `idx_tenant_id` (`tenant_id`)

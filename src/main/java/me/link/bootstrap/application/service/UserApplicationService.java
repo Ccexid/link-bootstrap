@@ -99,7 +99,8 @@ public class UserApplicationService {
     public UserPO update(Long id, UserUpdateRequest request) {
         UserPO user = get(id);
         Long tenantId = SecurityHelper.getRequiredTenantId();
-        fillUser(user, request.getUsername(), request.getPassword(), request.getNickname(), request.getUserType(), request.getMobile(), request.getEmail(), request.getAvatar(), request.getStatus(), request.getOrgId(), request.getDeptId(), request.getLoginIp(), request.getLoginDate(), tenantId);
+        fillUserProfile(user, request.getUsername(), request.getNickname(), request.getUserType(), request.getMobile(), request.getEmail(), request.getAvatar(), request.getStatus(), request.getOrgId(), request.getDeptId(), request.getLoginIp(), request.getLoginDate(), tenantId);
+        updatePasswordIfPresent(user, request.getPassword());
         ApplicationAssert.requireSuccess(userInternalService.updateById(user), ErrorCode.USER_NOT_FOUND);
         return get(id);
     }
@@ -135,11 +136,18 @@ public class UserApplicationService {
     private void fillUser(UserPO user, String username, String password, String nickname, Integer userType, String mobile,
                           String email, String avatar, StatusEnum status, Long orgId, Long deptId, String loginIp,
                           LocalDateTime loginDate, Long tenantId) {
-        validate(username, password, nickname, mobile, email);
+        validateRequiredPassword(password);
+        fillUserProfile(user, username, nickname, userType, mobile, email, avatar, status, orgId, deptId, loginIp, loginDate, tenantId);
+        user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
+    }
+
+    private void fillUserProfile(UserPO user, String username, String nickname, Integer userType, String mobile,
+                                 String email, String avatar, StatusEnum status, Long orgId, Long deptId,
+                                 String loginIp, LocalDateTime loginDate, Long tenantId) {
+        validateProfile(username, nickname, mobile, email);
         ProtectedMobile protectedMobile = mobileCryptoService.protect(mobile);
 
         user.setUsername(username.trim());
-        user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
         user.setNickname(nickname.trim());
         user.setUserType(userType);
         user.setMobileCipher(protectedMobile.cipher());
@@ -156,18 +164,20 @@ public class UserApplicationService {
         user.setTenantId(tenantId);
     }
 
-    private void validate(String username, String password, String nickname, String mobile, String email) {
+    private void updatePasswordIfPresent(UserPO user, String password) {
+        if (StrUtil.isBlank(password)) {
+            return;
+        }
+        validatePassword(password);
+        user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
+    }
+
+    private void validateProfile(String username, String nickname, String mobile, String email) {
         if (StrUtil.isBlank(username)) {
             ApplicationAssert.invalidParam("用户username不能为空");
         }
         if (StrUtil.isBlank(nickname)) {
             ApplicationAssert.invalidParam("用户nickname不能为空");
-        }
-        if (password == null || password.isEmpty()) {
-            ApplicationAssert.invalidParam("用户密码不能为空");
-        }
-        if (password.length() < PASSWORD_MIN_LENGTH || password.length() > PASSWORD_MAX_LENGTH) {
-            ApplicationAssert.invalidParam("用户密码长度必须在 " + PASSWORD_MIN_LENGTH + " 到 " + PASSWORD_MAX_LENGTH + " 之间");
         }
         if (StrUtil.isBlank(mobile)) {
             ApplicationAssert.invalidParam("用户手机号不能为空");
@@ -177,6 +187,19 @@ public class UserApplicationService {
         }
         if (StrUtil.isNotBlank(email) && !EMAIL_PATTERN.matcher(email.trim()).matches()) {
             ApplicationAssert.invalidParam("用户邮箱格式不正确");
+        }
+    }
+
+    private void validateRequiredPassword(String password) {
+        if (StrUtil.isBlank(password)) {
+            ApplicationAssert.invalidParam("用户密码不能为空");
+        }
+        validatePassword(password);
+    }
+
+    private void validatePassword(String password) {
+        if (password.length() < PASSWORD_MIN_LENGTH || password.length() > PASSWORD_MAX_LENGTH) {
+            ApplicationAssert.invalidParam("用户密码长度必须在 " + PASSWORD_MIN_LENGTH + " 到 " + PASSWORD_MAX_LENGTH + " 之间");
         }
     }
 

@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import me.link.bootstrap.application.support.ApplicationAssert;
-import me.link.bootstrap.shared.kernel.valueobject.PageResult;
+import me.link.bootstrap.infrastructure.persistence.internal.MenuInternalService;
+import me.link.bootstrap.infrastructure.persistence.internal.RoleInternalService;
 import me.link.bootstrap.infrastructure.persistence.internal.RoleMenuInternalService;
+import me.link.bootstrap.infrastructure.persistence.po.RolePO;
 import me.link.bootstrap.infrastructure.persistence.po.RoleMenuPO;
 import me.link.bootstrap.infrastructure.persistence.support.PageOrderHelper;
 import me.link.bootstrap.infrastructure.security.PermissionCacheService;
@@ -13,13 +15,16 @@ import me.link.bootstrap.interfaces.dto.request.rolemenu.RoleMenuAuthorizeReques
 import me.link.bootstrap.interfaces.dto.request.rolemenu.RoleMenuCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.rolemenu.RoleMenuPageRequest;
 import me.link.bootstrap.interfaces.dto.request.rolemenu.RoleMenuUpdateRequest;
+import me.link.bootstrap.shared.kernel.exception.BusinessException;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 import me.link.bootstrap.shared.kernel.util.SecurityHelper;
+import me.link.bootstrap.shared.kernel.valueobject.PageResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 角色菜单关联服务，直接编排角色-菜单权限增删改查、覆盖式授权和权限缓存失效。
@@ -42,11 +47,15 @@ public class RoleMenuApplicationService {
     );
 
     private final RoleMenuInternalService roleMenuInternalService;
+    private final RoleInternalService roleInternalService;
+    private final MenuInternalService menuInternalService;
     private final PermissionCacheService permissionCacheService;
 
     @Transactional
     public RoleMenuPO create(RoleMenuCreateRequest request) {
         Long tenantId = SecurityHelper.getRequiredTenantId();
+        validateReferences(request.getRoleId(), request.getMenuId(), tenantId);
+        validateUniqueBinding(request.getRoleId(), request.getMenuId(), tenantId, null);
         RoleMenuPO roleMenu = createPO(request.getRoleId(), request.getMenuId(), tenantId);
         roleMenuInternalService.save(roleMenu);
         permissionCacheService.evictByRoleId(request.getRoleId());
@@ -73,6 +82,8 @@ public class RoleMenuApplicationService {
         RoleMenuPO roleMenu = get(id);
         Long tenantId = SecurityHelper.getRequiredTenantId();
         Long oldRoleId = roleMenu.getRoleId();
+        validateReferences(request.getRoleId(), request.getMenuId(), tenantId);
+        validateUniqueBinding(request.getRoleId(), request.getMenuId(), tenantId, id);
         applyMutableFields(roleMenu, request.getRoleId(), request.getMenuId(), tenantId);
         ApplicationAssert.requireSuccess(roleMenuInternalService.updateById(roleMenu), ErrorCode.ROLE_MENU_NOT_FOUND);
         // 旧/新 roleId 都失效,避免改了关联后老 role 的缓存仍含旧菜单
@@ -95,8 +106,12 @@ public class RoleMenuApplicationService {
             ApplicationAssert.invalidParam("角色菜单关联roleId必须大于0");
         }
         Long tenantId = SecurityHelper.getRequiredTenantId();
-        List<RoleMenuPO> roleMenus = request.getMenuIds() == null ? List.of() : request.getMenuIds().stream()
+        List<Long> menuIds = request.getMenuIds() == null ? List.of() : request.getMenuIds().stream()
                 .distinct()
+                .toList();
+        validateRoleInCurrentTenant(request.getRoleId(), tenantId);
+        validateMenuIds(menuIds);
+        List<RoleMenuPO> roleMenus = menuIds.stream()
                 .map(menuId -> createPO(request.getRoleId(), menuId, tenantId))
                 .toList();
         roleMenuInternalService.remove(new LambdaQueryWrapper<RoleMenuPO>()
@@ -120,6 +135,50 @@ public class RoleMenuApplicationService {
         RoleMenuPO roleMenu = new RoleMenuPO();
         applyMutableFields(roleMenu, roleId, menuId, tenantId);
         return roleMenu;
+    }
+
+    private void validateReferences(Long roleId, Long menuId, Long tenantId) {
+        if (roleId == null || roleId <= 0) {
+            ApplicationAssert.invalidParam("角色菜单关联roleId必须大于0");
+        }
+        if (menuId == null || menuId <= 0) {
+            ApplicationAssert.invalidParam("角色菜单关联menuId必须大于0");
+        }
+        validateRoleInCurrentTenant(roleId, tenantId);
+        validateMenuExists(menuId);
+    }
+
+    private void validateRoleInCurrentTenant(Long roleId, Long tenantId) {
+        RolePO role = roleInternalService.getById(roleId);
+        if (role == null || !Objects.equals(role.getTenantId(), tenantId)) {
+            throw new BusinessException(ErrorCode.ROLE_NOT_FOUND);
+        }
+    }
+
+    private void validateMenuExists(Long menuId) {
+        if (menuInternalService.getById(menuId) == null) {
+            throw new BusinessException(ErrorCode.MENU_NOT_FOUND);
+        }
+    }
+
+    private void validateMenuIds(List<Long> menuIds) {
+        for (Long menuId : menuIds) {
+            if (menuId == null || menuId <= 0) {
+                ApplicationAssert.invalidParam("角色菜单关联menuId必须大于0");
+            }
+            validateMenuExists(menuId);
+        }
+    }
+
+    private void validateUniqueBinding(Long roleId, Long menuId, Long tenantId, Long excludeId) {
+        boolean exists = roleMenuInternalService.exists(new LambdaQueryWrapper<RoleMenuPO>()
+                .eq(RoleMenuPO::getRoleId, roleId)
+                .eq(RoleMenuPO::getMenuId, menuId)
+                .eq(RoleMenuPO::getTenantId, tenantId)
+                .ne(excludeId != null, RoleMenuPO::getId, excludeId));
+        if (exists) {
+            ApplicationAssert.invalidParam("角色菜单关联已存在");
+        }
     }
 
     private static void applyMutableFields(RoleMenuPO roleMenu, Long roleId, Long menuId, Long tenantId) {
