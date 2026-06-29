@@ -75,7 +75,7 @@ class ApiCryptoResponseBodyAdviceTest {
                 returnType,
                 MediaType.APPLICATION_JSON,
                 MappingJackson2HttpMessageConverter.class,
-                serverRequest("/api/v1/auth/public-key"),
+                serverRequest("/api/v1/auth/public-keys/current"),
                 new ServletServerHttpResponse(new MockHttpServletResponse())
         );
 

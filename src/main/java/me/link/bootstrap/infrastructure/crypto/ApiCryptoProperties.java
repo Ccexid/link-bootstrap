@@ -38,7 +38,7 @@ public class ApiCryptoProperties {
 
     /** 无需加解密的路径。 */
     private List<String> excludePaths = new ArrayList<>(List.of(
-            API_PREFIX + "/auth/public-key",
+            API_PREFIX + "/auth/public-keys/current",
             "/actuator/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",

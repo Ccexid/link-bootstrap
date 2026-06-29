@@ -40,7 +40,7 @@
 --   | admin    |        2 | tenant_admin  | 租户 2 管理员              |
 --
 -- 调用样例:
---   curl -X POST http://localhost:48080/api/v1/auth/login \
+--   curl -X POST http://localhost:48080/api/v1/auth/tokens \
 --     -H 'Content-Type: application/json' \
 --     -d '{"username":"root","password":"Admin@123456","tenantId":0}'
 -- ====================================================================

@@ -385,7 +385,8 @@ infrastructure/persistence/repository/XxxRepositoryImpl.java
 - 分页使用 `GET /resource`。
 - 更新使用 `PUT /resource/{id}`。
 - 删除使用 `DELETE /resource/{id}`。
-- 授权、刷新 Token、发送验证码、审核、置顶、加精、举报处理等非 CRUD 动作允许使用动词路径，例如 `/auth/refresh-token`、`/auth/email-code`、`/system/role-menu/authorize`、`/system/community/posts/{id}/audit`。
+- 认证接口按资源建模:账号密码登录使用 `POST /auth/tokens`,邮箱验证码登录使用 `POST /auth/email-code-tokens`,发送邮箱验证码使用 `POST /auth/email-verification-codes`,刷新/查询/删除当前 Token 使用 `PATCH|GET|DELETE /auth/tokens/current`,获取加密公钥使用 `GET /auth/public-keys/current`。
+- 授权、审核、置顶、加精、举报处理等业务动作允许使用动词路径，例如 `/system/role-menu/authorize`、`/system/community/posts/{id}/audit`。
 
 ### Controller
 
@@ -521,7 +522,7 @@ infrastructure/persistence/repository/XxxRepositoryImpl.java
 - 接口加解密由 `ApiCryptoRequestFilter` 和 `ApiCryptoResponseBodyAdvice` 统一处理。
 - 开关、字段名、密钥、包含路径和排除路径统一放在 `link.api-crypto` 配置下。
 - 开启后请求体使用 `{ "data": "RSA密文" }` 结构。
-- `/api/v1/auth/public-key`、Actuator、Swagger 必须保持排除。
+- `/api/v1/auth/public-keys/current`、Actuator、Swagger 必须保持排除。
 - 生产环境密钥必须通过环境变量或配置中心注入。
 
 ## 异常与响应规范

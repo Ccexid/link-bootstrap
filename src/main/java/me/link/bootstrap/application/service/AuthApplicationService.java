@@ -58,7 +58,7 @@ public class AuthApplicationService {
      * 不再覆盖整个 login 方法,避免后续查询角色码时也被绕过(角色码必须按当前租户查)。
      * </p>
      */
-    public void login(LoginRequest request) {
+    public TokenRefreshResult login(LoginRequest request) {
         humanVerificationService.verify(request.getCaptchaToken());
         UserPO user = resolveSingleUser(userApplicationService.findByUsernameForLogin(request.getUsername()), ErrorCode.USER_NOT_FOUND);
 
@@ -77,6 +77,7 @@ public class AuthApplicationService {
         // 密码校验通过,重置失败计数防御窗口
         loginAttemptService.reset(request.getUsername(), user.getTenantId());
         loginResolvedUser(user);
+        return currentToken();
     }
 
     /**
@@ -86,7 +87,7 @@ public class AuthApplicationService {
      * 不覆盖后续角色码查询。
      * </p>
      */
-    public void emailLogin(EmailLoginRequest request) {
+    public TokenRefreshResult emailLogin(EmailLoginRequest request) {
         humanVerificationService.verify(request.getCaptchaToken());
         String email = normalizeEmail(request.getEmail());
         UserPO user = resolveSingleUser(userApplicationService.findByEmailForLogin(email), ErrorCode.USER_NOT_FOUND);
@@ -109,6 +110,7 @@ public class AuthApplicationService {
 
         loginAttemptService.reset(email, user.getTenantId());
         loginResolvedUser(user);
+        return currentToken();
     }
 
     /**

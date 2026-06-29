@@ -78,7 +78,7 @@ link:
     include-paths:
       - /api/v1/**
     exclude-paths:
-      - /api/v1/auth/public-key
+      - /api/v1/auth/public-keys/current
       - /actuator/**
       - /v3/api-docs/**
       - /swagger-ui/**
