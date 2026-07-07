@@ -1,0 +1,38 @@
+services:
+  mysql:
+    build:
+      context: ..
+      dockerfile: docker/mysql/Dockerfile
+    container_name: link-bootstrap-mysql
+    environment:
+      MYSQL_DATABASE: link-pro
+      MYSQL_ROOT_PASSWORD: admin3306
+      TZ: Asia/Shanghai
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    build:
+      context: ..
+      dockerfile: docker/redis/Dockerfile
+    container_name: link-bootstrap-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  mysql-data:
+  redis-data:
