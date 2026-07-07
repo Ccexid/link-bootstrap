@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 操作日志查询接口控制器。
  */
 @RestController
-@RequestMapping(GlobalConstants.API_PREFIX + "/system/operate-log")
+@RequestMapping(GlobalConstants.API_PREFIX + "/system/operate-logs")
 @Validated
 @RequiredArgsConstructor
 @Tag(name = "操作日志接口", description = "操作日志只读审计查询接口")

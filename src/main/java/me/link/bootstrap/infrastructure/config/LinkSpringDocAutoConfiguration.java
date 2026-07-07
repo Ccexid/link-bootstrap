@@ -63,7 +63,9 @@ public class LinkSpringDocAutoConfiguration {
     public GroupedOpenApi tenantApi() {
         return GroupedOpenApi.builder()
                 .group("3-租户管理")
-                .pathsToMatch(GlobalConstants.API_PREFIX + "/tenant/**")
+                .pathsToMatch(
+                        GlobalConstants.API_PREFIX + "/system/tenants/**",
+                        GlobalConstants.API_PREFIX + "/system/tenant-packages/**")
                 .displayName("租户管理接口")
                 .build();
     }

@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 角色接口控制器，对外提供角色增删改查 REST 接口。
  */
 @RestController
-@RequestMapping(GlobalConstants.API_PREFIX + "/system/role")
+@RequestMapping(GlobalConstants.API_PREFIX + "/system/roles")
 @Validated
 @RequiredArgsConstructor
 @Tag(name = "角色接口", description = "角色增删改查接口")

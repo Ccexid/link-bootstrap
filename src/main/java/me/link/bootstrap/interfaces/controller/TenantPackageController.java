@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 租户套餐接口控制器，对外提供套餐增删改查 REST 接口。
  */
 @RestController
-@RequestMapping(GlobalConstants.API_PREFIX + "/tenant/package")
+@RequestMapping(GlobalConstants.API_PREFIX + "/system/tenant-packages")
 @Validated
 @RequiredArgsConstructor
 @Tag(name = "租户套餐接口", description = "租户套餐增删改查接口")

@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 菜单接口控制器，对外提供菜单增删改查 REST 接口。
  */
 @RestController
-@RequestMapping(GlobalConstants.API_PREFIX + "/system/menu")
+@RequestMapping(GlobalConstants.API_PREFIX + "/system/menus")
 @Validated
 @RequiredArgsConstructor
 @Tag(name = "菜单接口", description = "菜单增删改查接口")

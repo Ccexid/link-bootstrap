@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 用户角色关联接口控制器，对外提供用户角色分配关系维护接口。
  */
 @RestController
-@RequestMapping(GlobalConstants.API_PREFIX + "/system/user-role")
+@RequestMapping(GlobalConstants.API_PREFIX + "/system/user-roles")
 @Validated
 @RequiredArgsConstructor
 @Tag(name = "用户角色关联接口", description = "用户角色关联增删改查接口")

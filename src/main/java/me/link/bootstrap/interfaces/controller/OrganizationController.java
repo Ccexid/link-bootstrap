@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 组织接口控制器，对外提供组织增删改查 REST 接口。
  */
 @RestController
-@RequestMapping(GlobalConstants.API_PREFIX + "/system/organization")
+@RequestMapping(GlobalConstants.API_PREFIX + "/system/organizations")
 @Validated
 @RequiredArgsConstructor
 @Tag(name = "组织接口", description = "组织增删改查接口")

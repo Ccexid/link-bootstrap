@@ -22,6 +22,9 @@ Refactor the codebase according to `ReadME.md` and the latest module-generation 
 - [x] Ran compile verification.
 - [x] Ran tests.
 - [x] Ran structural scan for forbidden layer names and converter references.
+- [x] Normalized REST resource paths to plural nouns under `/api/v1`.
+- [x] Synchronized frontend API contract documentation.
+- [x] Removed remaining forbidden `Repository` naming from shared component code.
 
 ## Notes
 
@@ -31,3 +34,9 @@ Refactor the codebase according to `ReadME.md` and the latest module-generation 
 - 2026-07-07: `./mvnw -q clean compile` passed.
 - 2026-07-07: `./mvnw -q clean -Dmaven.test.skip=false test` passed outside the sandbox. The sandboxed run failed because local Redis access and Mockito ByteBuddy agent attachment were blocked.
 - 2026-07-07: Structural scan returned no matches for `ApplicationService`, `InternalService`, `ResponseVOConverter`, `BaseConverter`, `infrastructure.persistence.internal`, or `interfaces.converter` under `src/main/java` and `src/test/java`.
+- 2026-07-07: REST controller paths were normalized to plural resources, including `/system/tenants`, `/system/tenant-packages`, `/system/roles`, `/system/menus`, `/system/organizations`, `/system/user-roles`, `/system/role-menus`, `/system/operate-logs`, and community post interaction subresources `/likes`, `/collections`, `/interactions/current`.
+- 2026-07-07: `docs/frontend-api-contract.md` was updated to match the normalized API paths.
+- 2026-07-07: `BloomRepository` was renamed to `BloomFilterStore` to remove the remaining forbidden `Repository` suffix from source files.
+- 2026-07-07: Fixed-string scans returned no old single-resource path literals for tenant, tenant package, role, menu, organization, and user-role endpoints.
+- 2026-07-07: Forbidden file-name scan returned no matches for `ApplicationService`, `InternalService`, `Repository`, `RepositoryImpl`, `Command`, `Query`, or `Converter` under `src/main/java` and `src/test/java`.
+- 2026-07-07: `./mvnw -q clean compile`, `./mvnw -q clean -Dmaven.test.skip=false test`, and `git diff --check` passed after the continued refactor.

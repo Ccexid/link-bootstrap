@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 角色菜单关联接口控制器，对外提供角色菜单授权关系维护接口。
  */
 @RestController
-@RequestMapping(GlobalConstants.API_PREFIX + "/system/role-menu")
+@RequestMapping(GlobalConstants.API_PREFIX + "/system/role-menus")
 @Validated
 @RequiredArgsConstructor
 @Tag(name = "角色菜单关联接口", description = "角色菜单关联增删改查接口")

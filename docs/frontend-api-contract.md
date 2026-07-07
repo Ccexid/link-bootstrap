@@ -125,15 +125,15 @@
 
 ## 租户管理
 
-基础路径：`/api/v1/tenant`。
+基础路径：`/api/v1/system/tenants`。
 
 | 方法 | 路径 | 权限码 | 请求 | 响应 |
 |---|---|---|---|---|
-| POST | `/api/v1/tenant` | `system:tenant:create` | `TenantCreateRequest` | `TenantResponseVO` |
-| GET | `/api/v1/tenant/{id}` | `system:tenant:query` | path: `id` | `TenantResponseVO` |
-| GET | `/api/v1/tenant` | `system:tenant:list` | `TenantPageRequest` query | `ResultTableResponse<TenantResponseVO>` |
-| PUT | `/api/v1/tenant/{id}` | `system:tenant:update` | `TenantUpdateRequest` | `TenantResponseVO` |
-| DELETE | `/api/v1/tenant/{id}` | `system:tenant:delete` | path: `id` | 无数据 |
+| POST | `/api/v1/system/tenants` | `system:tenant:create` | `TenantCreateRequest` | `TenantResponseVO` |
+| GET | `/api/v1/system/tenants/{id}` | `system:tenant:query` | path: `id` | `TenantResponseVO` |
+| GET | `/api/v1/system/tenants` | `system:tenant:list` | `TenantPageRequest` query | `ResultTableResponse<TenantResponseVO>` |
+| PUT | `/api/v1/system/tenants/{id}` | `system:tenant:update` | `TenantUpdateRequest` | `TenantResponseVO` |
+| DELETE | `/api/v1/system/tenants/{id}` | `system:tenant:delete` | path: `id` | 无数据 |
 
 `TenantCreateRequest`
 
@@ -156,15 +156,15 @@
 
 ## 租户套餐
 
-基础路径：`/api/v1/tenant/package`。
+基础路径：`/api/v1/system/tenant-packages`。
 
 | 方法 | 路径 | 权限码 | 请求 | 响应 |
 |---|---|---|---|---|
-| POST | `/api/v1/tenant/package` | `system:tenant-package:create` | `TenantPackageCreateRequest` | `TenantPackageResponseVO` |
-| GET | `/api/v1/tenant/package/{id}` | `system:tenant-package:query` | path: `id` | `TenantPackageResponseVO` |
-| GET | `/api/v1/tenant/package` | `system:tenant-package:list` | `TenantPackagePageRequest` query | 分页 |
-| PUT | `/api/v1/tenant/package/{id}` | `system:tenant-package:update` | `TenantPackageUpdateRequest` | `TenantPackageResponseVO` |
-| DELETE | `/api/v1/tenant/package/{id}` | `system:tenant-package:delete` | path: `id` | 无数据 |
+| POST | `/api/v1/system/tenant-packages` | `system:tenant-package:create` | `TenantPackageCreateRequest` | `TenantPackageResponseVO` |
+| GET | `/api/v1/system/tenant-packages/{id}` | `system:tenant-package:query` | path: `id` | `TenantPackageResponseVO` |
+| GET | `/api/v1/system/tenant-packages` | `system:tenant-package:list` | `TenantPackagePageRequest` query | 分页 |
+| PUT | `/api/v1/system/tenant-packages/{id}` | `system:tenant-package:update` | `TenantPackageUpdateRequest` | `TenantPackageResponseVO` |
+| DELETE | `/api/v1/system/tenant-packages/{id}` | `system:tenant-package:delete` | path: `id` | 无数据 |
 
 请求字段：
 
@@ -213,15 +213,15 @@
 
 ## 角色管理
 
-基础路径：`/api/v1/system/role`。
+基础路径：`/api/v1/system/roles`。
 
 | 方法 | 路径 | 权限码 | 请求 | 响应 |
 |---|---|---|---|---|
-| POST | `/api/v1/system/role` | `system:role:create` | `RoleCreateRequest` | `RoleResponseVO` |
-| GET | `/api/v1/system/role/{id}` | `system:role:query` | path: `id` | `RoleResponseVO` |
-| GET | `/api/v1/system/role` | `system:role:list` | `RolePageRequest` query | 分页 |
-| PUT | `/api/v1/system/role/{id}` | `system:role:update` | `RoleUpdateRequest` | `RoleResponseVO` |
-| DELETE | `/api/v1/system/role/{id}` | `system:role:delete` | path: `id` | 无数据 |
+| POST | `/api/v1/system/roles` | `system:role:create` | `RoleCreateRequest` | `RoleResponseVO` |
+| GET | `/api/v1/system/roles/{id}` | `system:role:query` | path: `id` | `RoleResponseVO` |
+| GET | `/api/v1/system/roles` | `system:role:list` | `RolePageRequest` query | 分页 |
+| PUT | `/api/v1/system/roles/{id}` | `system:role:update` | `RoleUpdateRequest` | `RoleResponseVO` |
+| DELETE | `/api/v1/system/roles/{id}` | `system:role:delete` | path: `id` | 无数据 |
 
 请求字段：
 
@@ -235,15 +235,15 @@
 
 ## 菜单管理
 
-基础路径：`/api/v1/system/menu`。
+基础路径：`/api/v1/system/menus`。
 
 | 方法 | 路径 | 权限码 | 请求 | 响应 |
 |---|---|---|---|---|
-| POST | `/api/v1/system/menu` | `system:menu:create` | `MenuCreateRequest` | `MenuResponseVO` |
-| GET | `/api/v1/system/menu/{id}` | `system:menu:query` | path: `id` | `MenuResponseVO` |
-| GET | `/api/v1/system/menu` | `system:menu:list` | `MenuPageRequest` query | 分页 |
-| PUT | `/api/v1/system/menu/{id}` | `system:menu:update` | `MenuUpdateRequest` | `MenuResponseVO` |
-| DELETE | `/api/v1/system/menu/{id}` | `system:menu:delete` | path: `id` | 无数据 |
+| POST | `/api/v1/system/menus` | `system:menu:create` | `MenuCreateRequest` | `MenuResponseVO` |
+| GET | `/api/v1/system/menus/{id}` | `system:menu:query` | path: `id` | `MenuResponseVO` |
+| GET | `/api/v1/system/menus` | `system:menu:list` | `MenuPageRequest` query | 分页 |
+| PUT | `/api/v1/system/menus/{id}` | `system:menu:update` | `MenuUpdateRequest` | `MenuResponseVO` |
+| DELETE | `/api/v1/system/menus/{id}` | `system:menu:delete` | path: `id` | 无数据 |
 
 请求字段：
 
@@ -257,15 +257,15 @@
 
 ## 组织管理
 
-基础路径：`/api/v1/system/organization`。
+基础路径：`/api/v1/system/organizations`。
 
 | 方法 | 路径 | 权限码 | 请求 | 响应 |
 |---|---|---|---|---|
-| POST | `/api/v1/system/organization` | `system:organization:create` | `OrganizationCreateRequest` | `OrganizationResponseVO` |
-| GET | `/api/v1/system/organization/{id}` | `system:organization:query` | path: `id` | `OrganizationResponseVO` |
-| GET | `/api/v1/system/organization` | `system:organization:list` | `OrganizationPageRequest` query | 分页 |
-| PUT | `/api/v1/system/organization/{id}` | `system:organization:update` | `OrganizationUpdateRequest` | `OrganizationResponseVO` |
-| DELETE | `/api/v1/system/organization/{id}` | `system:organization:delete` | path: `id` | 无数据 |
+| POST | `/api/v1/system/organizations` | `system:organization:create` | `OrganizationCreateRequest` | `OrganizationResponseVO` |
+| GET | `/api/v1/system/organizations/{id}` | `system:organization:query` | path: `id` | `OrganizationResponseVO` |
+| GET | `/api/v1/system/organizations` | `system:organization:list` | `OrganizationPageRequest` query | 分页 |
+| PUT | `/api/v1/system/organizations/{id}` | `system:organization:update` | `OrganizationUpdateRequest` | `OrganizationResponseVO` |
+| DELETE | `/api/v1/system/organizations/{id}` | `system:organization:delete` | path: `id` | 无数据 |
 
 请求字段：
 
@@ -279,16 +279,16 @@
 
 ## 用户角色关联
 
-基础路径：`/api/v1/system/user-role`。
+基础路径：`/api/v1/system/user-roles`。
 
 | 方法 | 路径 | 权限码 | 请求 | 响应 |
 |---|---|---|---|---|
-| POST | `/api/v1/system/user-role` | `system:user-role:create` | `UserRoleCreateRequest` | `UserRoleResponseVO` |
-| POST | `/api/v1/system/user-role/assign` | `system:user-role:assign` | `UserRoleAssignRequest` | 无数据 |
-| GET | `/api/v1/system/user-role/{id}` | `system:user-role:query` | path: `id` | `UserRoleResponseVO` |
-| GET | `/api/v1/system/user-role` | `system:user-role:list` | `UserRolePageRequest` query | 分页 |
-| PUT | `/api/v1/system/user-role/{id}` | `system:user-role:update` | `UserRoleUpdateRequest` | `UserRoleResponseVO` |
-| DELETE | `/api/v1/system/user-role/{id}` | `system:user-role:delete` | path: `id` | 无数据 |
+| POST | `/api/v1/system/user-roles` | `system:user-role:create` | `UserRoleCreateRequest` | `UserRoleResponseVO` |
+| POST | `/api/v1/system/user-roles/assign` | `system:user-role:assign` | `UserRoleAssignRequest` | 无数据 |
+| GET | `/api/v1/system/user-roles/{id}` | `system:user-role:query` | path: `id` | `UserRoleResponseVO` |
+| GET | `/api/v1/system/user-roles` | `system:user-role:list` | `UserRolePageRequest` query | 分页 |
+| PUT | `/api/v1/system/user-roles/{id}` | `system:user-role:update` | `UserRoleUpdateRequest` | `UserRoleResponseVO` |
+| DELETE | `/api/v1/system/user-roles/{id}` | `system:user-role:delete` | path: `id` | 无数据 |
 
 请求字段：
 
@@ -303,16 +303,16 @@
 
 ## 角色菜单关联
 
-基础路径：`/api/v1/system/role-menu`。
+基础路径：`/api/v1/system/role-menus`。
 
 | 方法 | 路径 | 权限码 | 请求 | 响应 |
 |---|---|---|---|---|
-| POST | `/api/v1/system/role-menu` | `system:role-menu:create` | `RoleMenuCreateRequest` | `RoleMenuResponseVO` |
-| POST | `/api/v1/system/role-menu/authorize` | `system:role-menu:authorize` | `RoleMenuAuthorizeRequest` | 无数据 |
-| GET | `/api/v1/system/role-menu/{id}` | `system:role-menu:query` | path: `id` | `RoleMenuResponseVO` |
-| GET | `/api/v1/system/role-menu` | `system:role-menu:list` | `RoleMenuPageRequest` query | 分页 |
-| PUT | `/api/v1/system/role-menu/{id}` | `system:role-menu:update` | `RoleMenuUpdateRequest` | `RoleMenuResponseVO` |
-| DELETE | `/api/v1/system/role-menu/{id}` | `system:role-menu:delete` | path: `id` | 无数据 |
+| POST | `/api/v1/system/role-menus` | `system:role-menu:create` | `RoleMenuCreateRequest` | `RoleMenuResponseVO` |
+| POST | `/api/v1/system/role-menus/authorize` | `system:role-menu:authorize` | `RoleMenuAuthorizeRequest` | 无数据 |
+| GET | `/api/v1/system/role-menus/{id}` | `system:role-menu:query` | path: `id` | `RoleMenuResponseVO` |
+| GET | `/api/v1/system/role-menus` | `system:role-menu:list` | `RoleMenuPageRequest` query | 分页 |
+| PUT | `/api/v1/system/role-menus/{id}` | `system:role-menu:update` | `RoleMenuUpdateRequest` | `RoleMenuResponseVO` |
+| DELETE | `/api/v1/system/role-menus/{id}` | `system:role-menu:delete` | path: `id` | 无数据 |
 
 请求字段：
 
@@ -327,12 +327,12 @@
 
 ## 操作日志
 
-基础路径：`/api/v1/system/operate-log`。该模块只提供审计查询，不提供前端写入接口。
+基础路径：`/api/v1/system/operate-logs`。该模块只提供审计查询，不提供前端写入接口。
 
 | 方法 | 路径 | 权限码 | 请求 | 响应 |
 |---|---|---|---|---|
-| GET | `/api/v1/system/operate-log/{id}` | `system:operate-log:query` | path: `id` | `OperateLogResponseVO` |
-| GET | `/api/v1/system/operate-log` | `system:operate-log:list` | `OperateLogPageRequest` query | 分页 |
+| GET | `/api/v1/system/operate-logs/{id}` | `system:operate-log:query` | path: `id` | `OperateLogResponseVO` |
+| GET | `/api/v1/system/operate-logs` | `system:operate-log:list` | `OperateLogPageRequest` query | 分页 |
 
 `OperateLogPageRequest`: 通用分页参数 + `trace_id`、`user_id`、`module`、`operation`、`biz_id`、`success`。
 
@@ -427,11 +427,11 @@
 
 | 方法 | 路径 | 权限码 | 请求 | 响应 |
 |---|---|---|---|---|
-| POST | `/api/v1/community/posts/{id}/like` | 登录即可 | path: `id` | `CommunityPostInteractionResponseVO` |
-| DELETE | `/api/v1/community/posts/{id}/like` | 登录即可 | path: `id` | `CommunityPostInteractionResponseVO` |
-| POST | `/api/v1/community/posts/{id}/collect` | 登录即可 | path: `id` | `CommunityPostInteractionResponseVO` |
-| DELETE | `/api/v1/community/posts/{id}/collect` | 登录即可 | path: `id` | `CommunityPostInteractionResponseVO` |
-| GET | `/api/v1/community/posts/{id}/interaction` | 登录即可 | path: `id` | `CommunityPostInteractionResponseVO` |
+| POST | `/api/v1/community/posts/{id}/likes` | 登录即可 | path: `id` | `CommunityPostInteractionResponseVO` |
+| DELETE | `/api/v1/community/posts/{id}/likes` | 登录即可 | path: `id` | `CommunityPostInteractionResponseVO` |
+| POST | `/api/v1/community/posts/{id}/collections` | 登录即可 | path: `id` | `CommunityPostInteractionResponseVO` |
+| DELETE | `/api/v1/community/posts/{id}/collections` | 登录即可 | path: `id` | `CommunityPostInteractionResponseVO` |
+| GET | `/api/v1/community/posts/{id}/interactions/current` | 登录即可 | path: `id` | `CommunityPostInteractionResponseVO` |
 
 `CommunityPostInteractionResponseVO` 字段：`liked`、`collected`、`like_count`、`collect_count`。
 

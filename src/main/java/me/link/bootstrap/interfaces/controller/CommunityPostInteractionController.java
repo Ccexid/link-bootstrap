@@ -30,32 +30,32 @@ public class CommunityPostInteractionController {
     private final CommunityPostInteractionService communityPostInteractionService;
 
     @Idempotent
-    @PostMapping("/{id}/like")
+    @PostMapping("/{id}/likes")
     @Operation(summary = "点赞帖子")
     public ResultResponse<CommunityPostInteractionResponseVO> like(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         return ResultResponse.success(communityPostInteractionService.like(id));
     }
 
-    @DeleteMapping("/{id}/like")
+    @DeleteMapping("/{id}/likes")
     @Operation(summary = "取消点赞帖子")
     public ResultResponse<CommunityPostInteractionResponseVO> unlike(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         return ResultResponse.success(communityPostInteractionService.unlike(id));
     }
 
     @Idempotent
-    @PostMapping("/{id}/collect")
+    @PostMapping("/{id}/collections")
     @Operation(summary = "收藏帖子")
     public ResultResponse<CommunityPostInteractionResponseVO> collect(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         return ResultResponse.success(communityPostInteractionService.collect(id));
     }
 
-    @DeleteMapping("/{id}/collect")
+    @DeleteMapping("/{id}/collections")
     @Operation(summary = "取消收藏帖子")
     public ResultResponse<CommunityPostInteractionResponseVO> uncollect(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         return ResultResponse.success(communityPostInteractionService.uncollect(id));
     }
 
-    @GetMapping("/{id}/interaction")
+    @GetMapping("/{id}/interactions/current")
     @Operation(summary = "查询当前用户帖子互动状态")
     public ResultResponse<CommunityPostInteractionResponseVO> interaction(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         return ResultResponse.success(communityPostInteractionService.interaction(id));
