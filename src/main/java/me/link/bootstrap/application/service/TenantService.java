@@ -3,7 +3,6 @@ package me.link.bootstrap.application.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import me.link.bootstrap.infrastructure.persistence.po.TenantPO;
 import java.util.Set;
-import me.link.bootstrap.infrastructure.persistence.po.TenantPO;
 import me.link.bootstrap.interfaces.dto.request.tenant.TenantCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.tenant.TenantPageRequest;
 import me.link.bootstrap.interfaces.dto.request.tenant.TenantUpdateRequest;

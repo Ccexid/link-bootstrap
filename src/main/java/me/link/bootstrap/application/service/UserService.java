@@ -3,7 +3,6 @@ package me.link.bootstrap.application.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import me.link.bootstrap.infrastructure.persistence.po.UserPO;
 import java.util.List;
-import me.link.bootstrap.infrastructure.persistence.po.UserPO;
 import me.link.bootstrap.interfaces.dto.request.user.UserCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.user.UserPageRequest;
 import me.link.bootstrap.interfaces.dto.request.user.UserUpdateRequest;

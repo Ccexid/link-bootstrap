@@ -3,7 +3,7 @@ package me.link.bootstrap.application.service.impl;
 import me.link.bootstrap.application.service.RoleService;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import me.link.bootstrap.infrastructure.persistence.mapper.RoleMapper;
+import me.link.bootstrap.infrastructure.mapper.RoleMapper;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import me.link.bootstrap.application.support.ApplicationAssert;
 import me.link.bootstrap.shared.kernel.valueobject.StatusEnum;
 import me.link.bootstrap.shared.kernel.valueobject.PageResult;
-import me.link.bootstrap.application.service.RoleService;
 import me.link.bootstrap.infrastructure.persistence.po.RolePO;
 import me.link.bootstrap.interfaces.dto.response.vo.RoleResponseVO;
 import me.link.bootstrap.infrastructure.persistence.support.PageOrderHelper;

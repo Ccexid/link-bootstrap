@@ -2,7 +2,6 @@ package me.link.bootstrap.application.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import me.link.bootstrap.infrastructure.persistence.po.MenuPO;
-import me.link.bootstrap.infrastructure.persistence.po.MenuPO;
 import me.link.bootstrap.interfaces.dto.request.menu.MenuCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.menu.MenuPageRequest;
 import me.link.bootstrap.interfaces.dto.request.menu.MenuUpdateRequest;

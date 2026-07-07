@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
  */
 @AutoConfiguration(before = MybatisPlusAutoConfiguration.class)
 @MapperScan(
-        basePackages = "me.link.bootstrap.infrastructure.persistence.mapper",
+        basePackages = "me.link.bootstrap.infrastructure.mapper",
         annotationClass = Mapper.class,
         lazyInitialization = "${mybatis.lazy-initialization:false}"
 )

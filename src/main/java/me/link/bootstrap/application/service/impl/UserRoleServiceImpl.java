@@ -4,7 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import me.link.bootstrap.application.service.UserRoleService;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import me.link.bootstrap.infrastructure.persistence.mapper.UserRoleMapper;
+import me.link.bootstrap.infrastructure.mapper.UserRoleMapper;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import me.link.bootstrap.application.support.ApplicationAssert;
 import me.link.bootstrap.application.service.RoleService;
 import me.link.bootstrap.application.service.UserService;
-import me.link.bootstrap.application.service.UserRoleService;
 import me.link.bootstrap.infrastructure.persistence.po.RolePO;
 import me.link.bootstrap.infrastructure.persistence.po.UserPO;
 import me.link.bootstrap.infrastructure.persistence.po.UserRolePO;

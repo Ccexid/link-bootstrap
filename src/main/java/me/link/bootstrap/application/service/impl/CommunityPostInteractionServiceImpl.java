@@ -3,7 +3,7 @@ package me.link.bootstrap.application.service.impl;
 import me.link.bootstrap.application.service.CommunityPostInteractionService;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import me.link.bootstrap.infrastructure.persistence.mapper.CommunityPostMapper;
+import me.link.bootstrap.infrastructure.mapper.CommunityPostMapper;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;

@@ -1,8 +1,9 @@
 package me.link.bootstrap.infrastructure.security;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import me.link.bootstrap.infrastructure.persistence.mapper.PermissionMapper;
+import me.link.bootstrap.infrastructure.mapper.PermissionMapper;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;

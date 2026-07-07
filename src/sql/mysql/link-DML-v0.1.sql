@@ -176,6 +176,20 @@ VALUES
     (313, '话题更新', 'system:community:topic:update',   3, 30, 310, '',          '',          NULL,                       NULL,               0, 0, 0, 0, 1, 1),
     (314, '话题删除', 'system:community:topic:delete',   3, 40, 310, '',          '',          NULL,                       NULL,               0, 0, 0, 0, 1, 1);
 
+-- ---------- 3.13 社区用户端权限 ----------
+INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `updater`)
+VALUES
+    (320, '帖子创建', 'community:post:create',       3, 10, 3, '', '', NULL, NULL, 0, 0, 0, 0, 1, 1),
+    (321, '帖子更新', 'community:post:update',       3, 20, 3, '', '', NULL, NULL, 0, 0, 0, 0, 1, 1),
+    (322, '帖子删除', 'community:post:delete',       3, 30, 3, '', '', NULL, NULL, 0, 0, 0, 0, 1, 1),
+    (323, '帖子点赞', 'community:post:like',         3, 40, 3, '', '', NULL, NULL, 0, 0, 0, 0, 1, 1),
+    (324, '取消点赞', 'community:post:unlike',       3, 50, 3, '', '', NULL, NULL, 0, 0, 0, 0, 1, 1),
+    (325, '帖子收藏', 'community:post:collect',      3, 60, 3, '', '', NULL, NULL, 0, 0, 0, 0, 1, 1),
+    (326, '取消收藏', 'community:post:uncollect',    3, 70, 3, '', '', NULL, NULL, 0, 0, 0, 0, 1, 1),
+    (327, '评论创建', 'community:comment:create',    3, 80, 3, '', '', NULL, NULL, 0, 0, 0, 0, 1, 1),
+    (328, '评论更新', 'community:comment:update',    3, 90, 3, '', '', NULL, NULL, 0, 0, 0, 0, 1, 1),
+    (329, '评论删除', 'community:comment:delete',    3, 100, 3, '', '', NULL, NULL, 0, 0, 0, 0, 1, 1);
+
 -- ====================================================================
 -- 4. 角色 system_role
 -- ====================================================================
@@ -254,14 +268,19 @@ WHERE m.`deleted` = 0
     140, 141, 142, 143, 144, 145,
     150, 151, 152, 153, 154, 155,
     160, 162,
-    3, 300, 301, 302, 303, 304, 310, 311, 312, 313, 314
+    3, 300, 301, 302, 303, 304, 310, 311, 312, 313, 314,
+    320, 321, 322, 323, 324, 325, 326, 327, 328, 329
   );
 
--- 7.4 tenant_user (role=4, tenant=1) 仅查看类菜单
+-- 7.4 tenant_user (role=4, tenant=1) 拥有基础查看与社区用户端写权限
 INSERT INTO `system_role_menu` (`role_id`, `menu_id`, `tenant_id`, `creator`, `updater`)
 SELECT 4, m.`id`, 1, 1, 1 FROM `system_menu` m
 WHERE m.`deleted` = 0
-  AND m.`id` IN (1, 100, 102, 110, 112, 120, 122, 130, 132, 160, 162, 3, 300, 302, 310, 312);
+  AND m.`id` IN (
+    1, 100, 102, 110, 112, 120, 122, 130, 132, 160, 162,
+    3, 300, 302, 310, 312,
+    320, 321, 322, 323, 324, 325, 326, 327, 328, 329
+  );
 
 -- 7.5 tenant_admin (role=5, tenant=2) 同 role=3
 INSERT INTO `system_role_menu` (`role_id`, `menu_id`, `tenant_id`, `creator`, `updater`)
@@ -276,7 +295,8 @@ WHERE m.`deleted` = 0
     140, 141, 142, 143, 144, 145,
     150, 151, 152, 153, 154, 155,
     160, 162,
-    3, 300, 301, 302, 303, 304, 310, 311, 312, 313, 314
+    3, 300, 301, 302, 303, 304, 310, 311, 312, 313, 314,
+    320, 321, 322, 323, 324, 325, 326, 327, 328, 329
   );
 
 -- ====================================================================

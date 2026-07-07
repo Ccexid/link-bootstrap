@@ -2,7 +2,6 @@ package me.link.bootstrap.application.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import me.link.bootstrap.infrastructure.persistence.po.CommunitySectionPO;
-import me.link.bootstrap.infrastructure.persistence.po.CommunitySectionPO;
 import me.link.bootstrap.interfaces.dto.request.community.section.CommunitySectionCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.community.section.CommunitySectionPageRequest;
 import me.link.bootstrap.interfaces.dto.request.community.section.CommunitySectionUpdateRequest;

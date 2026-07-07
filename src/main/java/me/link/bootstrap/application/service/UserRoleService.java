@@ -5,7 +5,6 @@ import me.link.bootstrap.infrastructure.persistence.po.UserRolePO;
 import java.util.List;
 import me.link.bootstrap.infrastructure.persistence.po.RolePO;
 import me.link.bootstrap.infrastructure.persistence.po.UserPO;
-import me.link.bootstrap.infrastructure.persistence.po.UserRolePO;
 import me.link.bootstrap.interfaces.dto.request.userrole.UserRoleAssignRequest;
 import me.link.bootstrap.interfaces.dto.request.userrole.UserRoleCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.userrole.UserRolePageRequest;

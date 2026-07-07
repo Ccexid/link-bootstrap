@@ -10,7 +10,7 @@ import cn.hutool.crypto.digest.BCrypt;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.link.bootstrap.interfaces.dto.response.vo.TokenResponseVO;
-import me.link.bootstrap.infrastructure.persistence.mapper.PermissionMapper;
+import me.link.bootstrap.infrastructure.mapper.PermissionMapper;
 import me.link.bootstrap.infrastructure.persistence.po.UserPO;
 import me.link.bootstrap.infrastructure.security.EmailCodeSendRateLimitService;
 import me.link.bootstrap.infrastructure.security.EmailCodeService;

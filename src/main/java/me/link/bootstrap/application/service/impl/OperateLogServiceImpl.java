@@ -3,7 +3,7 @@ package me.link.bootstrap.application.service.impl;
 import me.link.bootstrap.application.service.OperateLogService;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import me.link.bootstrap.infrastructure.persistence.mapper.OperateLogMapper;
+import me.link.bootstrap.infrastructure.mapper.OperateLogMapper;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import me.link.bootstrap.application.support.ApplicationAssert;
 import me.link.bootstrap.application.support.OperateLogRecord;
 import me.link.bootstrap.shared.kernel.valueobject.PageResult;
-import me.link.bootstrap.application.service.OperateLogService;
 import me.link.bootstrap.infrastructure.persistence.po.OperateLogPO;
 import me.link.bootstrap.interfaces.dto.response.vo.OperateLogResponseVO;
 import me.link.bootstrap.infrastructure.persistence.support.PageOrderHelper;

@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import me.link.bootstrap.infrastructure.persistence.po.CommunityPostPO;
 import me.link.bootstrap.infrastructure.persistence.po.CommunityPostCollectPO;
 import me.link.bootstrap.infrastructure.persistence.po.CommunityPostLikePO;
-import me.link.bootstrap.infrastructure.persistence.po.CommunityPostPO;
 import me.link.bootstrap.interfaces.dto.response.vo.CommunityPostInteractionResponseVO;
 
 public interface CommunityPostInteractionService extends IService<CommunityPostPO> {

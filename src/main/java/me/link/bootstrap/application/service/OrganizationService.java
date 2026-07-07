@@ -2,7 +2,6 @@ package me.link.bootstrap.application.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import me.link.bootstrap.infrastructure.persistence.po.OrganizationPO;
-import me.link.bootstrap.infrastructure.persistence.po.OrganizationPO;
 import me.link.bootstrap.interfaces.dto.request.organization.OrganizationCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.organization.OrganizationPageRequest;
 import me.link.bootstrap.interfaces.dto.request.organization.OrganizationUpdateRequest;

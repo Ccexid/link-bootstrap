@@ -1,11 +1,10 @@
-package me.link.bootstrap.infrastructure.persistence.mapper;
+package me.link.bootstrap.infrastructure.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import java.util.List;
 import me.link.bootstrap.infrastructure.persistence.po.MenuPO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 /**
  * 权限聚合查询 Mapper。

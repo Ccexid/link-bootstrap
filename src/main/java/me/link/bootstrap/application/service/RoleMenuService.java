@@ -3,7 +3,6 @@ package me.link.bootstrap.application.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import me.link.bootstrap.infrastructure.persistence.po.RoleMenuPO;
 import java.util.List;
-import me.link.bootstrap.infrastructure.persistence.po.RoleMenuPO;
 import me.link.bootstrap.infrastructure.persistence.po.RolePO;
 import me.link.bootstrap.interfaces.dto.request.rolemenu.RoleMenuAuthorizeRequest;
 import me.link.bootstrap.interfaces.dto.request.rolemenu.RoleMenuCreateRequest;

@@ -26,6 +26,9 @@ Refactor the codebase according to `ReadME.md` and the latest module-generation 
 - [x] Synchronized frontend API contract documentation.
 - [x] Removed remaining forbidden `Repository` naming from shared component code.
 - [x] Rechecked REST method usage, mapper inheritance, and unused refactor leftovers.
+- [x] Aligned Mapper package path with `ReadME.md` (`infrastructure/mapper`).
+- [x] Added user-side community write permissions and DML permission seeds.
+- [x] Removed duplicate Java imports left by the earlier mechanical refactor.
 
 ## Notes
 
@@ -45,3 +48,7 @@ Refactor the codebase according to `ReadME.md` and the latest module-generation 
 - 2026-07-07: `PermissionMapper` now extends `BaseMapper<MenuPO>` while keeping only the custom permission aggregation SQL methods used by auth/permission cache flows.
 - 2026-07-07: Removed unused `LoginResponseVO` and `TokenRefreshResult` leftovers after confirming they had no references.
 - 2026-07-07: Follow-up verification passed: `./mvnw -q clean compile`, `./mvnw -q clean -Dmaven.test.skip=false test`, `git diff --check`, PATCH/source leftover scan, and forbidden file-name scan.
+- 2026-07-07: Continued audit found Mapper interfaces still under `infrastructure/persistence/mapper`, while `ReadME.md` requires `infrastructure/mapper`. Mappers were moved, `@MapperScan` was updated, and XML namespaces now point to `me.link.bootstrap.infrastructure.mapper`.
+- 2026-07-07: User-side community write endpoints now declare `@SaCheckPermission` with `community:*:*` permissions. Matching hidden permission rows were added to `src/sql/mysql/link-DML-v0.1.sql` and granted to tenant admin/basic user seed roles so initialized environments can authorize the endpoints.
+- 2026-07-07: Duplicate import scan is clean after removing repeated imports from Service interfaces and implementations.
+- 2026-07-07: Verification after this audit: `./mvnw -q clean compile` passed; `git diff --check` passed; scans returned no old Mapper package, PATCH/token leftovers, forbidden layer file names, or duplicate imports. Full `./mvnw -q clean -Dmaven.test.skip=false test` currently fails only at `LinkMainApplicationTests.contextLoads` because Redis at `127.0.0.1:6379` is unavailable. The remaining 7 test classes pass when run explicitly.

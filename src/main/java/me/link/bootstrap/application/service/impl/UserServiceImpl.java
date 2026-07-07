@@ -3,7 +3,7 @@ package me.link.bootstrap.application.service.impl;
 import me.link.bootstrap.application.service.UserService;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import me.link.bootstrap.infrastructure.persistence.mapper.UserMapper;
+import me.link.bootstrap.infrastructure.mapper.UserMapper;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
@@ -16,7 +16,6 @@ import me.link.bootstrap.shared.kernel.valueobject.StatusEnum;
 import me.link.bootstrap.shared.kernel.valueobject.PageResult;
 import me.link.bootstrap.infrastructure.crypto.MobileCryptoService;
 import me.link.bootstrap.infrastructure.crypto.ProtectedMobile;
-import me.link.bootstrap.application.service.UserService;
 import me.link.bootstrap.infrastructure.persistence.po.UserPO;
 import me.link.bootstrap.interfaces.dto.response.vo.UserResponseVO;
 import me.link.bootstrap.infrastructure.persistence.support.PageOrderHelper;
