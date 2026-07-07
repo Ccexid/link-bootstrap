@@ -1,6 +1,6 @@
 package me.link.bootstrap.interfaces.controller;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.springframework.security.access.prepost.PreAuthorize;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -41,7 +41,7 @@ public class RoleMenuController {
     private final RoleMenuService roleMenuService;
 
     @PostMapping
-    @SaCheckPermission("system:role-menu:create")
+    @PreAuthorize("hasAuthority('system:role-menu:create')")
     @Idempotent
     @Operation(summary = "创建角色菜单关联", description = "创建角色菜单关联基础信息")
     public ResultResponse<RoleMenuResponseVO> create(@Valid @RequestBody RoleMenuCreateRequest request) {
@@ -49,7 +49,7 @@ public class RoleMenuController {
     }
 
     @PostMapping("/authorize")
-    @SaCheckPermission("system:role-menu:authorize")
+    @PreAuthorize("hasAuthority('system:role-menu:authorize')")
     @Idempotent
     @Operation(summary = "批量授权角色菜单", description = "覆盖指定角色的菜单授权")
     public ResultResponse<Void> authorize(@Valid @RequestBody RoleMenuAuthorizeRequest request) {
@@ -58,14 +58,14 @@ public class RoleMenuController {
     }
 
     @GetMapping("/{id}")
-    @SaCheckPermission("system:role-menu:query")
+    @PreAuthorize("hasAuthority('system:role-menu:query')")
     @Operation(summary = "查询角色菜单关联详情", description = "根据ID查询角色菜单关联详情")
     public ResultResponse<RoleMenuResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         return ResultResponse.success(roleMenuService.get(id));
     }
 
     @GetMapping
-    @SaCheckPermission("system:role-menu:list")
+    @PreAuthorize("hasAuthority('system:role-menu:list')")
     @Operation(summary = "分页查询角色菜单关联", description = "分页查询角色菜单关联列表")
     public ResultTableResponse<RoleMenuResponseVO> page(@Validated @SortWhitelist(RoleMenuResponseVO.class) RoleMenuPageRequest request) {
         PageResult<RoleMenuResponseVO> pageResult = roleMenuService.page(request);
@@ -73,7 +73,7 @@ public class RoleMenuController {
     }
 
     @PutMapping("/{id}")
-    @SaCheckPermission("system:role-menu:update")
+    @PreAuthorize("hasAuthority('system:role-menu:update')")
     @Idempotent
     @Operation(summary = "更新角色菜单关联", description = "更新角色菜单关联基础信息")
     public ResultResponse<RoleMenuResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
@@ -82,7 +82,7 @@ public class RoleMenuController {
     }
 
     @DeleteMapping("/{id}")
-    @SaCheckPermission("system:role-menu:delete")
+    @PreAuthorize("hasAuthority('system:role-menu:delete')")
     @Operation(summary = "删除角色菜单关联", description = "根据ID删除角色菜单关联")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         roleMenuService.delete(id);

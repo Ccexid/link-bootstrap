@@ -37,14 +37,6 @@ spring:
           max-wait: 3000ms
         shutdown-timeout: 100ms
 
-# Sa-Token配置 (生产环境)
-sa-token:
-  is-log: false
-  is-color-log: false
-  jwt-secret-key: ${JWT_SECRET:}
-  timeout: 7200
-  active-timeout: 3600
-
 # MyBatis配置 (生产环境关闭SQL打印)
 mybatis-plus:
   configuration:
@@ -60,6 +52,9 @@ springdoc:
 # Link 安全配置 (生产环境)
 link:
   security:
+    token:
+      timeout: ${LINK_SECURITY_TOKEN_TIMEOUT:2h}
+      active-timeout: ${LINK_SECURITY_TOKEN_ACTIVE_TIMEOUT:1h}
     cors:
       # 生产环境必须配置为明确域名白名单，例如:
       # LINK_CORS_ALLOWED_ORIGIN_PATTERNS=https://admin.example.com,https://app.example.com

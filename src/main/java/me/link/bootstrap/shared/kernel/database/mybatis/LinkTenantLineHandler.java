@@ -14,7 +14,7 @@ import java.util.Set;
  * MyBatis-Plus 多租户处理器实现。
  * <p>
  * 由 {@link com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor}
- * 在 SQL 解析阶段回调：从 Sa-Token 上下文取当前登录用户的租户ID，自动追加
+ * 在 SQL 解析阶段回调：从 Spring Security 上下文取当前登录用户的租户ID，自动追加
  * {@code WHERE tenant_id = ?} 到所有 SELECT/UPDATE/DELETE/INSERT 语句中（除显式忽略的表外），
  * 实现全局多租户数据隔离，规避水平越权（IDOR）风险。
  * </p>

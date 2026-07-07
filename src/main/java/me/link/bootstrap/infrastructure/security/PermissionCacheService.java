@@ -1,6 +1,5 @@
 package me.link.bootstrap.infrastructure.security;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.link.bootstrap.infrastructure.mapper.PermissionMapper;
@@ -15,7 +14,7 @@ import java.util.List;
  * 权限码 / 角色码缓存服务。
  * <p>
  * 在 Redis 中按用户 ID 缓存权限码列表和角色码列表(TTL 30 分钟),
- * 减少高频接口注解校验(@SaCheckPermission / @SaCheckRole)时的 SQL 压力。
+ * 减少高频接口注解校验(@PreAuthorize)时的 SQL 压力。
  * </p>
  * <p>
  * <b>缓存键设计</b>:
@@ -98,7 +97,7 @@ public class PermissionCacheService {
     /**
      * 失效拥有指定角色的所有用户的缓存(用于 role / role_menu 变更后)。
      * <p>
-     * 当前 sa-token 上下文需要登录且有 tenantId,user_role 查询会被
+     * 当前 Spring Security 上下文需要登录且有 tenantId,user_role 查询会被
      * TenantLineInnerInterceptor 自动加 tenant_id 过滤;若调用方是超管则不受租户限制。
      * </p>
      */

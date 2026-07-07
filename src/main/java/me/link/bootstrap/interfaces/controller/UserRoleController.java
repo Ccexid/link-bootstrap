@@ -1,6 +1,6 @@
 package me.link.bootstrap.interfaces.controller;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.springframework.security.access.prepost.PreAuthorize;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -41,7 +41,7 @@ public class UserRoleController {
     private final UserRoleService userRoleService;
 
     @PostMapping
-    @SaCheckPermission("system:user-role:create")
+    @PreAuthorize("hasAuthority('system:user-role:create')")
     @Idempotent
     @Operation(summary = "创建用户角色关联", description = "创建用户角色关联基础信息")
     public ResultResponse<UserRoleResponseVO> create(@Valid @RequestBody UserRoleCreateRequest request) {
@@ -49,7 +49,7 @@ public class UserRoleController {
     }
 
     @PostMapping("/assign")
-    @SaCheckPermission("system:user-role:assign")
+    @PreAuthorize("hasAuthority('system:user-role:assign')")
     @Idempotent
     @Operation(summary = "批量分配用户角色", description = "覆盖指定用户的角色分配")
     public ResultResponse<Void> assign(@Valid @RequestBody UserRoleAssignRequest request) {
@@ -58,14 +58,14 @@ public class UserRoleController {
     }
 
     @GetMapping("/{id}")
-    @SaCheckPermission("system:user-role:query")
+    @PreAuthorize("hasAuthority('system:user-role:query')")
     @Operation(summary = "查询用户角色关联详情", description = "根据ID查询用户角色关联详情")
     public ResultResponse<UserRoleResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         return ResultResponse.success(userRoleService.get(id));
     }
 
     @GetMapping
-    @SaCheckPermission("system:user-role:list")
+    @PreAuthorize("hasAuthority('system:user-role:list')")
     @Operation(summary = "分页查询用户角色关联", description = "分页查询用户角色关联列表")
     public ResultTableResponse<UserRoleResponseVO> page(@Validated @SortWhitelist(UserRoleResponseVO.class) UserRolePageRequest request) {
         PageResult<UserRoleResponseVO> pageResult = userRoleService.page(request);
@@ -73,7 +73,7 @@ public class UserRoleController {
     }
 
     @PutMapping("/{id}")
-    @SaCheckPermission("system:user-role:update")
+    @PreAuthorize("hasAuthority('system:user-role:update')")
     @Idempotent
     @Operation(summary = "更新用户角色关联", description = "更新用户角色关联基础信息")
     public ResultResponse<UserRoleResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
@@ -82,7 +82,7 @@ public class UserRoleController {
     }
 
     @DeleteMapping("/{id}")
-    @SaCheckPermission("system:user-role:delete")
+    @PreAuthorize("hasAuthority('system:user-role:delete')")
     @Operation(summary = "删除用户角色关联", description = "根据ID删除用户角色关联")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         userRoleService.delete(id);

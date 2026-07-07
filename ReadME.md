@@ -22,7 +22,7 @@
 | Web 容器 | Undertow | 替代默认 Tomcat，提升性能 |
 | ORM | MyBatis-Plus | 简化 CRUD，提供代码生成器 |
 | 数据库 | MySQL | 结构维护在 `src/sql/mysql/link-DDL-v0.1.sql` |
-| 权限框架 | Sa-Token | 轻量级权限认证 |
+| 权限框架 | Spring Security | Redis 不透明 Bearer Token 鉴权 |
 | 缓存 | Redisson | 分布式锁与缓存 |
 | Bean 映射 | MapStruct | 编译期生成转换代码，性能零损耗 |
 | API 文档 | SpringDoc OpenAPI | Swagger UI |
@@ -128,8 +128,10 @@ XxxController  ->  XxxService  ->  XxxMapper  ->  XxxPO
 
 ### 1. 认证与权限
 
-- 全局登录态由 Sa-Token 拦截，白名单仅限登录、公钥、Swagger 等必要入口。
-- 业务写接口必须添加 `@SaCheckPermission("resource:action")`。
+- 全局登录态由 Spring Security 无状态过滤链处理，白名单仅限登录、公钥、Swagger、Actuator 等必要入口。
+- 客户端统一使用 `Authorization: Bearer <token>`；Token 为 Redis 中的服务端不透明会话标识，不承载 JWT 声明。
+- 业务写接口必须添加 `@PreAuthorize("hasAuthority('resource:action')")`。
+- Token 会话配置统一维护在 `link.security.token`，默认 Redis Key 前缀为 `link:security:token:`。
 - 高频或易滥用接口必须添加 `@RateLimit`。
 - 创建、更新等非幂等写操作添加 `@Idempotent`。
 

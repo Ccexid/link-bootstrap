@@ -32,12 +32,6 @@ spring:
           min-idle: 2
           max-wait: 2000ms
 
-# Sa-Token配置 (测试环境)
-sa-token:
-  is-log: true
-  is-color-log: false
-  jwt-secret-key: ${JWT_SECRET:}
-
 # MyBatis配置 (关闭SQL打印)
 mybatis-plus:
   configuration:

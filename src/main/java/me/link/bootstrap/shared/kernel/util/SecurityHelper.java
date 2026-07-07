@@ -1,19 +1,19 @@
 package me.link.bootstrap.shared.kernel.util;
 
-import cn.dev33.satoken.stp.StpUtil;
 import lombok.extern.slf4j.Slf4j;
+import me.link.bootstrap.infrastructure.security.LoginUserPrincipal;
 import me.link.bootstrap.shared.kernel.constant.SecurityConstants;
 import me.link.bootstrap.shared.kernel.exception.BusinessException;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * 安全上下文工具类，用于获取当前登录用户信息。
  * <p>
- * 基于 Sa-Token 框架，提供从当前会话中获取用户ID、租户ID等信息的静态方法。
+ * 基于 Spring Security 上下文，提供从当前认证主体中获取用户ID、租户ID等信息的静态方法。
  * 适用于 Application Service 层、AOP 切面等需要获取当前用户上下文的场景。
  * </p>
- *
- * @author ccexid
  */
 @Slf4j
 public final class SecurityHelper {
@@ -28,67 +28,36 @@ public final class SecurityHelper {
      * @return 用户 ID（未登录时返回 null）
      */
     public static Long getUserId() {
-        try {
-            if (StpUtil.isLogin()) {
-                return StpUtil.getLoginIdAsLong();
-            }
-            return null;
-        } catch (Exception e) {
-            log.warn("获取当前用户ID失败: {}", e.getMessage());
-            return null;
-        }
+        LoginUserPrincipal principal = currentPrincipal();
+        return principal == null ? null : principal.getUserId();
     }
 
     /**
      * 获取当前登录用户的租户 ID。
-     * <p>
-     * 从 Sa-Token Session 中读取 "tenantId" 属性。
-     * 需要在用户登录时将 tenantId 存入 Session。
-     * </p>
      *
      * @return 租户 ID（未登录或未设置时返回 null）
      */
     public static Long getTenantId() {
-        try {
-            if (StpUtil.isLogin()) {
-                Object tenantId = StpUtil.getSession().get(SecurityConstants.SESSION_KEY_TENANT_ID);
-                if (tenantId != null) {
-                    return Long.valueOf(tenantId.toString());
-                }
-                log.warn("当前用户Session中未找到tenantId");
-                return null;
-            }
-            return null;
-        } catch (Exception e) {
-            log.warn("获取当前用户租户ID失败: {}", e.getMessage());
-            return null;
-        }
+        LoginUserPrincipal principal = currentPrincipal();
+        return principal == null ? null : principal.getTenantId();
     }
 
     /**
      * 判断当前登录用户是否平台超级管理员。
      * <p>
-     * 登录时由 {@code AuthService} 写入 Session,
+     * 登录时由 {@code AuthService} 写入 Redis Token 会话,
      * 持有 {@link SecurityConstants#ROLE_SUPER_ADMIN} 角色码者为 true。
      * </p>
      * <p>
      * <b>注意</b>:此方法被 {@code LinkTenantLineHandler} 在每条 SQL 解析时调用,
-     * 处于性能敏感路径。Sa-Token 自身对 Session 数据有线程级缓存,实际开销可控。
+     * 处于性能敏感路径。当前实现只读取 ThreadLocal 中的 Authentication,不访问 Redis。
      * </p>
      *
      * @return true-超管, false-非超管或未登录
      */
     public static boolean isSuperAdmin() {
-        try {
-            if (!StpUtil.isLogin()) {
-                return false;
-            }
-            Object flag = StpUtil.getSession().get(SecurityConstants.SESSION_KEY_SUPER_ADMIN);
-            return flag instanceof Boolean b && b;
-        } catch (Exception e) {
-            log.warn("获取当前用户超管标记失败: {}", e.getMessage());
-            return false;
-        }
+        LoginUserPrincipal principal = currentPrincipal();
+        return principal != null && principal.isSuperAdmin();
     }
 
     /**
@@ -123,6 +92,43 @@ public final class SecurityHelper {
      * @return true-已登录, false-未登录
      */
     public static boolean isLoggedIn() {
-        return StpUtil.isLogin();
+        return currentPrincipal() != null;
+    }
+
+    /**
+     * 获取当前请求的 Bearer Token 值。
+     *
+     * @return Token 值（未登录时返回 null）
+     */
+    public static String getTokenValue() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !(authentication.getCredentials() instanceof String token)) {
+            return null;
+        }
+        return token;
+    }
+
+    public static String getRequiredTokenValue() {
+        String token = getTokenValue();
+        if (token == null || token.isBlank()) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED, "当前用户未登录");
+        }
+        return token;
+    }
+
+    private static LoginUserPrincipal currentPrincipal() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return null;
+            }
+            if (authentication.getPrincipal() instanceof LoginUserPrincipal principal) {
+                return principal;
+            }
+            return null;
+        } catch (Exception e) {
+            log.warn("获取当前登录主体失败: {}", e.getMessage());
+            return null;
+        }
     }
 }

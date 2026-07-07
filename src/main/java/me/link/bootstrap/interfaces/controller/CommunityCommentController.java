@@ -1,6 +1,6 @@
 package me.link.bootstrap.interfaces.controller;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.springframework.security.access.prepost.PreAuthorize;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -41,7 +41,7 @@ public class CommunityCommentController {
 
     @Idempotent
     @PostMapping
-    @SaCheckPermission("community:comment:create")
+    @PreAuthorize("hasAuthority('community:comment:create')")
     @Operation(summary = "创建社区评论或回复")
     public ResultResponse<CommunityCommentResponseVO> create(@Valid @RequestBody CommunityCommentCreateRequest request) {
         return ResultResponse.success(communityCommentService.create(request));
@@ -62,14 +62,14 @@ public class CommunityCommentController {
 
     @Idempotent
     @PutMapping("/{id}")
-    @SaCheckPermission("community:comment:update")
+    @PreAuthorize("hasAuthority('community:comment:update')")
     @Operation(summary = "更新本人社区评论")
     public ResultResponse<CommunityCommentResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id, @Valid @RequestBody CommunityCommentUpdateRequest request) {
         return ResultResponse.success(communityCommentService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @SaCheckPermission("community:comment:delete")
+    @PreAuthorize("hasAuthority('community:comment:delete')")
     @Operation(summary = "删除本人社区评论")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         communityCommentService.delete(id);

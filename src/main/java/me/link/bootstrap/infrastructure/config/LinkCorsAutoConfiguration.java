@@ -52,7 +52,7 @@ public class LinkCorsAutoConfiguration {
         source.registerCorsConfiguration(GlobalConstants.API_PREFIX + "/**", config);
 
         // 8. 包装为 FilterRegistrationBean，并显式设置为过滤链第一优先级
-        // 确保跨域响应在进入核心的 Spring MVC 拦截器、Sa-Token 鉴权过滤器之前就直接生效返回
+        // 确保跨域响应在进入 Spring Security 鉴权过滤器之前就直接生效返回
         FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
         bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return bean;

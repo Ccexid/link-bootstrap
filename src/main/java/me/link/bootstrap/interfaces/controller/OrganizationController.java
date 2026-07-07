@@ -1,6 +1,6 @@
 package me.link.bootstrap.interfaces.controller;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.springframework.security.access.prepost.PreAuthorize;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -40,7 +40,7 @@ public class OrganizationController {
     private final OrganizationService organizationService;
 
     @PostMapping
-    @SaCheckPermission("system:organization:create")
+    @PreAuthorize("hasAuthority('system:organization:create')")
     @Idempotent
     @Operation(summary = "创建组织", description = "创建组织基础信息")
     public ResultResponse<OrganizationResponseVO> create(@Valid @RequestBody OrganizationCreateRequest request) {
@@ -48,14 +48,14 @@ public class OrganizationController {
     }
 
     @GetMapping("/{id}")
-    @SaCheckPermission("system:organization:query")
+    @PreAuthorize("hasAuthority('system:organization:query')")
     @Operation(summary = "查询组织详情", description = "根据ID查询组织详情")
     public ResultResponse<OrganizationResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         return ResultResponse.success(organizationService.get(id));
     }
 
     @GetMapping
-    @SaCheckPermission("system:organization:list")
+    @PreAuthorize("hasAuthority('system:organization:list')")
     @Operation(summary = "分页查询组织", description = "分页查询组织列表")
     public ResultTableResponse<OrganizationResponseVO> page(@Validated @SortWhitelist(OrganizationResponseVO.class) OrganizationPageRequest request) {
         PageResult<OrganizationResponseVO> pageResult = organizationService.page(request);
@@ -63,7 +63,7 @@ public class OrganizationController {
     }
 
     @PutMapping("/{id}")
-    @SaCheckPermission("system:organization:update")
+    @PreAuthorize("hasAuthority('system:organization:update')")
     @Idempotent
     @Operation(summary = "更新组织", description = "更新组织基础信息")
     public ResultResponse<OrganizationResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
@@ -72,7 +72,7 @@ public class OrganizationController {
     }
 
     @DeleteMapping("/{id}")
-    @SaCheckPermission("system:organization:delete")
+    @PreAuthorize("hasAuthority('system:organization:delete')")
     @Operation(summary = "删除组织", description = "根据ID删除组织")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         organizationService.delete(id);

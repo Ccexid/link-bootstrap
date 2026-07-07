@@ -12,7 +12,7 @@ import org.apache.ibatis.annotations.Param;
  * 权限码来源于 {@code system_menu.permission},聚合 SQL 写在 {@code resources/mapper/PermissionMapper.xml}。
  * </p>
  * <p>
- * 调用时上下文必须已登录:{@code TenantLineInnerInterceptor} 会从 Sa-Token Session 取 tenantId,
+ * 调用时上下文必须已登录:{@code TenantLineInnerInterceptor} 会从 Spring Security 上下文取 tenantId,
  * 自动给 {@code system_user_role} / {@code system_role_menu} / {@code system_role} 拼接
  * {@code tenant_id = ?} 条件。{@code system_menu} 是全局表,不参与租户隔离。
  * </p>

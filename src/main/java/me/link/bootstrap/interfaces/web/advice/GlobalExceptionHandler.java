@@ -1,7 +1,5 @@
 package me.link.bootstrap.interfaces.web.advice;
 
-import cn.dev33.satoken.exception.NotLoginException;
-import cn.dev33.satoken.exception.NotPermissionException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -10,6 +8,8 @@ import me.link.bootstrap.interfaces.dto.response.ResultResponse;
 import me.link.bootstrap.shared.kernel.exception.BusinessException;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -91,30 +91,17 @@ public class GlobalExceptionHandler {
                 "缺少必要参数: " + e.getParameterName());
     }
 
-    @ExceptionHandler(NotLoginException.class)
+    @ExceptionHandler(AuthenticationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ResultResponse<Void> handleNotLoginException(NotLoginException e, HttpServletRequest request) {
-        log.warn("未登录异常, uri: {}, type: {}",
-                request.getRequestURI(), e.getType());
-
-        String message = switch (e.getType()) {
-            case NotLoginException.NOT_TOKEN -> "未提供认证令牌";
-            case NotLoginException.INVALID_TOKEN -> "认证令牌无效";
-            case NotLoginException.TOKEN_TIMEOUT -> "认证令牌已过期";
-            case NotLoginException.BE_REPLACED -> "账号已在其他设备登录";
-            case NotLoginException.KICK_OUT -> "账号已被强制下线";
-            default -> "未登录或登录已失效";
-        };
-
-        return ResultResponse.failure(ErrorCode.UNAUTHORIZED, message);
+    public ResultResponse<Void> handleAuthenticationException(AuthenticationException e, HttpServletRequest request) {
+        log.warn("认证异常, uri: {}, message: {}", request.getRequestURI(), e.getMessage());
+        return ResultResponse.failure(ErrorCode.UNAUTHORIZED, "未登录或登录已失效");
     }
 
-    @ExceptionHandler(NotPermissionException.class)
+    @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ResultResponse<Void> handleNotPermissionException(NotPermissionException e, HttpServletRequest request) {
-        log.warn("权限不足异常, uri: {}, permission: {}",
-                request.getRequestURI(), e.getPermission());
-
+    public ResultResponse<Void> handleAccessDeniedException(AccessDeniedException e, HttpServletRequest request) {
+        log.warn("权限不足异常, uri: {}, message: {}", request.getRequestURI(), e.getMessage());
         return ResultResponse.failure(ErrorCode.FORBIDDEN, "无权访问该资源");
     }
 

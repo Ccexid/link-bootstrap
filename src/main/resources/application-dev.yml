@@ -38,12 +38,6 @@ spring:
     init:
       mode: never
 
-# Sa-Token配置 (开发环境)
-sa-token:
-  is-log: true
-  is-color-log: true
-  jwt-secret-key: dev-secret-key-change-in-prod
-
 # MyBatis配置 (开启SQL打印)
 mybatis-plus:
   configuration:

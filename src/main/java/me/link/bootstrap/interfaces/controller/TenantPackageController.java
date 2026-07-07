@@ -1,6 +1,6 @@
 package me.link.bootstrap.interfaces.controller;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.springframework.security.access.prepost.PreAuthorize;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -43,7 +43,7 @@ public class TenantPackageController {
      * 创建业务对象。
      */
     @PostMapping
-    @SaCheckPermission("system:tenant-package:create")
+    @PreAuthorize("hasAuthority('system:tenant-package:create')")
     @Idempotent
     @Operation(summary = "创建租户套餐", description = "创建租户套餐基础信息")
     public ResultResponse<TenantPackageResponseVO> create(@Valid @RequestBody TenantPackageCreateRequest request) {
@@ -54,7 +54,7 @@ public class TenantPackageController {
      * 根据主键查询业务对象详情。
      */
     @GetMapping("/{id}")
-    @SaCheckPermission("system:tenant-package:query")
+    @PreAuthorize("hasAuthority('system:tenant-package:query')")
     @Operation(summary = "查询租户套餐详情", description = "根据租户套餐ID查询租户套餐详情")
     public ResultResponse<TenantPackageResponseVO> get(@PathVariable @NotNull(message = "租户套餐ID不能为空") Long id) {
         return ResultResponse.success(tenantPackageService.get(id));
@@ -64,7 +64,7 @@ public class TenantPackageController {
      * 分页查询业务对象列表。
      */
     @GetMapping
-    @SaCheckPermission("system:tenant-package:list")
+    @PreAuthorize("hasAuthority('system:tenant-package:list')")
     @Operation(summary = "分页查询租户套餐", description = "分页查询租户套餐列表")
     public ResultTableResponse<TenantPackageResponseVO> page(@Validated @SortWhitelist(TenantPackageResponseVO.class) TenantPackagePageRequest request) {
         PageResult<TenantPackageResponseVO> pageResult = tenantPackageService.page(request);
@@ -75,7 +75,7 @@ public class TenantPackageController {
      * 更新业务对象。
      */
     @PutMapping("/{id}")
-    @SaCheckPermission("system:tenant-package:update")
+    @PreAuthorize("hasAuthority('system:tenant-package:update')")
     @Idempotent
     @Operation(summary = "更新租户套餐", description = "更新租户套餐基础信息")
     public ResultResponse<TenantPackageResponseVO> update(@PathVariable @NotNull(message = "租户套餐ID不能为空") Long id,
@@ -87,7 +87,7 @@ public class TenantPackageController {
      * 根据主键删除业务对象。
      */
     @DeleteMapping("/{id}")
-    @SaCheckPermission("system:tenant-package:delete")
+    @PreAuthorize("hasAuthority('system:tenant-package:delete')")
     @Operation(summary = "删除租户套餐", description = "根据租户套餐ID删除租户套餐")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "租户套餐ID不能为空") Long id) {
         tenantPackageService.delete(id);

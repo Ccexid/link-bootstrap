@@ -4,24 +4,23 @@ import me.link.bootstrap.application.service.AuthService;
 import me.link.bootstrap.application.service.UserService;
 
 
-import cn.dev33.satoken.SaManager;
-import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.crypto.digest.BCrypt;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.link.bootstrap.interfaces.dto.response.vo.TokenResponseVO;
-import me.link.bootstrap.infrastructure.mapper.PermissionMapper;
 import me.link.bootstrap.infrastructure.persistence.po.UserPO;
 import me.link.bootstrap.infrastructure.security.EmailCodeSendRateLimitService;
 import me.link.bootstrap.infrastructure.security.EmailCodeService;
 import me.link.bootstrap.infrastructure.security.HumanVerificationService;
 import me.link.bootstrap.infrastructure.security.LoginAttemptService;
+import me.link.bootstrap.infrastructure.security.SecurityTokenSession;
+import me.link.bootstrap.infrastructure.security.SecurityTokenSessionService;
 import me.link.bootstrap.interfaces.dto.request.auth.EmailLoginRequest;
 import me.link.bootstrap.interfaces.dto.request.auth.LoginRequest;
 import me.link.bootstrap.interfaces.dto.request.auth.SendEmailCodeRequest;
-import me.link.bootstrap.shared.kernel.constant.SecurityConstants;
 import me.link.bootstrap.shared.kernel.exception.BusinessException;
 import me.link.bootstrap.shared.kernel.exception.ErrorCode;
+import me.link.bootstrap.shared.kernel.util.SecurityHelper;
 import me.link.bootstrap.shared.kernel.valueobject.StatusEnum;
 import org.springframework.stereotype.Service;
 
@@ -31,13 +30,13 @@ import java.util.List;
  * 认证应用服务,负责登录、登出的业务编排。
  * <p>
  * 账号密码登录流程:按 username 跨租户查询唯一用户 → BCrypt 校验密码 → 校验账号状态 →
- * 调用 Sa-Token 创建会话 → 在 Session 注入 tenantId / userType,供后续多租户隔离与权限判断使用。
+ * 创建 Redis 不透明 Bearer Token 会话,供后续多租户隔离与权限判断使用。
  * </p>
  * <p>
- * <b>@TenantIgnore</b>:登录时尚未建立 Sa-Token 会话,
+ * <b>@TenantIgnore</b>:登录时尚未建立 Spring Security 认证上下文,
  * {@link me.link.bootstrap.shared.kernel.database.mybatis.LinkTenantLineHandler} 取不到 tenantId,
  * 默认行为会让查询 SQL 退化为 {@code tenant_id IS NULL} 而查不到数据。
- * 登录查询由用户应用服务的最小查询方法显式标注绕过租户拦截,认证成功后再将用户所属 tenantId 写入 Session。
+ * 登录查询由用户应用服务的最小查询方法显式标注绕过租户拦截,认证成功后再将用户上下文写入 Token 会话。
  * </p>
  */
 @Slf4j
@@ -46,17 +45,17 @@ import java.util.List;
 public class AuthServiceImpl implements AuthService {
 
     private final UserService userService;
-    private final PermissionMapper permissionMapper;
     private final LoginAttemptService loginAttemptService;
     private final EmailCodeService emailCodeService;
     private final HumanVerificationService humanVerificationService;
     private final EmailCodeSendRateLimitService emailCodeSendRateLimitService;
+    private final SecurityTokenSessionService securityTokenSessionService;
 
     /**
      * 账号密码登录。
      * <p>
      * 错误响应均统一为业务异常,HTTP 状态码由 GlobalExceptionHandler 处理。
-     * 登录成功后会将 tenantId、userType、isSuperAdmin 写入 Sa-Token Session,
+     * 登录成功后会将 tenantId、userType、isSuperAdmin 写入 Redis Token 会话,
      * 供 SecurityHelper / LinkTenantLineHandler 在后续请求中使用。
      * </p>
      * <p>
@@ -82,8 +81,7 @@ public class AuthServiceImpl implements AuthService {
 
         // 密码校验通过,重置失败计数防御窗口
         loginAttemptService.reset(request.getUsername(), user.getTenantId());
-        loginResolvedUser(user);
-        return currentToken();
+        return loginResolvedUser(user);
     }
 
     /**
@@ -115,8 +113,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         loginAttemptService.reset(email, user.getTenantId());
-        loginResolvedUser(user);
-        return currentToken();
+        return loginResolvedUser(user);
     }
 
     /**
@@ -183,46 +180,30 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-    private void loginResolvedUser(UserPO user) {
+    private TokenResponseVO loginResolvedUser(UserPO user) {
         ensureUserEnabled(user);
-
-        StpUtil.login(user.getId());
-        StpUtil.getSession().set(SecurityConstants.SESSION_KEY_TENANT_ID, user.getTenantId());
-        StpUtil.getSession().set(SecurityConstants.SESSION_KEY_USER_TYPE, user.getUserType());
-
-        // 标记是否为平台超级管理员,LinkTenantLineHandler 会据此跳过租户隔离
-        List<String> roleCodes = permissionMapper.selectRoleCodesByUserId(user.getId());
-        boolean isSuperAdmin = roleCodes.contains(SecurityConstants.ROLE_SUPER_ADMIN);
-        StpUtil.getSession().set(SecurityConstants.SESSION_KEY_SUPER_ADMIN, isSuperAdmin);
-
-        log.info("登录成功: userId={}, tenantId={}, isSuperAdmin={}", user.getId(), user.getTenantId(), isSuperAdmin);
+        SecurityTokenSession session = securityTokenSessionService.create(user);
+        log.info("登录成功: userId={}, tenantId={}, isSuperAdmin={}",
+                user.getId(), user.getTenantId(), session.isSuperAdmin());
+        return securityTokenSessionService.toTokenResponse(session);
     }
 
     public TokenResponseVO refreshToken() {
-        StpUtil.checkLogin();
-        long timeout = SaManager.getConfig().getTimeout();
-        if (timeout > 0) {
-            StpUtil.renewTimeout(timeout);
-        }
-        StpUtil.updateLastActiveToNow();
-        return currentToken();
+        SecurityTokenSession session = securityTokenSessionService.refresh(SecurityHelper.getRequiredTokenValue());
+        return securityTokenSessionService.toTokenResponse(session);
     }
 
     public TokenResponseVO currentToken() {
-        return new TokenResponseVO(
-                StpUtil.getTokenName(),
-                StpUtil.getTokenValue(),
-                SaManager.getConfig().getTokenPrefix(),
-                StpUtil.getTokenTimeout(),
-                StpUtil.getTokenActiveTimeout()
-        );
+        SecurityTokenSession session = securityTokenSessionService.load(SecurityHelper.getRequiredTokenValue())
+                .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
+        return securityTokenSessionService.toTokenResponse(session);
     }
 
     /**
      * 退出当前会话。
-     * <p>清除 Sa-Token 会话(含 Redis Session)。无登录态时调用也是幂等的,不抛异常。</p>
+     * <p>清除 Redis Token 会话。无登录态时调用也是幂等的,不抛异常。</p>
      */
     public void logout() {
-        StpUtil.logout();
+        securityTokenSessionService.revoke(SecurityHelper.getTokenValue());
     }
 }

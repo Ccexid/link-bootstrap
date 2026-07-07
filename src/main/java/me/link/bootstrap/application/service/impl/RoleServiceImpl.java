@@ -122,7 +122,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RolePO> implements 
     /**
      * 校验角色权限编码在当前租户下的唯一性。
      * <p>
-     * 结合Sa-Token上下文获取租户ID，确保同一租户下角色编码不重复。
+     * 结合 Spring Security 上下文获取租户ID，确保同一租户下角色编码不重复。
      * 更新操作时排除自身记录（excludeId参数），允许保持原有编码不变。
      * </p>
      *

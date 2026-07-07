@@ -1,6 +1,6 @@
 package me.link.bootstrap.interfaces.controller;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.springframework.security.access.prepost.PreAuthorize;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -40,7 +40,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    @SaCheckPermission("system:user:create")
+    @PreAuthorize("hasAuthority('system:user:create')")
     @Idempotent
     @Operation(summary = "创建用户", description = "创建用户基础信息")
     public ResultResponse<UserResponseVO> create(@Valid @RequestBody UserCreateRequest request) {
@@ -48,14 +48,14 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    @SaCheckPermission("system:user:query")
+    @PreAuthorize("hasAuthority('system:user:query')")
     @Operation(summary = "查询用户详情", description = "根据ID查询用户详情")
     public ResultResponse<UserResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         return ResultResponse.success(userService.get(id));
     }
 
     @GetMapping
-    @SaCheckPermission("system:user:list")
+    @PreAuthorize("hasAuthority('system:user:list')")
     @Operation(summary = "分页查询用户", description = "分页查询用户列表")
     public ResultTableResponse<UserResponseVO> page(@Validated @SortWhitelist(UserResponseVO.class) UserPageRequest request) {
         PageResult<UserResponseVO> pageResult = userService.page(request);
@@ -63,7 +63,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    @SaCheckPermission("system:user:update")
+    @PreAuthorize("hasAuthority('system:user:update')")
     @Idempotent
     @Operation(summary = "更新用户", description = "更新用户基础信息")
     public ResultResponse<UserResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
@@ -72,7 +72,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    @SaCheckPermission("system:user:delete")
+    @PreAuthorize("hasAuthority('system:user:delete')")
     @Operation(summary = "删除用户", description = "根据ID删除用户")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         userService.delete(id);

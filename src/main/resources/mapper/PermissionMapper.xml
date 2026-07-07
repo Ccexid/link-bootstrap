@@ -7,7 +7,7 @@
 
         - system_menu 是全局表(LinkTenantLineHandler.GLOBAL_TABLES),不参与租户隔离。
         - system_user_role / system_role_menu / system_role 由 TenantLineInnerInterceptor 自动注入
-          tenant_id = ? 条件(取自 Sa-Token Session)。
+          tenant_id = ? 条件(取自 Spring Security 上下文)。
         - status=0 表示正常启用,deleted=0 表示未逻辑删除。
     -->
     <select id="selectPermissionsByUserId" resultType="java.lang.String">

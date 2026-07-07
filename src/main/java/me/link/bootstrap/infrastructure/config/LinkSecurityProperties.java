@@ -28,6 +28,9 @@ public class LinkSecurityProperties {
     /** 登录策略配置。 */
     private Login login = new Login();
 
+    /** Bearer Token 配置。 */
+    private Token token = new Token();
+
     /** 邮箱验证码配置。 */
     private EmailCode emailCode = new EmailCode();
 
@@ -44,6 +47,27 @@ public class LinkSecurityProperties {
 
         /** 账号锁定持续时长,默认 15 分钟。 */
         private Duration lockDuration = Duration.ofMinutes(15);
+    }
+
+    @Data
+    public static class Token {
+        /** 令牌请求头名称。 */
+        private String tokenName = "Authorization";
+
+        /** 令牌前缀。 */
+        private String tokenPrefix = "Bearer";
+
+        /** 令牌绝对有效期。 */
+        private Duration timeout = Duration.ofHours(1);
+
+        /** 令牌无操作有效期。 */
+        private Duration activeTimeout = Duration.ofMinutes(30);
+
+        /** 每次有效请求是否刷新无操作有效期。 */
+        private boolean autoRenew = true;
+
+        /** Redis Token 会话键前缀。 */
+        private String keyPrefix = "link:security:token:";
     }
 
     @Data

@@ -1,6 +1,5 @@
 package me.link.bootstrap.infrastructure.aop;
 
-import cn.dev33.satoken.stp.StpUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +11,7 @@ import me.link.bootstrap.application.service.OperateLogService;
 import me.link.bootstrap.application.support.OperateLogRecord;
 import me.link.bootstrap.infrastructure.tracing.TraceIdContext;
 import me.link.bootstrap.shared.kernel.config.ClientIpProperties;
+import me.link.bootstrap.shared.kernel.util.SecurityHelper;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -194,8 +194,9 @@ public class OperateLogAspect {
      */
     private Long currentUserId() {
         try {
-            if (StpUtil.isLogin()) {
-                return StpUtil.getLoginIdAsLong();
+            Long userId = SecurityHelper.getUserId();
+            if (userId != null) {
+                return userId;
             }
         } catch (Exception ex) {
             log.debug("获取当前登录用户失败，使用系统用户记录操作日志: {}", ex.getMessage());

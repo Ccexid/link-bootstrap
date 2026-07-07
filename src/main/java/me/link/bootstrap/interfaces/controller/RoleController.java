@@ -1,6 +1,6 @@
 package me.link.bootstrap.interfaces.controller;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.springframework.security.access.prepost.PreAuthorize;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -40,7 +40,7 @@ public class RoleController {
     private final RoleService roleService;
 
     @PostMapping
-    @SaCheckPermission("system:role:create")
+    @PreAuthorize("hasAuthority('system:role:create')")
     @Idempotent
     @Operation(summary = "创建角色", description = "创建角色基础信息")
     public ResultResponse<RoleResponseVO> create(@Valid @RequestBody RoleCreateRequest request) {
@@ -48,14 +48,14 @@ public class RoleController {
     }
 
     @GetMapping("/{id}")
-    @SaCheckPermission("system:role:query")
+    @PreAuthorize("hasAuthority('system:role:query')")
     @Operation(summary = "查询角色详情", description = "根据ID查询角色详情")
     public ResultResponse<RoleResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         return ResultResponse.success(roleService.get(id));
     }
 
     @GetMapping
-    @SaCheckPermission("system:role:list")
+    @PreAuthorize("hasAuthority('system:role:list')")
     @Operation(summary = "分页查询角色", description = "分页查询角色列表")
     public ResultTableResponse<RoleResponseVO> page(@Validated @SortWhitelist(RoleResponseVO.class) RolePageRequest request) {
         PageResult<RoleResponseVO> pageResult = roleService.page(request);
@@ -63,7 +63,7 @@ public class RoleController {
     }
 
     @PutMapping("/{id}")
-    @SaCheckPermission("system:role:update")
+    @PreAuthorize("hasAuthority('system:role:update')")
     @Idempotent
     @Operation(summary = "更新角色", description = "更新角色基础信息")
     public ResultResponse<RoleResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
@@ -72,7 +72,7 @@ public class RoleController {
     }
 
     @DeleteMapping("/{id}")
-    @SaCheckPermission("system:role:delete")
+    @PreAuthorize("hasAuthority('system:role:delete')")
     @Operation(summary = "删除角色", description = "根据ID删除角色")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         roleService.delete(id);

@@ -1,8 +1,8 @@
 package me.link.bootstrap.infrastructure.persistence.handler;
 
-import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import lombok.extern.slf4j.Slf4j;
+import me.link.bootstrap.shared.kernel.util.SecurityHelper;
 import org.apache.ibatis.reflection.MetaObject;
 
 import java.time.LocalDateTime;
@@ -52,8 +52,8 @@ public class LinkDefaultDBFieldHandler implements MetaObjectHandler {
 
     private Long getCurrentUserId() {
         try {
-            if (StpUtil.isLogin()) {
-                Long loginId = StpUtil.getLoginIdAsLong();
+            Long loginId = SecurityHelper.getUserId();
+            if (loginId != null) {
                 if (log.isTraceEnabled()) {
                     log.trace("获取到登录用户ID: {}", loginId);
                 }

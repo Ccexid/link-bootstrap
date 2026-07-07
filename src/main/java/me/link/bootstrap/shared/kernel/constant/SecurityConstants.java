@@ -1,20 +1,9 @@
 package me.link.bootstrap.shared.kernel.constant;
 
 /**
- * 安全相关常量:Sa-Token Session 键、特权角色码等。
+ * 安全相关常量。
  */
 public interface SecurityConstants {
-
-    /* ==================== Sa-Token Session Key ==================== */
-
-    /** Session 中存储租户 ID 的键。 */
-    String SESSION_KEY_TENANT_ID = "tenantId";
-
-    /** Session 中存储用户类型(1供应商 2平台 3商家 4用户)的键。 */
-    String SESSION_KEY_USER_TYPE = "userType";
-
-    /** Session 中标记当前用户是否平台超管的键(boolean)。 */
-    String SESSION_KEY_SUPER_ADMIN = "isSuperAdmin";
 
     /* ==================== 特权角色 ==================== */
 

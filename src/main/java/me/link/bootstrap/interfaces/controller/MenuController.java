@@ -1,6 +1,6 @@
 package me.link.bootstrap.interfaces.controller;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.springframework.security.access.prepost.PreAuthorize;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -40,7 +40,7 @@ public class MenuController {
     private final MenuService menuService;
 
     @PostMapping
-    @SaCheckPermission("system:menu:create")
+    @PreAuthorize("hasAuthority('system:menu:create')")
     @Idempotent
     @Operation(summary = "创建菜单", description = "创建菜单基础信息")
     public ResultResponse<MenuResponseVO> create(@Valid @RequestBody MenuCreateRequest request) {
@@ -48,14 +48,14 @@ public class MenuController {
     }
 
     @GetMapping("/{id}")
-    @SaCheckPermission("system:menu:query")
+    @PreAuthorize("hasAuthority('system:menu:query')")
     @Operation(summary = "查询菜单详情", description = "根据ID查询菜单详情")
     public ResultResponse<MenuResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         return ResultResponse.success(menuService.get(id));
     }
 
     @GetMapping
-    @SaCheckPermission("system:menu:list")
+    @PreAuthorize("hasAuthority('system:menu:list')")
     @Operation(summary = "分页查询菜单", description = "分页查询菜单列表")
     public ResultTableResponse<MenuResponseVO> page(@Validated @SortWhitelist(MenuResponseVO.class) MenuPageRequest request) {
         PageResult<MenuResponseVO> pageResult = menuService.page(request);
@@ -63,7 +63,7 @@ public class MenuController {
     }
 
     @PutMapping("/{id}")
-    @SaCheckPermission("system:menu:update")
+    @PreAuthorize("hasAuthority('system:menu:update')")
     @Idempotent
     @Operation(summary = "更新菜单", description = "更新菜单基础信息")
     public ResultResponse<MenuResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
@@ -72,7 +72,7 @@ public class MenuController {
     }
 
     @DeleteMapping("/{id}")
-    @SaCheckPermission("system:menu:delete")
+    @PreAuthorize("hasAuthority('system:menu:delete')")
     @Operation(summary = "删除菜单", description = "根据ID删除菜单")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         menuService.delete(id);

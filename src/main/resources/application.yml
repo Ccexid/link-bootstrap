@@ -121,6 +121,13 @@ link:
       subject: ${LINK_EMAIL_CODE_SUBJECT:登录验证码}
       send-ip-email-window: ${LINK_EMAIL_CODE_SEND_IP_EMAIL_WINDOW:10m}
       send-ip-email-max-requests: ${LINK_EMAIL_CODE_SEND_IP_EMAIL_MAX_REQUESTS:3}
+    token:
+      token-name: ${LINK_SECURITY_TOKEN_NAME:Authorization}
+      token-prefix: ${LINK_SECURITY_TOKEN_PREFIX:Bearer}
+      timeout: ${LINK_SECURITY_TOKEN_TIMEOUT:1h}
+      active-timeout: ${LINK_SECURITY_TOKEN_ACTIVE_TIMEOUT:30m}
+      auto-renew: ${LINK_SECURITY_TOKEN_AUTO_RENEW:true}
+      key-prefix: ${LINK_SECURITY_TOKEN_KEY_PREFIX:link:security:token:}
     client-ip:
       trust-forward-headers: false
       forward-headers:
@@ -141,21 +148,6 @@ mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: true
-# Sa-Token 安全配置
-sa-token:
-  token-name: Authorization
-  timeout: 3600
-  active-timeout: 1800
-  is-concurrent: false
-  is-share: false
-  token-style: tik
-  is-log: false
-  auto-renew: true
-  is-read-header: true
-  is-read-cookie: false
-  is-color-log: false
-  token-prefix: Bearer
-
 # 监控配置 (对接 Spring Boot Admin / Actuator)
 management:
   endpoints:

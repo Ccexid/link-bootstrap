@@ -1,6 +1,6 @@
 package me.link.bootstrap.interfaces.controller;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.springframework.security.access.prepost.PreAuthorize;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
@@ -32,14 +32,14 @@ public class CommunityPostInteractionController {
 
     @Idempotent
     @PostMapping("/{id}/likes")
-    @SaCheckPermission("community:post:like")
+    @PreAuthorize("hasAuthority('community:post:like')")
     @Operation(summary = "点赞帖子")
     public ResultResponse<CommunityPostInteractionResponseVO> like(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         return ResultResponse.success(communityPostInteractionService.like(id));
     }
 
     @DeleteMapping("/{id}/likes")
-    @SaCheckPermission("community:post:unlike")
+    @PreAuthorize("hasAuthority('community:post:unlike')")
     @Operation(summary = "取消点赞帖子")
     public ResultResponse<CommunityPostInteractionResponseVO> unlike(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         return ResultResponse.success(communityPostInteractionService.unlike(id));
@@ -47,14 +47,14 @@ public class CommunityPostInteractionController {
 
     @Idempotent
     @PostMapping("/{id}/collections")
-    @SaCheckPermission("community:post:collect")
+    @PreAuthorize("hasAuthority('community:post:collect')")
     @Operation(summary = "收藏帖子")
     public ResultResponse<CommunityPostInteractionResponseVO> collect(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         return ResultResponse.success(communityPostInteractionService.collect(id));
     }
 
     @DeleteMapping("/{id}/collections")
-    @SaCheckPermission("community:post:uncollect")
+    @PreAuthorize("hasAuthority('community:post:uncollect')")
     @Operation(summary = "取消收藏帖子")
     public ResultResponse<CommunityPostInteractionResponseVO> uncollect(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         return ResultResponse.success(communityPostInteractionService.uncollect(id));

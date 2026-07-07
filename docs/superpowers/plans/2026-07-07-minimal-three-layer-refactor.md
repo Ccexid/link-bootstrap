@@ -6,7 +6,7 @@
 
 **Architecture:** Each business service interface lives under `application/service` and extends MyBatis-Plus `IService<PO>`. Each implementation lives under `application/service/impl`, extends `ServiceImpl<Mapper, PO>`, owns business logic, transactions, sorting, and PO-to-VO conversion. Controllers depend only on service interfaces and wrap `ResultResponse` / `ResultTableResponse`.
 
-**Tech Stack:** Java 17, Spring Boot 3.5.x, MyBatis-Plus, Sa-Token, Jakarta Validation, Maven Wrapper.
+**Tech Stack:** Java 17, Spring Boot 3.5.x, MyBatis-Plus, Spring Security, Jakarta Validation, Maven Wrapper.
 
 ---
 

@@ -118,7 +118,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserPO> implements 
     }
 
     /**
-     * 登录前按用户名跨租户查询。此时尚无 Sa-Token 会话，只能在最小方法范围绕过租户拦截。
+     * 登录前按用户名跨租户查询。此时尚无 Spring Security 认证上下文，只能在最小方法范围绕过租户拦截。
      */
     @TenantIgnore
     public List<UserPO> findByUsernameForLogin(String username) {
@@ -128,7 +128,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserPO> implements 
     }
 
     /**
-     * 登录前按邮箱跨租户查询。后续认证成功后再把用户 tenantId 写入 Sa-Token Session。
+     * 登录前按邮箱跨租户查询。后续认证成功后再把用户 tenantId 写入 Token 会话。
      */
     @TenantIgnore
     public List<UserPO> findByEmailForLogin(String email) {

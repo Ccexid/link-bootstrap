@@ -47,7 +47,7 @@ public class OperateLogServiceImpl extends ServiceImpl<OperateLogMapper, Operate
     /**
      * 自动操作日志写入入口。
      * <p>
-     * 匿名接口（如发送登录邮箱验证码）没有 Sa-Token 会话，不能强制读取租户上下文；
+     * 匿名接口（如发送登录邮箱验证码）没有 Spring Security 认证上下文，不能强制读取租户上下文；
      * 这类日志统一归到平台租户 0，并显式忽略租户插件，避免 INSERT 阶段被补入 NULL 租户。
      * </p>
      */

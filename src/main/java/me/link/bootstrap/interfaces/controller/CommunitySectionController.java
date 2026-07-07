@@ -1,6 +1,6 @@
 package me.link.bootstrap.interfaces.controller;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.springframework.security.access.prepost.PreAuthorize;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -41,21 +41,21 @@ public class CommunitySectionController {
 
     @Idempotent
     @PostMapping
-    @SaCheckPermission("system:community:section:create")
+    @PreAuthorize("hasAuthority('system:community:section:create')")
     @Operation(summary = "创建社区板块")
     public ResultResponse<CommunitySectionResponseVO> create(@Valid @RequestBody CommunitySectionCreateRequest request) {
         return ResultResponse.success(communitySectionService.create(request));
     }
 
     @GetMapping("/{id}")
-    @SaCheckPermission("system:community:section:query")
+    @PreAuthorize("hasAuthority('system:community:section:query')")
     @Operation(summary = "获取社区板块详情")
     public ResultResponse<CommunitySectionResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         return ResultResponse.success(communitySectionService.get(id));
     }
 
     @GetMapping
-    @SaCheckPermission("system:community:section:list")
+    @PreAuthorize("hasAuthority('system:community:section:list')")
     @Operation(summary = "分页查询社区板块")
     public ResultTableResponse<CommunitySectionResponseVO> page(@Validated @SortWhitelist(CommunitySectionResponseVO.class) CommunitySectionPageRequest request) {
         PageResult<CommunitySectionResponseVO> pageResult = communitySectionService.page(request);
@@ -64,14 +64,14 @@ public class CommunitySectionController {
 
     @Idempotent
     @PutMapping("/{id}")
-    @SaCheckPermission("system:community:section:update")
+    @PreAuthorize("hasAuthority('system:community:section:update')")
     @Operation(summary = "更新社区板块")
     public ResultResponse<CommunitySectionResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id, @Valid @RequestBody CommunitySectionUpdateRequest request) {
         return ResultResponse.success(communitySectionService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @SaCheckPermission("system:community:section:delete")
+    @PreAuthorize("hasAuthority('system:community:section:delete')")
     @Operation(summary = "删除社区板块")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         communitySectionService.delete(id);

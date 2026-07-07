@@ -1,6 +1,6 @@
 package me.link.bootstrap.interfaces.controller;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.springframework.security.access.prepost.PreAuthorize;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -41,21 +41,21 @@ public class CommunityTopicController {
 
     @Idempotent
     @PostMapping
-    @SaCheckPermission("system:community:topic:create")
+    @PreAuthorize("hasAuthority('system:community:topic:create')")
     @Operation(summary = "创建社区话题")
     public ResultResponse<CommunityTopicResponseVO> create(@Valid @RequestBody CommunityTopicCreateRequest request) {
         return ResultResponse.success(communityTopicService.create(request));
     }
 
     @GetMapping("/{id}")
-    @SaCheckPermission("system:community:topic:query")
+    @PreAuthorize("hasAuthority('system:community:topic:query')")
     @Operation(summary = "获取社区话题详情")
     public ResultResponse<CommunityTopicResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         return ResultResponse.success(communityTopicService.get(id));
     }
 
     @GetMapping
-    @SaCheckPermission("system:community:topic:list")
+    @PreAuthorize("hasAuthority('system:community:topic:list')")
     @Operation(summary = "分页查询社区话题")
     public ResultTableResponse<CommunityTopicResponseVO> page(@Validated @SortWhitelist(CommunityTopicResponseVO.class) CommunityTopicPageRequest request) {
         PageResult<CommunityTopicResponseVO> pageResult = communityTopicService.page(request);
@@ -64,14 +64,14 @@ public class CommunityTopicController {
 
     @Idempotent
     @PutMapping("/{id}")
-    @SaCheckPermission("system:community:topic:update")
+    @PreAuthorize("hasAuthority('system:community:topic:update')")
     @Operation(summary = "更新社区话题")
     public ResultResponse<CommunityTopicResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id, @Valid @RequestBody CommunityTopicUpdateRequest request) {
         return ResultResponse.success(communityTopicService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @SaCheckPermission("system:community:topic:delete")
+    @PreAuthorize("hasAuthority('system:community:topic:delete')")
     @Operation(summary = "删除社区话题")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         communityTopicService.delete(id);

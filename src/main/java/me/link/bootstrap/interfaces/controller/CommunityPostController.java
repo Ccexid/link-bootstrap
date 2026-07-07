@@ -1,6 +1,6 @@
 package me.link.bootstrap.interfaces.controller;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.springframework.security.access.prepost.PreAuthorize;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -41,7 +41,7 @@ public class CommunityPostController {
 
     @Idempotent
     @PostMapping
-    @SaCheckPermission("community:post:create")
+    @PreAuthorize("hasAuthority('community:post:create')")
     @Operation(summary = "创建社区帖子")
     public ResultResponse<CommunityPostResponseVO> create(@Valid @RequestBody CommunityPostCreateRequest request) {
         return ResultResponse.success(communityPostService.create(request));
@@ -62,14 +62,14 @@ public class CommunityPostController {
 
     @Idempotent
     @PutMapping("/{id}")
-    @SaCheckPermission("community:post:update")
+    @PreAuthorize("hasAuthority('community:post:update')")
     @Operation(summary = "更新本人社区帖子")
     public ResultResponse<CommunityPostResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id, @Valid @RequestBody CommunityPostUpdateRequest request) {
         return ResultResponse.success(communityPostService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @SaCheckPermission("community:post:delete")
+    @PreAuthorize("hasAuthority('community:post:delete')")
     @Operation(summary = "删除本人社区帖子")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         communityPostService.delete(id);

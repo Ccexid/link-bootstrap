@@ -36,7 +36,7 @@
 --   |          |          |               | Handler 自动放行隔离       |
 --   | platform |        0 | platform_admin| 平台运营,管租户/套餐       |
 --   | admin    |        1 | tenant_admin  | 租户 1 管理员              |
---   | user1    |        1 | tenant_user   | 租户 1 普通用户(只读)    |
+--   | user1    |        1 | tenant_user   | 租户 1 普通用户,可参与社区 |
 --   | admin    |        2 | tenant_admin  | 租户 2 管理员              |
 --
 -- 调用样例:
@@ -53,8 +53,8 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ====================================================================
 INSERT INTO `system_tenant_package` (`id`, `name`, `status`, `remark`, `menu_ids`, `creator`, `updater`)
 VALUES
-    (1, '基础套餐',   0, '默认套餐,包含用户/角色/菜单/组织/操作日志/社区基础内容', JSON_ARRAY(100,110,120,130,140,150,160,300,310), 1, 1),
-    (2, '高级套餐',   0, '高级套餐,额外含租户管理菜单',                         JSON_ARRAY(100,110,120,130,140,150,160,200,210,300,310), 1, 1);
+    (1, '基础套餐',   0, '默认套餐,包含用户/角色/菜单/组织/操作日志/社区基础内容', JSON_ARRAY(100,110,120,130,140,150,160,300,310,320,321,322,323,324,325,326,327,328,329), 1, 1),
+    (2, '高级套餐',   0, '高级套餐,额外含租户管理菜单',                         JSON_ARRAY(100,110,120,130,140,150,160,200,210,300,310,320,321,322,323,324,325,326,327,328,329), 1, 1);
 
 -- ====================================================================
 -- 2. 租户 system_tenant
@@ -203,7 +203,7 @@ VALUES
 INSERT INTO `system_role` (`id`, `name`, `code`, `sort`, `data_scope`, `data_scope_dept_ids`, `status`, `type`, `remark`, `tenant_id`, `creator`, `updater`)
 VALUES
     (3, '租户管理员', 'tenant_admin', 0, 1, '', 0, 1, '租户内全部权限', 1, 1, 1),
-    (4, '普通用户',   'tenant_user',  1, 3, '', 0, 1, '租户内只读',     1, 1, 1);
+    (4, '普通用户',   'tenant_user',  1, 3, '', 0, 1, '租户内基础查看与社区互动', 1, 1, 1);
 
 -- 租户 2
 INSERT INTO `system_role` (`id`, `name`, `code`, `sort`, `data_scope`, `data_scope_dept_ids`, `status`, `type`, `remark`, `tenant_id`, `creator`, `updater`)
