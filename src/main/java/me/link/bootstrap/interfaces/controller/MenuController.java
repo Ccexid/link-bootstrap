@@ -6,10 +6,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import me.link.bootstrap.application.service.MenuApplicationService;
+import me.link.bootstrap.application.service.MenuService;
 import me.link.bootstrap.shared.kernel.valueobject.PageResult;
-import me.link.bootstrap.infrastructure.persistence.po.MenuPO;
-import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.menu.MenuCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.menu.MenuPageRequest;
 import me.link.bootstrap.interfaces.dto.request.menu.MenuUpdateRequest;
@@ -39,31 +37,29 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "菜单接口", description = "菜单增删改查接口")
 public class MenuController {
 
-    private final MenuApplicationService menuApplicationService;
-    private final ResponseVOConverter responseVOConverter;
+    private final MenuService menuService;
 
     @PostMapping
     @SaCheckPermission("system:menu:create")
     @Idempotent
     @Operation(summary = "创建菜单", description = "创建菜单基础信息")
     public ResultResponse<MenuResponseVO> create(@Valid @RequestBody MenuCreateRequest request) {
-        MenuPO menu = menuApplicationService.create(request);
-        return ResultResponse.success(responseVOConverter.toResponse(menu));
+        return ResultResponse.success(menuService.create(request));
     }
 
     @GetMapping("/{id}")
     @SaCheckPermission("system:menu:query")
     @Operation(summary = "查询菜单详情", description = "根据ID查询菜单详情")
     public ResultResponse<MenuResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
-        return ResultResponse.success(responseVOConverter.toResponse(menuApplicationService.get(id)));
+        return ResultResponse.success(menuService.get(id));
     }
 
     @GetMapping
     @SaCheckPermission("system:menu:list")
     @Operation(summary = "分页查询菜单", description = "分页查询菜单列表")
     public ResultTableResponse<MenuResponseVO> page(@Validated @SortWhitelist(MenuResponseVO.class) MenuPageRequest request) {
-        PageResult<MenuPO> pageResult = menuApplicationService.page(request);
-        return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
+        PageResult<MenuResponseVO> pageResult = menuService.page(request);
+        return ResultTableResponse.success(pageResult.records(), pageResult.total());
     }
 
     @PutMapping("/{id}")
@@ -72,15 +68,14 @@ public class MenuController {
     @Operation(summary = "更新菜单", description = "更新菜单基础信息")
     public ResultResponse<MenuResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
                                                   @Valid @RequestBody MenuUpdateRequest request) {
-        MenuPO menu = menuApplicationService.update(id, request);
-        return ResultResponse.success(responseVOConverter.toResponse(menu));
+        return ResultResponse.success(menuService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     @SaCheckPermission("system:menu:delete")
     @Operation(summary = "删除菜单", description = "根据ID删除菜单")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
-        menuApplicationService.delete(id);
+        menuService.delete(id);
         return ResultResponse.success();
     }
 

@@ -6,9 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import me.link.bootstrap.application.service.CommunitySectionApplicationService;
-import me.link.bootstrap.infrastructure.persistence.po.CommunitySectionPO;
-import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
+import me.link.bootstrap.application.service.CommunitySectionService;
 import me.link.bootstrap.interfaces.dto.request.community.section.CommunitySectionCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.community.section.CommunitySectionPageRequest;
 import me.link.bootstrap.interfaces.dto.request.community.section.CommunitySectionUpdateRequest;
@@ -39,32 +37,29 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(GlobalConstants.API_PREFIX + "/system/community/sections")
 public class CommunitySectionController {
 
-    private final CommunitySectionApplicationService communitySectionApplicationService;
-    private final ResponseVOConverter responseVOConverter;
+    private final CommunitySectionService communitySectionService;
 
     @Idempotent
     @PostMapping
     @SaCheckPermission("system:community:section:create")
     @Operation(summary = "创建社区板块")
     public ResultResponse<CommunitySectionResponseVO> create(@Valid @RequestBody CommunitySectionCreateRequest request) {
-        CommunitySectionPO section = communitySectionApplicationService.create(request);
-        return ResultResponse.success(responseVOConverter.toResponse(section));
+        return ResultResponse.success(communitySectionService.create(request));
     }
 
     @GetMapping("/{id}")
     @SaCheckPermission("system:community:section:query")
     @Operation(summary = "获取社区板块详情")
     public ResultResponse<CommunitySectionResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
-        CommunitySectionPO section = communitySectionApplicationService.get(id);
-        return ResultResponse.success(responseVOConverter.toResponse(section));
+        return ResultResponse.success(communitySectionService.get(id));
     }
 
     @GetMapping
     @SaCheckPermission("system:community:section:list")
     @Operation(summary = "分页查询社区板块")
     public ResultTableResponse<CommunitySectionResponseVO> page(@Validated @SortWhitelist(CommunitySectionResponseVO.class) CommunitySectionPageRequest request) {
-        PageResult<CommunitySectionPO> pageResult = communitySectionApplicationService.page(request);
-        return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
+        PageResult<CommunitySectionResponseVO> pageResult = communitySectionService.page(request);
+        return ResultTableResponse.success(pageResult.records(), pageResult.total());
     }
 
     @Idempotent
@@ -72,15 +67,14 @@ public class CommunitySectionController {
     @SaCheckPermission("system:community:section:update")
     @Operation(summary = "更新社区板块")
     public ResultResponse<CommunitySectionResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id, @Valid @RequestBody CommunitySectionUpdateRequest request) {
-        CommunitySectionPO section = communitySectionApplicationService.update(id, request);
-        return ResultResponse.success(responseVOConverter.toResponse(section));
+        return ResultResponse.success(communitySectionService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     @SaCheckPermission("system:community:section:delete")
     @Operation(summary = "删除社区板块")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
-        communitySectionApplicationService.delete(id);
+        communitySectionService.delete(id);
         return ResultResponse.success();
     }
 }

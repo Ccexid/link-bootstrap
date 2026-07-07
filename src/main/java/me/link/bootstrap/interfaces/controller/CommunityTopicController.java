@@ -6,9 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import me.link.bootstrap.application.service.CommunityTopicApplicationService;
-import me.link.bootstrap.infrastructure.persistence.po.CommunityTopicPO;
-import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
+import me.link.bootstrap.application.service.CommunityTopicService;
 import me.link.bootstrap.interfaces.dto.request.community.topic.CommunityTopicCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.community.topic.CommunityTopicPageRequest;
 import me.link.bootstrap.interfaces.dto.request.community.topic.CommunityTopicUpdateRequest;
@@ -39,32 +37,29 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(GlobalConstants.API_PREFIX + "/system/community/topics")
 public class CommunityTopicController {
 
-    private final CommunityTopicApplicationService communityTopicApplicationService;
-    private final ResponseVOConverter responseVOConverter;
+    private final CommunityTopicService communityTopicService;
 
     @Idempotent
     @PostMapping
     @SaCheckPermission("system:community:topic:create")
     @Operation(summary = "创建社区话题")
     public ResultResponse<CommunityTopicResponseVO> create(@Valid @RequestBody CommunityTopicCreateRequest request) {
-        CommunityTopicPO topic = communityTopicApplicationService.create(request);
-        return ResultResponse.success(responseVOConverter.toResponse(topic));
+        return ResultResponse.success(communityTopicService.create(request));
     }
 
     @GetMapping("/{id}")
     @SaCheckPermission("system:community:topic:query")
     @Operation(summary = "获取社区话题详情")
     public ResultResponse<CommunityTopicResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
-        CommunityTopicPO topic = communityTopicApplicationService.get(id);
-        return ResultResponse.success(responseVOConverter.toResponse(topic));
+        return ResultResponse.success(communityTopicService.get(id));
     }
 
     @GetMapping
     @SaCheckPermission("system:community:topic:list")
     @Operation(summary = "分页查询社区话题")
     public ResultTableResponse<CommunityTopicResponseVO> page(@Validated @SortWhitelist(CommunityTopicResponseVO.class) CommunityTopicPageRequest request) {
-        PageResult<CommunityTopicPO> pageResult = communityTopicApplicationService.page(request);
-        return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
+        PageResult<CommunityTopicResponseVO> pageResult = communityTopicService.page(request);
+        return ResultTableResponse.success(pageResult.records(), pageResult.total());
     }
 
     @Idempotent
@@ -72,15 +67,14 @@ public class CommunityTopicController {
     @SaCheckPermission("system:community:topic:update")
     @Operation(summary = "更新社区话题")
     public ResultResponse<CommunityTopicResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id, @Valid @RequestBody CommunityTopicUpdateRequest request) {
-        CommunityTopicPO topic = communityTopicApplicationService.update(id, request);
-        return ResultResponse.success(responseVOConverter.toResponse(topic));
+        return ResultResponse.success(communityTopicService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     @SaCheckPermission("system:community:topic:delete")
     @Operation(summary = "删除社区话题")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
-        communityTopicApplicationService.delete(id);
+        communityTopicService.delete(id);
         return ResultResponse.success();
     }
 }

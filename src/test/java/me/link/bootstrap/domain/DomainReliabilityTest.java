@@ -1,6 +1,6 @@
 package me.link.bootstrap.domain;
 
-import me.link.bootstrap.domain.valueobject.PageResult;
+import me.link.bootstrap.shared.kernel.valueobject.PageResult;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

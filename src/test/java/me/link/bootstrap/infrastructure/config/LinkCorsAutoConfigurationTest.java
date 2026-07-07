@@ -1,5 +1,6 @@
 package me.link.bootstrap.infrastructure.config;
 
+import me.link.bootstrap.shared.kernel.exception.BusinessException;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.web.filter.CorsFilter;
@@ -20,7 +21,7 @@ class LinkCorsAutoConfigurationTest {
         LinkCorsAutoConfiguration autoConfiguration = new LinkCorsAutoConfiguration(properties);
 
         assertThatThrownBy(autoConfiguration::linkCorsFilter)
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("link.security.cors.allowed-origin-patterns");
     }
 

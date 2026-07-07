@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import me.link.bootstrap.application.service.OperateLogApplicationService;
+import me.link.bootstrap.application.service.OperateLogService;
 import me.link.bootstrap.application.support.OperateLogRecord;
 import me.link.bootstrap.infrastructure.tracing.TraceIdContext;
 import me.link.bootstrap.shared.kernel.config.ClientIpProperties;
@@ -94,7 +94,7 @@ public class OperateLogAspect {
             "mfa"
     );
 
-    private final OperateLogApplicationService operateLogApplicationService;
+    private final OperateLogService operateLogService;
     private final ObjectMapper objectMapper;
     private final ClientIpProperties clientIpProperties;
 
@@ -169,7 +169,7 @@ public class OperateLogAspect {
             record.setRequestMethod(requestMethod);
             record.setRequestUrl(truncate(request.getRequestURI(), 512));
             record.setDuration(duration);
-            operateLogApplicationService.createForCurrentContext(record);
+            operateLogService.createForCurrentContext(record);
         } catch (Exception ex) {
             log.warn("自动记录操作日志失败: {}", ex.getMessage(), ex);
         }

@@ -6,10 +6,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import me.link.bootstrap.application.service.UserRoleApplicationService;
+import me.link.bootstrap.application.service.UserRoleService;
 import me.link.bootstrap.shared.kernel.valueobject.PageResult;
-import me.link.bootstrap.infrastructure.persistence.po.UserRolePO;
-import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.userrole.UserRoleAssignRequest;
 import me.link.bootstrap.interfaces.dto.request.userrole.UserRoleCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.userrole.UserRolePageRequest;
@@ -40,16 +38,14 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "用户角色关联接口", description = "用户角色关联增删改查接口")
 public class UserRoleController {
 
-    private final UserRoleApplicationService userRoleApplicationService;
-    private final ResponseVOConverter responseVOConverter;
+    private final UserRoleService userRoleService;
 
     @PostMapping
     @SaCheckPermission("system:user-role:create")
     @Idempotent
     @Operation(summary = "创建用户角色关联", description = "创建用户角色关联基础信息")
     public ResultResponse<UserRoleResponseVO> create(@Valid @RequestBody UserRoleCreateRequest request) {
-        UserRolePO userRole = userRoleApplicationService.create(request);
-        return ResultResponse.success(responseVOConverter.toResponse(userRole));
+        return ResultResponse.success(userRoleService.create(request));
     }
 
     @PostMapping("/assign")
@@ -57,7 +53,7 @@ public class UserRoleController {
     @Idempotent
     @Operation(summary = "批量分配用户角色", description = "覆盖指定用户的角色分配")
     public ResultResponse<Void> assign(@Valid @RequestBody UserRoleAssignRequest request) {
-        userRoleApplicationService.assign(request);
+        userRoleService.assign(request);
         return ResultResponse.success();
     }
 
@@ -65,15 +61,15 @@ public class UserRoleController {
     @SaCheckPermission("system:user-role:query")
     @Operation(summary = "查询用户角色关联详情", description = "根据ID查询用户角色关联详情")
     public ResultResponse<UserRoleResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
-        return ResultResponse.success(responseVOConverter.toResponse(userRoleApplicationService.get(id)));
+        return ResultResponse.success(userRoleService.get(id));
     }
 
     @GetMapping
     @SaCheckPermission("system:user-role:list")
     @Operation(summary = "分页查询用户角色关联", description = "分页查询用户角色关联列表")
     public ResultTableResponse<UserRoleResponseVO> page(@Validated @SortWhitelist(UserRoleResponseVO.class) UserRolePageRequest request) {
-        PageResult<UserRolePO> pageResult = userRoleApplicationService.page(request);
-        return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
+        PageResult<UserRoleResponseVO> pageResult = userRoleService.page(request);
+        return ResultTableResponse.success(pageResult.records(), pageResult.total());
     }
 
     @PutMapping("/{id}")
@@ -82,15 +78,14 @@ public class UserRoleController {
     @Operation(summary = "更新用户角色关联", description = "更新用户角色关联基础信息")
     public ResultResponse<UserRoleResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
                                                   @Valid @RequestBody UserRoleUpdateRequest request) {
-        UserRolePO userRole = userRoleApplicationService.update(id, request);
-        return ResultResponse.success(responseVOConverter.toResponse(userRole));
+        return ResultResponse.success(userRoleService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     @SaCheckPermission("system:user-role:delete")
     @Operation(summary = "删除用户角色关联", description = "根据ID删除用户角色关联")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
-        userRoleApplicationService.delete(id);
+        userRoleService.delete(id);
         return ResultResponse.success();
     }
 

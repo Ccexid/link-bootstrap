@@ -6,10 +6,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import me.link.bootstrap.application.service.TenantPackageApplicationService;
+import me.link.bootstrap.application.service.TenantPackageService;
 import me.link.bootstrap.shared.kernel.valueobject.PageResult;
-import me.link.bootstrap.infrastructure.persistence.po.TenantPackagePO;
-import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.tenantpackage.TenantPackageCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.tenantpackage.TenantPackagePageRequest;
 import me.link.bootstrap.interfaces.dto.request.tenantpackage.TenantPackageUpdateRequest;
@@ -39,8 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "租户套餐接口", description = "租户套餐增删改查接口")
 public class TenantPackageController {
 
-    private final TenantPackageApplicationService tenantPackageApplicationService;
-    private final ResponseVOConverter responseVOConverter;
+    private final TenantPackageService tenantPackageService;
 
     /**
      * 创建业务对象。
@@ -50,8 +47,7 @@ public class TenantPackageController {
     @Idempotent
     @Operation(summary = "创建租户套餐", description = "创建租户套餐基础信息")
     public ResultResponse<TenantPackageResponseVO> create(@Valid @RequestBody TenantPackageCreateRequest request) {
-        TenantPackagePO tenantPackage = tenantPackageApplicationService.create(request);
-        return ResultResponse.success(responseVOConverter.toResponse(tenantPackage));
+        return ResultResponse.success(tenantPackageService.create(request));
     }
 
     /**
@@ -61,7 +57,7 @@ public class TenantPackageController {
     @SaCheckPermission("system:tenant-package:query")
     @Operation(summary = "查询租户套餐详情", description = "根据租户套餐ID查询租户套餐详情")
     public ResultResponse<TenantPackageResponseVO> get(@PathVariable @NotNull(message = "租户套餐ID不能为空") Long id) {
-        return ResultResponse.success(responseVOConverter.toResponse(tenantPackageApplicationService.get(id)));
+        return ResultResponse.success(tenantPackageService.get(id));
     }
 
     /**
@@ -71,8 +67,8 @@ public class TenantPackageController {
     @SaCheckPermission("system:tenant-package:list")
     @Operation(summary = "分页查询租户套餐", description = "分页查询租户套餐列表")
     public ResultTableResponse<TenantPackageResponseVO> page(@Validated @SortWhitelist(TenantPackageResponseVO.class) TenantPackagePageRequest request) {
-        PageResult<TenantPackagePO> pageResult = tenantPackageApplicationService.page(request);
-        return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
+        PageResult<TenantPackageResponseVO> pageResult = tenantPackageService.page(request);
+        return ResultTableResponse.success(pageResult.records(), pageResult.total());
     }
 
     /**
@@ -84,8 +80,7 @@ public class TenantPackageController {
     @Operation(summary = "更新租户套餐", description = "更新租户套餐基础信息")
     public ResultResponse<TenantPackageResponseVO> update(@PathVariable @NotNull(message = "租户套餐ID不能为空") Long id,
                                                           @Valid @RequestBody TenantPackageUpdateRequest request) {
-        TenantPackagePO tenantPackage = tenantPackageApplicationService.update(id, request);
-        return ResultResponse.success(responseVOConverter.toResponse(tenantPackage));
+        return ResultResponse.success(tenantPackageService.update(id, request));
     }
 
     /**
@@ -95,7 +90,7 @@ public class TenantPackageController {
     @SaCheckPermission("system:tenant-package:delete")
     @Operation(summary = "删除租户套餐", description = "根据租户套餐ID删除租户套餐")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "租户套餐ID不能为空") Long id) {
-        tenantPackageApplicationService.delete(id);
+        tenantPackageService.delete(id);
         return ResultResponse.success();
     }
 

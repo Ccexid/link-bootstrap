@@ -68,7 +68,7 @@ public final class SecurityHelper {
     /**
      * 判断当前登录用户是否平台超级管理员。
      * <p>
-     * 登录时由 {@code AuthApplicationService} 写入 Session,
+     * 登录时由 {@code AuthService} 写入 Session,
      * 持有 {@link SecurityConstants#ROLE_SUPER_ADMIN} 角色码者为 true。
      * </p>
      * <p>

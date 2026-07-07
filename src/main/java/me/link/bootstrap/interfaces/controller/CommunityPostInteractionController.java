@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import me.link.bootstrap.application.service.CommunityPostInteractionApplicationService;
+import me.link.bootstrap.application.service.CommunityPostInteractionService;
 import me.link.bootstrap.interfaces.dto.response.ResultResponse;
 import me.link.bootstrap.interfaces.dto.response.vo.CommunityPostInteractionResponseVO;
 import me.link.bootstrap.shared.kernel.annotation.Idempotent;
@@ -27,37 +27,37 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(GlobalConstants.API_PREFIX + "/community/posts")
 public class CommunityPostInteractionController {
 
-    private final CommunityPostInteractionApplicationService communityPostInteractionApplicationService;
+    private final CommunityPostInteractionService communityPostInteractionService;
 
     @Idempotent
     @PostMapping("/{id}/like")
     @Operation(summary = "点赞帖子")
     public ResultResponse<CommunityPostInteractionResponseVO> like(@PathVariable @NotNull(message = "ID不能为空") Long id) {
-        return ResultResponse.success(communityPostInteractionApplicationService.like(id));
+        return ResultResponse.success(communityPostInteractionService.like(id));
     }
 
     @DeleteMapping("/{id}/like")
     @Operation(summary = "取消点赞帖子")
     public ResultResponse<CommunityPostInteractionResponseVO> unlike(@PathVariable @NotNull(message = "ID不能为空") Long id) {
-        return ResultResponse.success(communityPostInteractionApplicationService.unlike(id));
+        return ResultResponse.success(communityPostInteractionService.unlike(id));
     }
 
     @Idempotent
     @PostMapping("/{id}/collect")
     @Operation(summary = "收藏帖子")
     public ResultResponse<CommunityPostInteractionResponseVO> collect(@PathVariable @NotNull(message = "ID不能为空") Long id) {
-        return ResultResponse.success(communityPostInteractionApplicationService.collect(id));
+        return ResultResponse.success(communityPostInteractionService.collect(id));
     }
 
     @DeleteMapping("/{id}/collect")
     @Operation(summary = "取消收藏帖子")
     public ResultResponse<CommunityPostInteractionResponseVO> uncollect(@PathVariable @NotNull(message = "ID不能为空") Long id) {
-        return ResultResponse.success(communityPostInteractionApplicationService.uncollect(id));
+        return ResultResponse.success(communityPostInteractionService.uncollect(id));
     }
 
     @GetMapping("/{id}/interaction")
     @Operation(summary = "查询当前用户帖子互动状态")
     public ResultResponse<CommunityPostInteractionResponseVO> interaction(@PathVariable @NotNull(message = "ID不能为空") Long id) {
-        return ResultResponse.success(communityPostInteractionApplicationService.interaction(id));
+        return ResultResponse.success(communityPostInteractionService.interaction(id));
     }
 }

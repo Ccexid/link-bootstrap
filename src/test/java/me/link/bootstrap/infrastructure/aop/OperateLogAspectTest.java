@@ -1,7 +1,7 @@
 package me.link.bootstrap.infrastructure.aop;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import me.link.bootstrap.application.service.OperateLogApplicationService;
+import me.link.bootstrap.application.service.OperateLogService;
 import me.link.bootstrap.shared.kernel.config.ClientIpProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -15,7 +15,7 @@ import static org.mockito.Mockito.mock;
 class OperateLogAspectTest {
 
     private final OperateLogAspect operateLogAspect = new OperateLogAspect(
-            mock(OperateLogApplicationService.class),
+            mock(OperateLogService.class),
             new ObjectMapper(),
             new ClientIpProperties()
     );

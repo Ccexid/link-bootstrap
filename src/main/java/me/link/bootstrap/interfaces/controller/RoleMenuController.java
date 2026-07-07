@@ -6,10 +6,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import me.link.bootstrap.application.service.RoleMenuApplicationService;
+import me.link.bootstrap.application.service.RoleMenuService;
 import me.link.bootstrap.shared.kernel.valueobject.PageResult;
-import me.link.bootstrap.infrastructure.persistence.po.RoleMenuPO;
-import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.rolemenu.RoleMenuAuthorizeRequest;
 import me.link.bootstrap.interfaces.dto.request.rolemenu.RoleMenuCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.rolemenu.RoleMenuPageRequest;
@@ -40,16 +38,14 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "角色菜单关联接口", description = "角色菜单关联增删改查接口")
 public class RoleMenuController {
 
-    private final RoleMenuApplicationService roleMenuApplicationService;
-    private final ResponseVOConverter responseVOConverter;
+    private final RoleMenuService roleMenuService;
 
     @PostMapping
     @SaCheckPermission("system:role-menu:create")
     @Idempotent
     @Operation(summary = "创建角色菜单关联", description = "创建角色菜单关联基础信息")
     public ResultResponse<RoleMenuResponseVO> create(@Valid @RequestBody RoleMenuCreateRequest request) {
-        RoleMenuPO roleMenu = roleMenuApplicationService.create(request);
-        return ResultResponse.success(responseVOConverter.toResponse(roleMenu));
+        return ResultResponse.success(roleMenuService.create(request));
     }
 
     @PostMapping("/authorize")
@@ -57,7 +53,7 @@ public class RoleMenuController {
     @Idempotent
     @Operation(summary = "批量授权角色菜单", description = "覆盖指定角色的菜单授权")
     public ResultResponse<Void> authorize(@Valid @RequestBody RoleMenuAuthorizeRequest request) {
-        roleMenuApplicationService.authorize(request);
+        roleMenuService.authorize(request);
         return ResultResponse.success();
     }
 
@@ -65,15 +61,15 @@ public class RoleMenuController {
     @SaCheckPermission("system:role-menu:query")
     @Operation(summary = "查询角色菜单关联详情", description = "根据ID查询角色菜单关联详情")
     public ResultResponse<RoleMenuResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
-        return ResultResponse.success(responseVOConverter.toResponse(roleMenuApplicationService.get(id)));
+        return ResultResponse.success(roleMenuService.get(id));
     }
 
     @GetMapping
     @SaCheckPermission("system:role-menu:list")
     @Operation(summary = "分页查询角色菜单关联", description = "分页查询角色菜单关联列表")
     public ResultTableResponse<RoleMenuResponseVO> page(@Validated @SortWhitelist(RoleMenuResponseVO.class) RoleMenuPageRequest request) {
-        PageResult<RoleMenuPO> pageResult = roleMenuApplicationService.page(request);
-        return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
+        PageResult<RoleMenuResponseVO> pageResult = roleMenuService.page(request);
+        return ResultTableResponse.success(pageResult.records(), pageResult.total());
     }
 
     @PutMapping("/{id}")
@@ -82,15 +78,14 @@ public class RoleMenuController {
     @Operation(summary = "更新角色菜单关联", description = "更新角色菜单关联基础信息")
     public ResultResponse<RoleMenuResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id,
                                                   @Valid @RequestBody RoleMenuUpdateRequest request) {
-        RoleMenuPO roleMenu = roleMenuApplicationService.update(id, request);
-        return ResultResponse.success(responseVOConverter.toResponse(roleMenu));
+        return ResultResponse.success(roleMenuService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     @SaCheckPermission("system:role-menu:delete")
     @Operation(summary = "删除角色菜单关联", description = "根据ID删除角色菜单关联")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
-        roleMenuApplicationService.delete(id);
+        roleMenuService.delete(id);
         return ResultResponse.success();
     }
 

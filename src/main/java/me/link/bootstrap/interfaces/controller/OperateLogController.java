@@ -5,10 +5,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import me.link.bootstrap.application.service.OperateLogApplicationService;
+import me.link.bootstrap.application.service.OperateLogService;
 import me.link.bootstrap.shared.kernel.valueobject.PageResult;
-import me.link.bootstrap.infrastructure.persistence.po.OperateLogPO;
-import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
 import me.link.bootstrap.interfaces.dto.request.operatelog.OperateLogPageRequest;
 import me.link.bootstrap.interfaces.dto.response.ResultResponse;
 import me.link.bootstrap.interfaces.dto.response.ResultTableResponse;
@@ -31,22 +29,21 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "操作日志接口", description = "操作日志只读审计查询接口")
 public class OperateLogController {
 
-    private final OperateLogApplicationService operateLogApplicationService;
-    private final ResponseVOConverter responseVOConverter;
+    private final OperateLogService operateLogService;
 
     @GetMapping("/{id}")
     @SaCheckPermission("system:operate-log:query")
     @Operation(summary = "查询操作日志详情", description = "根据ID查询操作日志详情")
     public ResultResponse<OperateLogResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
-        return ResultResponse.success(responseVOConverter.toResponse(operateLogApplicationService.get(id)));
+        return ResultResponse.success(operateLogService.get(id));
     }
 
     @GetMapping
     @SaCheckPermission("system:operate-log:list")
     @Operation(summary = "分页查询操作日志", description = "分页查询操作日志列表")
     public ResultTableResponse<OperateLogResponseVO> page(@Validated @SortWhitelist(OperateLogResponseVO.class) OperateLogPageRequest request) {
-        PageResult<OperateLogPO> pageResult = operateLogApplicationService.page(request);
-        return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
+        PageResult<OperateLogResponseVO> pageResult = operateLogService.page(request);
+        return ResultTableResponse.success(pageResult.records(), pageResult.total());
     }
 
 }

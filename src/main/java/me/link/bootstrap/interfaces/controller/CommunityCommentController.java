@@ -5,9 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import me.link.bootstrap.application.service.CommunityCommentApplicationService;
-import me.link.bootstrap.infrastructure.persistence.po.CommunityCommentPO;
-import me.link.bootstrap.interfaces.converter.ResponseVOConverter;
+import me.link.bootstrap.application.service.CommunityCommentService;
 import me.link.bootstrap.interfaces.dto.request.community.comment.CommunityCommentCreateRequest;
 import me.link.bootstrap.interfaces.dto.request.community.comment.CommunityCommentPageRequest;
 import me.link.bootstrap.interfaces.dto.request.community.comment.CommunityCommentUpdateRequest;
@@ -38,43 +36,39 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(GlobalConstants.API_PREFIX + "/community/comments")
 public class CommunityCommentController {
 
-    private final CommunityCommentApplicationService communityCommentApplicationService;
-    private final ResponseVOConverter responseVOConverter;
+    private final CommunityCommentService communityCommentService;
 
     @Idempotent
     @PostMapping
     @Operation(summary = "创建社区评论或回复")
     public ResultResponse<CommunityCommentResponseVO> create(@Valid @RequestBody CommunityCommentCreateRequest request) {
-        CommunityCommentPO comment = communityCommentApplicationService.create(request);
-        return ResultResponse.success(responseVOConverter.toResponse(comment));
+        return ResultResponse.success(communityCommentService.create(request));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "获取社区评论详情")
     public ResultResponse<CommunityCommentResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
-        CommunityCommentPO comment = communityCommentApplicationService.get(id);
-        return ResultResponse.success(responseVOConverter.toResponse(comment));
+        return ResultResponse.success(communityCommentService.get(id));
     }
 
     @GetMapping
     @Operation(summary = "分页查询社区评论")
     public ResultTableResponse<CommunityCommentResponseVO> page(@Validated @SortWhitelist(CommunityCommentResponseVO.class) CommunityCommentPageRequest request) {
-        PageResult<CommunityCommentPO> pageResult = communityCommentApplicationService.page(request);
-        return ResultTableResponse.success(pageResult, responseVOConverter::toResponse);
+        PageResult<CommunityCommentResponseVO> pageResult = communityCommentService.page(request);
+        return ResultTableResponse.success(pageResult.records(), pageResult.total());
     }
 
     @Idempotent
     @PutMapping("/{id}")
     @Operation(summary = "更新本人社区评论")
     public ResultResponse<CommunityCommentResponseVO> update(@PathVariable @NotNull(message = "ID不能为空") Long id, @Valid @RequestBody CommunityCommentUpdateRequest request) {
-        CommunityCommentPO comment = communityCommentApplicationService.update(id, request);
-        return ResultResponse.success(responseVOConverter.toResponse(comment));
+        return ResultResponse.success(communityCommentService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "删除本人社区评论")
     public ResultResponse<Void> delete(@PathVariable @NotNull(message = "ID不能为空") Long id) {
-        communityCommentApplicationService.delete(id);
+        communityCommentService.delete(id);
         return ResultResponse.success();
     }
 }
