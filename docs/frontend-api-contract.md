@@ -85,7 +85,7 @@
 | POST | `/tokens` | 匿名 | 同用户名 60 秒 5 次 | `LoginRequest` | `TokenResponseVO` |
 | POST | `/email-code-tokens` | 匿名 | 同邮箱 60 秒 5 次 | `EmailLoginRequest` | `TokenResponseVO` |
 | POST | `/email-verification-codes` | 匿名 | 同邮箱 60 秒 1 次 | `SendEmailCodeRequest` | 无数据 |
-| PATCH | `/tokens/current` | 登录 | - | 无 | `TokenResponseVO` |
+| PUT | `/tokens/current` | 登录 | - | 无 | `TokenResponseVO` |
 | GET | `/tokens/current` | 登录 | - | 无 | `TokenResponseVO` |
 | GET | `/public-keys/current` | 匿名 | - | 无 | `ApiCryptoPublicKeyResponseVO` |
 | DELETE | `/tokens/current` | 登录 | - | 无 | 无数据 |

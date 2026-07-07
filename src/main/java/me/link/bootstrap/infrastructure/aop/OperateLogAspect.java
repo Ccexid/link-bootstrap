@@ -57,7 +57,7 @@ public class OperateLogAspect {
     /** POST 请求对应新增或执行操作。 */
     private static final int OPERATION_CREATE = 2;
 
-    /** PUT/PATCH 请求对应更新操作。 */
+    /** PUT 请求对应更新操作。 */
     private static final int OPERATION_UPDATE = 3;
 
     /** DELETE 请求对应删除操作。 */
@@ -298,7 +298,7 @@ public class OperateLogAspect {
         return switch (requestMethod.toUpperCase(Locale.ROOT)) {
             case "GET" -> OPERATION_QUERY;
             case "POST" -> OPERATION_CREATE;
-            case "PUT", "PATCH" -> OPERATION_UPDATE;
+            case "PUT" -> OPERATION_UPDATE;
             case "DELETE" -> OPERATION_DELETE;
             default -> OPERATION_OTHER;
         };

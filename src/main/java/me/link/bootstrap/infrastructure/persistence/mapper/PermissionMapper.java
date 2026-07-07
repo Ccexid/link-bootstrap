@@ -1,5 +1,7 @@
 package me.link.bootstrap.infrastructure.persistence.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import me.link.bootstrap.infrastructure.persistence.po.MenuPO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -8,7 +10,7 @@ import java.util.List;
 /**
  * 权限聚合查询 Mapper。
  * <p>
- * 不绑定单一 PO,故独立于 BaseMapper 体系。SQL 写在 {@code resources/mapper/PermissionMapper.xml}。
+ * 权限码来源于 {@code system_menu.permission},聚合 SQL 写在 {@code resources/mapper/PermissionMapper.xml}。
  * </p>
  * <p>
  * 调用时上下文必须已登录:{@code TenantLineInnerInterceptor} 会从 Sa-Token Session 取 tenantId,
@@ -17,7 +19,7 @@ import java.util.List;
  * </p>
  */
 @Mapper
-public interface PermissionMapper {
+public interface PermissionMapper extends BaseMapper<MenuPO> {
 
     /**
      * 查询用户在当前租户下拥有的权限码列表(已去重,过滤空字符串,仅返回启用菜单)。

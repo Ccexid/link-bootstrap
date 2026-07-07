@@ -38,7 +38,6 @@ public class ApiCryptoRequestFilter extends OncePerRequestFilter {
     private static final Set<String> BODY_METHODS = Set.of(
             HttpMethod.POST.name(),
             HttpMethod.PUT.name(),
-            HttpMethod.PATCH.name(),
             HttpMethod.DELETE.name()
     );
 

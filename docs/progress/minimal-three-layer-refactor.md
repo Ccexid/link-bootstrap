@@ -25,6 +25,7 @@ Refactor the codebase according to `ReadME.md` and the latest module-generation 
 - [x] Normalized REST resource paths to plural nouns under `/api/v1`.
 - [x] Synchronized frontend API contract documentation.
 - [x] Removed remaining forbidden `Repository` naming from shared component code.
+- [x] Rechecked REST method usage, mapper inheritance, and unused refactor leftovers.
 
 ## Notes
 
@@ -40,3 +41,7 @@ Refactor the codebase according to `ReadME.md` and the latest module-generation 
 - 2026-07-07: Fixed-string scans returned no old single-resource path literals for tenant, tenant package, role, menu, organization, and user-role endpoints.
 - 2026-07-07: Forbidden file-name scan returned no matches for `ApplicationService`, `InternalService`, `Repository`, `RepositoryImpl`, `Command`, `Query`, or `Converter` under `src/main/java` and `src/test/java`.
 - 2026-07-07: `./mvnw -q clean compile`, `./mvnw -q clean -Dmaven.test.skip=false test`, and `git diff --check` passed after the continued refactor.
+- 2026-07-07: `PATCH /api/v1/auth/tokens/current` was changed to `PUT /api/v1/auth/tokens/current`, and explicit PATCH support was removed from CORS defaults, API crypto body-method handling, and operation-log method mapping.
+- 2026-07-07: `PermissionMapper` now extends `BaseMapper<MenuPO>` while keeping only the custom permission aggregation SQL methods used by auth/permission cache flows.
+- 2026-07-07: Removed unused `LoginResponseVO` and `TokenRefreshResult` leftovers after confirming they had no references.
+- 2026-07-07: Follow-up verification passed: `./mvnw -q clean compile`, `./mvnw -q clean -Dmaven.test.skip=false test`, `git diff --check`, PATCH/source leftover scan, and forbidden file-name scan.

@@ -119,7 +119,6 @@ public class LinkSecurityProperties {
                 "GET",
                 "POST",
                 "PUT",
-                "PATCH",
                 "DELETE",
                 "OPTIONS"
         ));
