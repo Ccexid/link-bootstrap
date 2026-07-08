@@ -4,6 +4,13 @@
 
 # 数据库配置 (测试MySQL)
 spring:
+  cloud:
+    nacos:
+      config:
+        enabled: false
+      discovery:
+        enabled: false
+        register-enabled: false
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.p6spy.engine.spy.P6SpyDriver
