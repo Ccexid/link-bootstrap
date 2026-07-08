@@ -31,6 +31,19 @@ docker build -f docker/redis/Dockerfile -t link-bootstrap-redis .
 docker run --name link-bootstrap-redis -p 6379:6379 -d link-bootstrap-redis
 ```
 
+## rnacos
+
+- Host ports: `8848`, `9848`, `10848`
+- Image: `qingpan/rnacos:stable`
+- Container name: `mynacos`
+
+Build from the repository root:
+
+```bash
+docker build -f docker/rnacos/Dockerfile -t link-bootstrap-rnacos .
+docker run -d --name mynacos -p 8848:8848 -p 9848:9848 -p 10848:10848 link-bootstrap-rnacos
+```
+
 ## Compose
 
 ```bash

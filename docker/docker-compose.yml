@@ -33,6 +33,16 @@ services:
       timeout: 5s
       retries: 10
 
+  rnacos:
+    build:
+      context: ..
+      dockerfile: docker/rnacos/Dockerfile
+    container_name: mynacos
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+      - "10848:10848"
+
 volumes:
   mysql-data:
   redis-data:
