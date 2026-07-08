@@ -44,6 +44,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuPO> implements 
     );
     private final PermissionCacheService permissionCacheService;
 
+    /**
+     * 创建菜单。
+     */
     @Transactional
     public MenuResponseVO create(MenuCreateRequest request) {
         MenuPO menu = new MenuPO();
@@ -53,10 +56,16 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuPO> implements 
         return toResponse(menu);
     }
 
+    /**
+     * 查询菜单详情。
+     */
     public MenuResponseVO get(Long id) {
         return toResponse(getRequired(id));
     }
 
+    /**
+     * 分页查询菜单列表。
+     */
     public PageResult<MenuResponseVO> page(MenuPageRequest request) {
         Page<MenuPO> page = Page.of(request.getPageNo(), request.getPageSize());
         PageOrderHelper.applyOrders(page, request.getSortingFields(), SORT_FIELD_MAPPING);
@@ -71,6 +80,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuPO> implements 
         return new PageResult<>(result.getRecords().stream().map(this::toResponse).toList(), result.getTotal());
     }
 
+    /**
+     * 更新菜单。
+     */
     @Transactional
     public MenuResponseVO update(Long id, MenuUpdateRequest request) {
         MenuPO menu = getRequired(id);
@@ -81,12 +93,18 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuPO> implements 
         return get(id);
     }
 
+    /**
+     * 删除菜单。
+     */
     @Transactional
     public void delete(Long id) {
         ApplicationAssert.requireSuccess(removeById(id), ErrorCode.MENU_NOT_FOUND);
         permissionCacheService.evictAll();
     }
 
+    /**
+     * 应用可变字段。
+     */
     private static void applyMutableFields(MenuPO menu,
                                            String name,
                                            String permission,
@@ -119,10 +137,16 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, MenuPO> implements 
         menu.setAlwaysShow(alwaysShow);
     }
 
+    /**
+     * 获取必需的业务对象。
+     */
     private MenuPO getRequired(Long id) {
         return ApplicationAssert.requireFound(getById(id), ErrorCode.MENU_NOT_FOUND);
     }
 
+    /**
+     * 转换为响应对象。
+     */
     private MenuResponseVO toResponse(MenuPO source) {
         MenuResponseVO response = BeanUtil.copyProperties(source, MenuResponseVO.class);
         response.setCreatedAt(source.getCreateTime());

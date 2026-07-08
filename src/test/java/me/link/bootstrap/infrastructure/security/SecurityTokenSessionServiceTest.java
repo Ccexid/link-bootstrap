@@ -39,6 +39,9 @@ class SecurityTokenSessionServiceTest {
 
     private SecurityTokenSessionService securityTokenSessionService;
 
+    /**
+     * 准备测试上下文。
+     */
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -55,6 +58,9 @@ class SecurityTokenSessionServiceTest {
         );
     }
 
+    /**
+     * 验证 createShouldStoreOpaqueTokenSessionInRedis 场景。
+     */
     @Test
     void createShouldStoreOpaqueTokenSessionInRedis() {
         UserPO user = new UserPO();
@@ -79,6 +85,9 @@ class SecurityTokenSessionServiceTest {
         assertThat(sessionCaptor.getValue().getPermissions()).containsExactly("system:user:list");
     }
 
+    /**
+     * 验证 loadShouldRejectIdleExpiredSessionAndDeleteRedisKey 场景。
+     */
     @Test
     void loadShouldRejectIdleExpiredSessionAndDeleteRedisKey() {
         SecurityTokenSession idleExpired = new SecurityTokenSession();
@@ -96,6 +105,9 @@ class SecurityTokenSessionServiceTest {
         verify(tokenBucket).delete();
     }
 
+    /**
+     * 验证 refreshShouldExtendAbsoluteAndActiveTimeouts 场景。
+     */
     @Test
     void refreshShouldExtendAbsoluteAndActiveTimeouts() {
         SecurityTokenSession session = new SecurityTokenSession();

@@ -48,6 +48,9 @@ public class RateLimitAspect {
     private final ExpressionParser expressionParser = new SpelExpressionParser();
     private final ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
 
+    /**
+     * 环绕处理。
+     */
     @Around("@annotation(rateLimit)")
     public Object around(ProceedingJoinPoint joinPoint, RateLimit rateLimit) throws Throwable {
         HttpServletRequest request = currentRequest();
@@ -74,6 +77,9 @@ public class RateLimitAspect {
         return joinPoint.proceed();
     }
 
+    /**
+     * 获取当前请求。
+     */
     private HttpServletRequest currentRequest() {
         if (!(RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes attributes)) {
             return null;
@@ -81,6 +87,9 @@ public class RateLimitAspect {
         return attributes.getRequest();
     }
 
+    /**
+     * 解析原始键。
+     */
     private String rawKey(ProceedingJoinPoint joinPoint, Method method, HttpServletRequest request, RateLimit rateLimit) {
         String businessKey = trimToNull(rateLimit.key());
         if (businessKey != null) {
@@ -93,6 +102,9 @@ public class RateLimitAspect {
         return httpMethod + ":" + uri + ":ipHash=" + sha256(clientIp(request));
     }
 
+    /**
+     * 解析键。
+     */
     private String parseKey(String expression, Method method, Object[] args) {
         EvaluationContext context = new StandardEvaluationContext();
         String[] parameterNames = parameterNameDiscoverer.getParameterNames(method);
@@ -106,6 +118,9 @@ public class RateLimitAspect {
         return value == null ? "" : value.toString();
     }
 
+    /**
+     * 解析IP。
+     */
     private String clientIp(HttpServletRequest request) {
         if (request == null) {
             return "";
@@ -126,12 +141,18 @@ public class RateLimitAspect {
         return ip == null ? "" : ip;
     }
 
+    /**
+     * 选择最右侧IP。
+     */
     private String pickRightmostIp(String headerValue) {
         int lastComma = headerValue.lastIndexOf(',');
         String candidate = lastComma >= 0 ? headerValue.substring(lastComma + 1) : headerValue;
         return candidate.trim();
     }
 
+    /**
+     * 计算256。
+     */
     private String sha256(String value) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -142,6 +163,9 @@ public class RateLimitAspect {
         }
     }
 
+    /**
+     * 去除空白To空值。
+     */
     private String trimToNull(String value) {
         if (value == null || value.trim().isEmpty()) {
             return null;
@@ -149,6 +173,9 @@ public class RateLimitAspect {
         return value.trim();
     }
 
+    /**
+     * 判断NotBlank是否成立。
+     */
     private boolean isNotBlank(String value) {
         return value != null && !value.trim().isEmpty();
     }

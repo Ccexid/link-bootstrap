@@ -23,6 +23,9 @@ import org.springframework.stereotype.Component;
 @Order(Integer.MIN_VALUE)
 public class TenantIgnoreAspect {
 
+    /**
+     * 环绕处理。
+     */
     @Around("@annotation(me.link.bootstrap.shared.kernel.database.mybatis.TenantIgnore) "
             + "|| @within(me.link.bootstrap.shared.kernel.database.mybatis.TenantIgnore)")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {

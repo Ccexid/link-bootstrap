@@ -34,11 +34,17 @@ public class ApiCryptoResponseBodyAdvice implements ResponseBodyAdvice<Object> {
     private final ApiCryptoService apiCryptoService;
     private final ObjectMapper objectMapper;
 
+    /**
+     * 创建APICrypto响应请求体Advice实例。
+     */
     public ApiCryptoResponseBodyAdvice(ApiCryptoService apiCryptoService, ObjectMapper objectMapper) {
         this.apiCryptoService = apiCryptoService;
         this.objectMapper = objectMapper;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean supports(@NonNull MethodParameter returnType,
             @NonNull Class<? extends HttpMessageConverter<?>> converterType) {
@@ -47,6 +53,9 @@ public class ApiCryptoResponseBodyAdvice implements ResponseBodyAdvice<Object> {
                 || ResultTableResponse.class.isAssignableFrom(parameterType);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object beforeBodyWrite(@Nullable Object body, @NonNull MethodParameter returnType,
             @NonNull MediaType selectedContentType,

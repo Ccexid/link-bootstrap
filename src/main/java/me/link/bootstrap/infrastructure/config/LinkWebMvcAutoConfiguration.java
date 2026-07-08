@@ -38,6 +38,9 @@ import java.util.Map;
 @EnableConfigurationProperties({ApiCryptoProperties.class, MobileCryptoProperties.class})
 public class LinkWebMvcAutoConfiguration {
 
+    /**
+     * 创建 APICryptoService Bean。
+     */
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = "link.api-crypto", name = "enabled", havingValue = "true")
@@ -45,12 +48,18 @@ public class LinkWebMvcAutoConfiguration {
         return new ApiCryptoService(properties);
     }
 
+    /**
+     * 创建 手机号CryptoService Bean。
+     */
     @Bean
     @ConditionalOnMissingBean
     public MobileCryptoService mobileCryptoService(MobileCryptoProperties properties) {
         return new MobileCryptoService(properties);
     }
 
+    /**
+     * 创建 APICrypto请求Filter Bean。
+     */
     @Bean
     @ConditionalOnMissingBean(name = "apiCryptoRequestFilter")
     @ConditionalOnProperty(prefix = "link.api-crypto", name = "enabled", havingValue = "true")
@@ -62,6 +71,9 @@ public class LinkWebMvcAutoConfiguration {
         return bean;
     }
 
+    /**
+     * 创建 Snake命名参数BindingFilter Bean。
+     */
     @Bean
     @ConditionalOnMissingBean(name = "snakeCaseParameterBindingFilter")
     public FilterRegistrationBean<OncePerRequestFilter> snakeCaseParameterBindingFilter() {
@@ -72,6 +84,9 @@ public class LinkWebMvcAutoConfiguration {
 
     private static final class SnakeCaseParameterBindingFilter extends OncePerRequestFilter {
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         protected void doFilterInternal(@NonNull HttpServletRequest request,
                                         @NonNull HttpServletResponse response,
@@ -84,16 +99,25 @@ public class LinkWebMvcAutoConfiguration {
 
         private Map<String, String[]> parameterMap;
 
+        /**
+         * 创建Snake命名参数Binding请求实例。
+         */
         private SnakeCaseParameterBindingRequest(HttpServletRequest request) {
             super(request);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String getParameter(String name) {
             String[] values = getParameterValues(name);
             return values == null || values.length == 0 ? null : values[0];
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Map<String, String[]> getParameterMap() {
             if (parameterMap == null) {
@@ -102,22 +126,34 @@ public class LinkWebMvcAutoConfiguration {
             return parameterMap;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Enumeration<String> getParameterNames() {
             return Collections.enumeration(getParameterMap().keySet());
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String[] getParameterValues(String name) {
             return getParameterMap().get(name);
         }
 
+        /**
+         * 构建参数Map。
+         */
         private static Map<String, String[]> buildParameterMap(Map<String, String[]> source) {
             Map<String, String[]> target = new LinkedHashMap<>(source);
             source.forEach((name, values) -> target.putIfAbsent(toCamelCase(name), values));
             return Collections.unmodifiableMap(target);
         }
 
+        /**
+         * 转换为驼峰命名。
+         */
         private static String toCamelCase(String name) {
             if (name == null || name.indexOf('_') < 0) {
                 return name;

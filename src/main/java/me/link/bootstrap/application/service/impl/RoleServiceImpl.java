@@ -139,6 +139,9 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RolePO> implements 
         });
     }
 
+    /**
+     * 按租户IDAnd验证码查询数据。
+     */
     private Optional<RolePO> findByTenantIdAndCode(Long tenantId, String code) {
         LambdaQueryWrapper<RolePO> wrapper = new LambdaQueryWrapper<RolePO>()
                 .eq(RolePO::getTenantId, tenantId)
@@ -147,6 +150,9 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RolePO> implements 
         return Optional.ofNullable(getOne(wrapper));
     }
 
+    /**
+     * 填充角色。
+     */
     private void fillRole(RolePO role, String name, String code, Integer sort, Integer dataScope, String dataScopeDeptIds,
                           StatusEnum status, Integer type, String remark, Long tenantId) {
         validateBasicFields(name, code);
@@ -161,6 +167,9 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RolePO> implements 
         role.setTenantId(tenantId);
     }
 
+    /**
+     * 校验Basic字段。
+     */
     private void validateBasicFields(String name, String code) {
         if (StrUtil.isBlank(name)) {
             ApplicationAssert.invalidParam("角色name不能为空");
@@ -170,10 +179,16 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RolePO> implements 
         }
     }
 
+    /**
+     * 获取必需的业务对象。
+     */
     private RolePO getRequired(Long id) {
         return ApplicationAssert.requireFound(getById(id), ErrorCode.ROLE_NOT_FOUND);
     }
 
+    /**
+     * 转换为响应对象。
+     */
     private RoleResponseVO toResponse(RolePO source) {
         RoleResponseVO response = BeanUtil.copyProperties(source, RoleResponseVO.class);
         response.setCreatedAt(source.getCreateTime());

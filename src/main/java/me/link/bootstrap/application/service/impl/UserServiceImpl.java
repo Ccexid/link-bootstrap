@@ -137,6 +137,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserPO> implements 
         return list(wrapper);
     }
 
+    /**
+     * 填充用户。
+     */
     private void fillUser(UserPO user, String username, String password, String nickname, Integer userType, String mobile,
                           String email, String avatar, StatusEnum status, Long orgId, Long deptId, String loginIp,
                           LocalDateTime loginDate, Long tenantId) {
@@ -145,6 +148,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserPO> implements 
         user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
     }
 
+    /**
+     * 填充用户资料。
+     */
     private void fillUserProfile(UserPO user, String username, String nickname, Integer userType, String mobile,
                                  String email, String avatar, StatusEnum status, Long orgId, Long deptId,
                                  String loginIp, LocalDateTime loginDate, Long tenantId) {
@@ -168,6 +174,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserPO> implements 
         user.setTenantId(tenantId);
     }
 
+    /**
+     * 在密码存在时更新用户密码。
+     */
     private void updatePasswordIfPresent(UserPO user, String password) {
         if (StrUtil.isBlank(password)) {
             return;
@@ -176,6 +185,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserPO> implements 
         user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
     }
 
+    /**
+     * 校验资料。
+     */
     private void validateProfile(String username, String nickname, String mobile, String email) {
         if (StrUtil.isBlank(username)) {
             ApplicationAssert.invalidParam("用户username不能为空");
@@ -194,6 +206,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserPO> implements 
         }
     }
 
+    /**
+     * 校验必填密码。
+     */
     private void validateRequiredPassword(String password) {
         if (StrUtil.isBlank(password)) {
             ApplicationAssert.invalidParam("用户密码不能为空");
@@ -201,20 +216,32 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserPO> implements 
         validatePassword(password);
     }
 
+    /**
+     * 校验密码。
+     */
     private void validatePassword(String password) {
         if (password.length() < PASSWORD_MIN_LENGTH || password.length() > PASSWORD_MAX_LENGTH) {
             ApplicationAssert.invalidParam("用户密码长度必须在 " + PASSWORD_MIN_LENGTH + " 到 " + PASSWORD_MAX_LENGTH + " 之间");
         }
     }
 
+    /**
+     * 规范化邮箱。
+     */
     private String normalizeEmail(String email) {
         return StrUtil.isBlank(email) ? null : email.trim();
     }
 
+    /**
+     * 获取必需的业务对象。
+     */
     private UserPO getRequired(Long id) {
         return ApplicationAssert.requireFound(getById(id), ErrorCode.USER_NOT_FOUND);
     }
 
+    /**
+     * 转换为响应对象。
+     */
     private UserResponseVO toResponse(UserPO source) {
         UserResponseVO response = BeanUtil.copyProperties(source, UserResponseVO.class);
         response.setMobile(source.getMobileMask());

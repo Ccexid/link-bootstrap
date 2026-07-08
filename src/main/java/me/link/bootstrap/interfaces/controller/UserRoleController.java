@@ -40,6 +40,9 @@ public class UserRoleController {
 
     private final UserRoleService userRoleService;
 
+    /**
+     * 创建用户角色关联。
+     */
     @PostMapping
     @PreAuthorize("hasAuthority('system:user-role:create')")
     @Idempotent
@@ -48,6 +51,9 @@ public class UserRoleController {
         return ResultResponse.success(userRoleService.create(request));
     }
 
+    /**
+     * 批量分配用户角色。
+     */
     @PostMapping("/assign")
     @PreAuthorize("hasAuthority('system:user-role:assign')")
     @Idempotent
@@ -57,6 +63,9 @@ public class UserRoleController {
         return ResultResponse.success();
     }
 
+    /**
+     * 查询用户角色关联详情。
+     */
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('system:user-role:query')")
     @Operation(summary = "查询用户角色关联详情", description = "根据ID查询用户角色关联详情")
@@ -64,6 +73,9 @@ public class UserRoleController {
         return ResultResponse.success(userRoleService.get(id));
     }
 
+    /**
+     * 分页查询用户角色关联。
+     */
     @GetMapping
     @PreAuthorize("hasAuthority('system:user-role:list')")
     @Operation(summary = "分页查询用户角色关联", description = "分页查询用户角色关联列表")
@@ -72,6 +84,9 @@ public class UserRoleController {
         return ResultTableResponse.success(pageResult.records(), pageResult.total());
     }
 
+    /**
+     * 更新用户角色关联。
+     */
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('system:user-role:update')")
     @Idempotent
@@ -81,6 +96,9 @@ public class UserRoleController {
         return ResultResponse.success(userRoleService.update(id, request));
     }
 
+    /**
+     * 删除用户角色关联。
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('system:user-role:delete')")
     @Operation(summary = "删除用户角色关联", description = "根据ID删除用户角色关联")

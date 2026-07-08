@@ -6,6 +6,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class MobileCryptoServiceTest {
 
+    /**
+     * 验证 shouldProtectMobileWithCipherHashAndMask 场景。
+     */
     @Test
     void shouldProtectMobileWithCipherHashAndMask() {
         MobileCryptoProperties properties = new MobileCryptoProperties();
@@ -24,6 +27,9 @@ class MobileCryptoServiceTest {
         assertThat(service.decrypt(protectedMobile.cipher())).isEqualTo("13800000001");
     }
 
+    /**
+     * 验证 shouldReturnEmptyProtectionForBlankMobile 场景。
+     */
     @Test
     void shouldReturnEmptyProtectionForBlankMobile() {
         MobileCryptoService service = new MobileCryptoService(new MobileCryptoProperties());

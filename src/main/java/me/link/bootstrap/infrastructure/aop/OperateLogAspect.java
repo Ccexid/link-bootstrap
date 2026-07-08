@@ -432,6 +432,9 @@ public class OperateLogAspect {
         return result;
     }
 
+    /**
+     * 净化嵌套值。
+     */
     private Object sanitizeNestedValue(Object value) {
         if (value instanceof Map<?, ?> nested) {
             return sanitizeMap(nested);
@@ -456,6 +459,9 @@ public class OperateLogAspect {
                 || SENSITIVE_NAME_FRAGMENTS.stream().anyMatch(normalizedName::contains);
     }
 
+    /**
+     * 规范化敏感名称。
+     */
     private String normalizeSensitiveName(String name) {
         if (name == null) {
             return "";

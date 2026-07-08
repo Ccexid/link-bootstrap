@@ -35,6 +35,9 @@ public final class TraceIdContext {
     /** 核心上下文（支持异步传递） */
     private static final TransmittableThreadLocal<String> CONTEXT = new TransmittableThreadLocal<>();
 
+    /**
+     * 创建链路追踪ID上下文实例。
+     */
     private TraceIdContext() {
         throw new UnsupportedOperationException("Utility class");
     }

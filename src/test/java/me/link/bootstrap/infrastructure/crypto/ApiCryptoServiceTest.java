@@ -10,6 +10,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ApiCryptoServiceTest {
 
+    /**
+     * 验证 shouldEncryptAndDecryptText 场景。
+     */
     @Test
     void shouldEncryptAndDecryptText() throws Exception {
         KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");

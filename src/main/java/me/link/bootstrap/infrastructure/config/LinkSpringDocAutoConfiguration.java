@@ -89,6 +89,9 @@ public class LinkSpringDocAutoConfiguration {
     }
 
 
+    /**
+     * 创建 Snake命名ModelResolver Bean。
+     */
     @Bean
     public ModelResolver snakeCaseModelResolver(ObjectMapper objectMapper){
         return new ModelResolver(objectMapper);

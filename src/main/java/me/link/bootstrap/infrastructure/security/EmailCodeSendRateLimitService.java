@@ -35,6 +35,9 @@ public class EmailCodeSendRateLimitService {
     private final LinkSecurityProperties securityProperties;
     private final ClientIpProperties clientIpProperties;
 
+    /**
+     * 检查。
+     */
     public void check(String email) {
         LinkSecurityProperties.EmailCode properties = securityProperties.getEmailCode();
         Duration window = properties.getSendIpEmailWindow();
@@ -56,6 +59,9 @@ public class EmailCodeSendRateLimitService {
         }
     }
 
+    /**
+     * 解析IP。
+     */
     private String clientIp() {
         if (!(RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes attributes)) {
             return "";
@@ -74,12 +80,18 @@ public class EmailCodeSendRateLimitService {
         return StringUtils.defaultIfBlank(ip, request.getRemoteAddr());
     }
 
+    /**
+     * 选择最右侧IP。
+     */
     private String pickRightmostIp(String headerValue) {
         int lastComma = headerValue.lastIndexOf(',');
         String candidate = lastComma >= 0 ? headerValue.substring(lastComma + 1) : headerValue;
         return candidate.trim();
     }
 
+    /**
+     * 计算256。
+     */
     private String sha256(String value) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");

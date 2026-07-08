@@ -43,6 +43,9 @@ public class TenantPackageServiceImpl extends ServiceImpl<TenantPackageMapper, T
             "updated_at", "update_time"
     );
 
+    /**
+     * 创建租户套餐。
+     */
     @Transactional
     public TenantPackageResponseVO create(TenantPackageCreateRequest request) {
         TenantPackagePO tenantPackage = new TenantPackagePO();
@@ -54,10 +57,16 @@ public class TenantPackageServiceImpl extends ServiceImpl<TenantPackageMapper, T
         return toResponse(tenantPackage);
     }
 
+    /**
+     * 查询租户套餐详情。
+     */
     public TenantPackageResponseVO get(Long id) {
         return toResponse(getRequired(id));
     }
 
+    /**
+     * 分页查询租户套餐列表。
+     */
     public PageResult<TenantPackageResponseVO> page(TenantPackagePageRequest request) {
         Page<TenantPackagePO> page = Page.of(request.getPageNo(), request.getPageSize());
         PageOrderHelper.applyOrders(page, request.getSortingFields(), SORT_FIELD_MAPPING);
@@ -68,6 +77,9 @@ public class TenantPackageServiceImpl extends ServiceImpl<TenantPackageMapper, T
         return new PageResult<>(result.getRecords().stream().map(this::toResponse).toList(), result.getTotal());
     }
 
+    /**
+     * 更新租户套餐。
+     */
     @Transactional
     public TenantPackageResponseVO update(Long id, TenantPackageUpdateRequest request) {
         TenantPackagePO tenantPackage = getRequired(id);
@@ -84,11 +96,17 @@ public class TenantPackageServiceImpl extends ServiceImpl<TenantPackageMapper, T
         return get(id);
     }
 
+    /**
+     * 删除租户套餐。
+     */
     @Transactional
     public void delete(Long id) {
         ApplicationAssert.requireSuccess(removeById(id), ErrorCode.TENANT_PACKAGE_NOT_FOUND);
     }
 
+    /**
+     * 规范化名称。
+     */
     private static String normalizeName(String name) {
         if (StrUtil.isBlank(name)) {
             ApplicationAssert.invalidParam("套餐名不能为空");
@@ -100,6 +118,9 @@ public class TenantPackageServiceImpl extends ServiceImpl<TenantPackageMapper, T
         return normalizedName;
     }
 
+    /**
+     * 规范化备注。
+     */
     private static String normalizeRemark(String remark) {
         if (StrUtil.isBlank(remark)) {
             return "";
@@ -111,6 +132,9 @@ public class TenantPackageServiceImpl extends ServiceImpl<TenantPackageMapper, T
         return normalizedRemark;
     }
 
+    /**
+     * 规范化菜单ID集合。
+     */
     private static Set<Long> normalizeMenuIds(Set<Long> menuIds) {
         if (menuIds == null || menuIds.isEmpty()) {
             ApplicationAssert.invalidParam("关联菜单不能为空");
@@ -125,10 +149,16 @@ public class TenantPackageServiceImpl extends ServiceImpl<TenantPackageMapper, T
         return normalizedMenuIds;
     }
 
+    /**
+     * 获取必需的业务对象。
+     */
     private TenantPackagePO getRequired(Long id) {
         return ApplicationAssert.requireFound(getById(id), ErrorCode.TENANT_PACKAGE_NOT_FOUND);
     }
 
+    /**
+     * 转换为响应对象。
+     */
     private TenantPackageResponseVO toResponse(TenantPackagePO source) {
         TenantPackageResponseVO response = BeanUtil.copyProperties(source, TenantPackageResponseVO.class);
         response.setCreatedAt(source.getCreateTime());

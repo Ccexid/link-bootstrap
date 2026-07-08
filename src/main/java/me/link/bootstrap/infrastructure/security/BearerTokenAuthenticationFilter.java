@@ -24,6 +24,9 @@ public class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
     private final SecurityTokenSessionService securityTokenSessionService;
     private final LinkSecurityProperties properties;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -49,6 +52,9 @@ public class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    /**
+     * 解析令牌。
+     */
     private String resolveToken(HttpServletRequest request) {
         String header = request.getHeader(properties.getToken().getTokenName());
         if (header == null || header.isBlank()) {
@@ -63,6 +69,9 @@ public class BearerTokenAuthenticationFilter extends OncePerRequestFilter {
         return token.isEmpty() ? null : token;
     }
 
+    /**
+     * 构建。
+     */
     private List<GrantedAuthority> authorities(SecurityTokenSession session) {
         List<GrantedAuthority> authorities = new ArrayList<>();
         if (session.getPermissions() != null) {

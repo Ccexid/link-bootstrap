@@ -39,6 +39,9 @@ public class MenuController {
 
     private final MenuService menuService;
 
+    /**
+     * 创建菜单。
+     */
     @PostMapping
     @PreAuthorize("hasAuthority('system:menu:create')")
     @Idempotent
@@ -47,6 +50,9 @@ public class MenuController {
         return ResultResponse.success(menuService.create(request));
     }
 
+    /**
+     * 查询菜单详情。
+     */
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('system:menu:query')")
     @Operation(summary = "查询菜单详情", description = "根据ID查询菜单详情")
@@ -54,6 +60,9 @@ public class MenuController {
         return ResultResponse.success(menuService.get(id));
     }
 
+    /**
+     * 分页查询菜单。
+     */
     @GetMapping
     @PreAuthorize("hasAuthority('system:menu:list')")
     @Operation(summary = "分页查询菜单", description = "分页查询菜单列表")
@@ -62,6 +71,9 @@ public class MenuController {
         return ResultTableResponse.success(pageResult.records(), pageResult.total());
     }
 
+    /**
+     * 更新菜单。
+     */
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('system:menu:update')")
     @Idempotent
@@ -71,6 +83,9 @@ public class MenuController {
         return ResultResponse.success(menuService.update(id, request));
     }
 
+    /**
+     * 删除菜单。
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('system:menu:delete')")
     @Operation(summary = "删除菜单", description = "根据ID删除菜单")

@@ -29,6 +29,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GlobalExceptionHandler {
 
+    /**
+     * 处理BusinessException。
+     */
     @ExceptionHandler(BusinessException.class)
     @ResponseStatus(HttpStatus.OK)
     public ResultResponse<Void> handleBusinessException(BusinessException e, HttpServletRequest request) {
@@ -37,6 +40,9 @@ public class GlobalExceptionHandler {
         return ResultResponse.failure(e.getErrorCode(), e.getMessage());
     }
 
+    /**
+     * 处理校验异常。
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResultResponse<Void> handleValidationException(MethodArgumentNotValidException e, HttpServletRequest request) {
@@ -49,6 +55,9 @@ public class GlobalExceptionHandler {
         return ResultResponse.failure(ErrorCode.PARAM_VALIDATION_ERROR, message);
     }
 
+    /**
+     * 处理BindException。
+     */
     @ExceptionHandler(BindException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResultResponse<Void> handleBindException(BindException e, HttpServletRequest request) {
@@ -61,6 +70,9 @@ public class GlobalExceptionHandler {
         return ResultResponse.failure(ErrorCode.PARAM_VALIDATION_ERROR, message);
     }
 
+    /**
+     * 处理ConstraintViolationException。
+     */
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResultResponse<Void> handleConstraintViolationException(ConstraintViolationException e, HttpServletRequest request) {
@@ -73,6 +85,9 @@ public class GlobalExceptionHandler {
         return ResultResponse.failure(ErrorCode.PARAM_VALIDATION_ERROR, message);
     }
 
+    /**
+     * 处理IllegalArgumentException。
+     */
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResultResponse<Void> handleIllegalArgumentException(IllegalArgumentException e, HttpServletRequest request) {
@@ -81,6 +96,9 @@ public class GlobalExceptionHandler {
         return ResultResponse.failure(ErrorCode.PARAM_VALIDATION_ERROR, e.getMessage());
     }
 
+    /**
+     * 处理MissingParamException。
+     */
     @ExceptionHandler(MissingServletRequestParameterException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResultResponse<Void> handleMissingParamException(MissingServletRequestParameterException e, HttpServletRequest request) {
@@ -91,6 +109,9 @@ public class GlobalExceptionHandler {
                 "缺少必要参数: " + e.getParameterName());
     }
 
+    /**
+     * 处理认证Exception。
+     */
     @ExceptionHandler(AuthenticationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResultResponse<Void> handleAuthenticationException(AuthenticationException e, HttpServletRequest request) {
@@ -98,6 +119,9 @@ public class GlobalExceptionHandler {
         return ResultResponse.failure(ErrorCode.UNAUTHORIZED, "未登录或登录已失效");
     }
 
+    /**
+     * 处理访问DeniedException。
+     */
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResultResponse<Void> handleAccessDeniedException(AccessDeniedException e, HttpServletRequest request) {
@@ -105,6 +129,9 @@ public class GlobalExceptionHandler {
         return ResultResponse.failure(ErrorCode.FORBIDDEN, "无权访问该资源");
     }
 
+    /**
+     * 处理MethodNotSupportedException。
+     */
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     public ResultResponse<Void> handleMethodNotSupportedException(HttpRequestMethodNotSupportedException e, HttpServletRequest request) {
@@ -115,6 +142,9 @@ public class GlobalExceptionHandler {
                 "不支持的请求方法: " + e.getMethod());
     }
 
+    /**
+     * 处理NoResourceFoundException。
+     */
     @ExceptionHandler(NoResourceFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResultResponse<Void> handleNoResourceFoundException(NoResourceFoundException e, HttpServletRequest request) {
@@ -123,6 +153,9 @@ public class GlobalExceptionHandler {
         return ResultResponse.failure(ErrorCode.NOT_FOUND, "请求的资源不存在");
     }
 
+    /**
+     * 处理异常。
+     */
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResultResponse<Void> handleException(Exception e, HttpServletRequest request) {

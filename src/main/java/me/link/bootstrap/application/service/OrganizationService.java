@@ -10,9 +10,24 @@ import me.link.bootstrap.shared.kernel.valueobject.PageResult;
 
 public interface OrganizationService extends IService<OrganizationPO> {
 
+    /**
+     * 创建组织。
+     */
     OrganizationResponseVO create(OrganizationCreateRequest request);
+    /**
+     * 查询组织详情。
+     */
     OrganizationResponseVO get(Long id);
+    /**
+     * 分页查询组织列表。
+     */
     PageResult<OrganizationResponseVO> page(OrganizationPageRequest request);
+    /**
+     * 更新组织。
+     */
     OrganizationResponseVO update(Long id, OrganizationUpdateRequest request);
+    /**
+     * 删除组织。
+     */
     void delete(Long id);
 }

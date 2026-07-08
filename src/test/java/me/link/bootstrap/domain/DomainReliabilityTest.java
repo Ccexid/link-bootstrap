@@ -10,6 +10,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class DomainReliabilityTest {
 
+    /**
+     * 验证 pageResultShouldNormalizeNullValues 场景。
+     */
     @Test
     void pageResultShouldNormalizeNullValues() {
         PageResult<String> pageResult = new PageResult<>(null, null);
@@ -18,6 +21,9 @@ class DomainReliabilityTest {
         assertThat(pageResult.total()).isZero();
     }
 
+    /**
+     * 验证 pageResultShouldProtectRecordsFromExternalMutation 场景。
+     */
     @Test
     void pageResultShouldProtectRecordsFromExternalMutation() {
         List<String> records = new java.util.ArrayList<>();

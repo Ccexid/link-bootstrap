@@ -39,6 +39,9 @@ public class CommunityPostController {
 
     private final CommunityPostService communityPostService;
 
+    /**
+     * 创建社区帖子。
+     */
     @Idempotent
     @PostMapping
     @PreAuthorize("hasAuthority('community:post:create')")
@@ -47,12 +50,18 @@ public class CommunityPostController {
         return ResultResponse.success(communityPostService.create(request));
     }
 
+    /**
+     * 获取社区帖子详情。
+     */
     @GetMapping("/{id}")
     @Operation(summary = "获取社区帖子详情")
     public ResultResponse<CommunityPostResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         return ResultResponse.success(communityPostService.get(id));
     }
 
+    /**
+     * 分页查询社区帖子。
+     */
     @GetMapping
     @Operation(summary = "分页查询社区帖子")
     public ResultTableResponse<CommunityPostResponseVO> page(@Validated @SortWhitelist(CommunityPostResponseVO.class) CommunityPostPageRequest request) {
@@ -60,6 +69,9 @@ public class CommunityPostController {
         return ResultTableResponse.success(pageResult.records(), pageResult.total());
     }
 
+    /**
+     * 更新本人社区帖子。
+     */
     @Idempotent
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('community:post:update')")
@@ -68,6 +80,9 @@ public class CommunityPostController {
         return ResultResponse.success(communityPostService.update(id, request));
     }
 
+    /**
+     * 删除本人社区帖子。
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('community:post:delete')")
     @Operation(summary = "删除本人社区帖子")

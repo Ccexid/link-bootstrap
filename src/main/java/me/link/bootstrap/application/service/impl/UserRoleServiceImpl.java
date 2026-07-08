@@ -56,6 +56,9 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRolePO>
     private final RoleService roleService;
     private final PermissionCacheService permissionCacheService;
 
+    /**
+     * 创建用户角色。
+     */
     @Transactional
     public UserRoleResponseVO create(UserRoleCreateRequest request) {
         Long tenantId = SecurityHelper.getRequiredTenantId();
@@ -67,10 +70,16 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRolePO>
         return toResponse(userRole);
     }
 
+    /**
+     * 查询用户角色详情。
+     */
     public UserRoleResponseVO get(Long id) {
         return toResponse(getRequired(id));
     }
 
+    /**
+     * 分页查询用户角色列表。
+     */
     public PageResult<UserRoleResponseVO> page(UserRolePageRequest request) {
         Page<UserRolePO> page = Page.of(request.getPageNo(), request.getPageSize());
         PageOrderHelper.applyOrders(page, request.getSortingFields(), SORT_FIELD_MAPPING);
@@ -82,6 +91,9 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRolePO>
         return new PageResult<>(result.getRecords().stream().map(this::toResponse).toList(), result.getTotal());
     }
 
+    /**
+     * 更新用户角色。
+     */
     @Transactional
     public UserRoleResponseVO update(Long id, UserRoleUpdateRequest request) {
         UserRolePO userRole = getRequired(id);
@@ -127,6 +139,9 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRolePO>
         permissionCacheService.evictByUserId(request.getUserId());
     }
 
+    /**
+     * 删除用户角色。
+     */
     @Transactional
     public void delete(Long id) {
         // 先 get 拿 userId 用于 evict,再删除
@@ -135,12 +150,18 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRolePO>
         permissionCacheService.evictByUserId(userRole.getUserId());
     }
 
+    /**
+     * 创建PO。
+     */
     private static UserRolePO createPO(Long userId, Long roleId, Long tenantId) {
         UserRolePO userRole = new UserRolePO();
         applyMutableFields(userRole, userId, roleId, tenantId);
         return userRole;
     }
 
+    /**
+     * 校验References。
+     */
     private void validateReferences(Long userId, Long roleId, Long tenantId) {
         if (userId == null || userId <= 0) {
             ApplicationAssert.invalidParam("用户角色关联userId必须大于0");
@@ -152,6 +173,9 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRolePO>
         validateRoleInCurrentTenant(roleId, tenantId);
     }
 
+    /**
+     * 校验用户In当前租户。
+     */
     private void validateUserInCurrentTenant(Long userId, Long tenantId) {
         UserPO user = userService.getById(userId);
         if (user == null || !Objects.equals(user.getTenantId(), tenantId)) {
@@ -159,6 +183,9 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRolePO>
         }
     }
 
+    /**
+     * 校验角色In当前租户。
+     */
     private void validateRoleInCurrentTenant(Long roleId, Long tenantId) {
         RolePO role = roleService.getById(roleId);
         if (role == null || !Objects.equals(role.getTenantId(), tenantId)) {
@@ -166,6 +193,9 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRolePO>
         }
     }
 
+    /**
+     * 校验角色ID集合In当前租户。
+     */
     private void validateRoleIdsInCurrentTenant(List<Long> roleIds, Long tenantId) {
         for (Long roleId : roleIds) {
             if (roleId == null || roleId <= 0) {
@@ -175,6 +205,9 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRolePO>
         }
     }
 
+    /**
+     * 校验UniqueBinding。
+     */
     private void validateUniqueBinding(Long userId, Long roleId, Long tenantId, Long excludeId) {
         boolean exists = exists(new LambdaQueryWrapper<UserRolePO>()
                 .eq(UserRolePO::getUserId, userId)
@@ -186,6 +219,9 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRolePO>
         }
     }
 
+    /**
+     * 应用可变字段。
+     */
     private static void applyMutableFields(UserRolePO userRole, Long userId, Long roleId, Long tenantId) {
         if (userId == null || userId <= 0) {
             ApplicationAssert.invalidParam("用户角色关联userId必须大于0");
@@ -201,10 +237,16 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRolePO>
         userRole.setTenantId(tenantId);
     }
 
+    /**
+     * 获取必需的业务对象。
+     */
     private UserRolePO getRequired(Long id) {
         return ApplicationAssert.requireFound(getById(id), ErrorCode.USER_ROLE_NOT_FOUND);
     }
 
+    /**
+     * 转换为响应对象。
+     */
     private UserRoleResponseVO toResponse(UserRolePO source) {
         UserRoleResponseVO response = BeanUtil.copyProperties(source, UserRoleResponseVO.class);
         response.setCreatedAt(source.getCreateTime());

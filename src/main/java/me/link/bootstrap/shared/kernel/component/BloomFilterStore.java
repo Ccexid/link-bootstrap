@@ -7,8 +7,14 @@ import org.redisson.api.RBloomFilter;
  */
 public interface BloomFilterStore<T> {
 
+    /**
+     * 获取BloomFilter。
+     */
     RBloomFilter<T> getBloomFilter();
 
+    /**
+     * 处理缺失。
+     */
     default boolean missing(T value) {
         RBloomFilter<T> bloomFilter = getBloomFilter();
         return bloomFilter == null || !bloomFilter.contains(value);

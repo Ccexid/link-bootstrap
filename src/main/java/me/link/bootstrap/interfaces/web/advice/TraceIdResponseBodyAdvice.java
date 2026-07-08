@@ -51,6 +51,9 @@ public class TraceIdResponseBodyAdvice implements ResponseBodyAdvice<Object> {
         return body;
     }
 
+    /**
+     * 解析链路追踪ID。
+     */
     private String resolveTraceId(ServerHttpRequest request, ServerHttpResponse response) {
         Object traceId = request instanceof ServletServerHttpRequest servletRequest
                 ? servletRequest.getServletRequest().getAttribute(TRACE_ID_HEADER)

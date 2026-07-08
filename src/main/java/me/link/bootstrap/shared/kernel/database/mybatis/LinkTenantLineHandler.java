@@ -44,6 +44,9 @@ public class LinkTenantLineHandler implements TenantLineHandler {
             "system_tenant_package"
     );
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Expression getTenantId() {
         Long tenantId = SecurityHelper.getTenantId();
@@ -54,6 +57,9 @@ public class LinkTenantLineHandler implements TenantLineHandler {
         return new LongValue(tenantId);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getTenantIdColumn() {
         return "tenant_id";

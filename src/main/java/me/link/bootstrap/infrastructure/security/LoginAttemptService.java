@@ -71,6 +71,9 @@ public class LoginAttemptService {
         return redissonClient.getAtomicLong(buildKey(username, tenantId)).get();
     }
 
+    /**
+     * 构建键。
+     */
     private String buildKey(String username, Long tenantId) {
         return KEY_PREFIX + tenantId + ":" + username;
     }

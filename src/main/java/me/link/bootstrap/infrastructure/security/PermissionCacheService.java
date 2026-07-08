@@ -123,10 +123,16 @@ public class PermissionCacheService {
         log.warn("权限缓存全量失效: perm 删除={}, role-code 删除={}", permRemoved, roleRemoved);
     }
 
+    /**
+     * 构建权限键。
+     */
     private String permKey(Long userId) {
         return KEY_PREFIX_PERM + userId;
     }
 
+    /**
+     * 构建角色键。
+     */
     private String roleKey(Long userId) {
         return KEY_PREFIX_ROLE_CODE + userId;
     }

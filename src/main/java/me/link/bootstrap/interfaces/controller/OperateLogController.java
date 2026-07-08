@@ -31,6 +31,9 @@ public class OperateLogController {
 
     private final OperateLogService operateLogService;
 
+    /**
+     * 查询操作日志详情。
+     */
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('system:operate-log:query')")
     @Operation(summary = "查询操作日志详情", description = "根据ID查询操作日志详情")
@@ -38,6 +41,9 @@ public class OperateLogController {
         return ResultResponse.success(operateLogService.get(id));
     }
 
+    /**
+     * 分页查询操作日志。
+     */
     @GetMapping
     @PreAuthorize("hasAuthority('system:operate-log:list')")
     @Operation(summary = "分页查询操作日志", description = "分页查询操作日志列表")

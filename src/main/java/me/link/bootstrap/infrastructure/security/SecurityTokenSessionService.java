@@ -30,6 +30,9 @@ public class SecurityTokenSessionService {
     private final Clock clock;
     private final SecureRandom secureRandom = new SecureRandom();
 
+    /**
+     * 创建安全令牌会话。
+     */
     public SecurityTokenSession create(UserPO user) {
         long now = nowEpochSecond();
         List<String> roles = permissionCacheService.getRoleCodes(user.getId());
@@ -50,6 +53,9 @@ public class SecurityTokenSessionService {
         return session;
     }
 
+    /**
+     * 加载安全令牌会话。
+     */
     public Optional<SecurityTokenSession> load(String token) {
         if (token == null || token.isBlank()) {
             return Optional.empty();
@@ -72,6 +78,9 @@ public class SecurityTokenSessionService {
         return Optional.of(session);
     }
 
+    /**
+     * 刷新。
+     */
     public SecurityTokenSession refresh(String token) {
         RBucket<SecurityTokenSession> bucket = bucket(token);
         SecurityTokenSession session = bucket.get();
@@ -86,6 +95,9 @@ public class SecurityTokenSessionService {
         return session;
     }
 
+    /**
+     * 撤销。
+     */
     public void revoke(String token) {
         if (token == null || token.isBlank()) {
             return;
@@ -93,6 +105,9 @@ public class SecurityTokenSessionService {
         bucket(token).delete();
     }
 
+    /**
+     * 转换为令牌响应。
+     */
     public TokenResponseVO toTokenResponse(SecurityTokenSession session) {
         long now = nowEpochSecond();
         return new TokenResponseVO(
@@ -104,6 +119,9 @@ public class SecurityTokenSessionService {
         );
     }
 
+    /**
+     * 转换为主体。
+     */
     public LoginUserPrincipal toPrincipal(SecurityTokenSession session) {
         return new LoginUserPrincipal(
                 session.getUserId(),
@@ -115,41 +133,68 @@ public class SecurityTokenSessionService {
         );
     }
 
+    /**
+     * 判断过期是否成立。
+     */
     private boolean isExpired(SecurityTokenSession session, long now) {
         return session.getExpireAtEpochSecond() <= now
                 || session.getLastActiveAtEpochSecond() + activeTimeoutSeconds() <= now;
     }
 
+    /**
+     * 安全转换List。
+     */
     private List<String> safeList(List<String> values) {
         return values == null ? List.of() : List.copyOf(values);
     }
 
+    /**
+     * 计算剩余绝对TTL。
+     */
     private Duration remainingAbsoluteTtl(SecurityTokenSession session, long now) {
         return Duration.ofSeconds(Math.max(1, session.getExpireAtEpochSecond() - now));
     }
 
+    /**
+     * 获取。
+     */
     private RBucket<SecurityTokenSession> bucket(String token) {
         return redissonClient.getBucket(properties.getToken().getKeyPrefix() + token);
     }
 
+    /**
+     * 生成令牌。
+     */
     private String generateToken() {
         byte[] bytes = new byte[TOKEN_BYTES];
         secureRandom.nextBytes(bytes);
         return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
 
+    /**
+     * 获取当前EpochSecond。
+     */
     private long nowEpochSecond() {
         return Instant.now(clock).getEpochSecond();
     }
 
+    /**
+     * 计算。
+     */
     private Duration timeout() {
         return properties.getToken().getTimeout();
     }
 
+    /**
+     * 计算Seconds。
+     */
     private long timeoutSeconds() {
         return timeout().toSeconds();
     }
 
+    /**
+     * 计算活跃TimeoutSeconds。
+     */
     private long activeTimeoutSeconds() {
         return properties.getToken().getActiveTimeout().toSeconds();
     }

@@ -51,6 +51,9 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
     );
     private final MobileCryptoService mobileCryptoService;
 
+    /**
+     * 创建组织。
+     */
     @Transactional
     public OrganizationResponseVO create(OrganizationCreateRequest request) {
         OrganizationPO organization = new OrganizationPO();
@@ -60,10 +63,16 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
         return toResponse(organization);
     }
 
+    /**
+     * 查询组织详情。
+     */
     public OrganizationResponseVO get(Long id) {
         return toResponse(getRequired(id));
     }
 
+    /**
+     * 分页查询组织列表。
+     */
     public PageResult<OrganizationResponseVO> page(OrganizationPageRequest request) {
         Page<OrganizationPO> page = Page.of(request.getPageNo(), request.getPageSize());
         PageOrderHelper.applyOrders(page, request.getSortingFields(), SORT_FIELD_MAPPING);
@@ -77,6 +86,9 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
         return new PageResult<>(result.getRecords().stream().map(this::toResponse).toList(), result.getTotal());
     }
 
+    /**
+     * 更新组织。
+     */
     @Transactional
     public OrganizationResponseVO update(Long id, OrganizationUpdateRequest request) {
         OrganizationPO organization = getRequired(id);
@@ -86,11 +98,17 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
         return get(id);
     }
 
+    /**
+     * 删除组织。
+     */
     @Transactional
     public void delete(Long id) {
         ApplicationAssert.requireSuccess(removeById(id), ErrorCode.ORGANIZATION_NOT_FOUND);
     }
 
+    /**
+     * 应用可变字段。
+     */
     private void applyMutableFields(OrganizationPO organization,
                                     String name,
                                     Integer orgType,
@@ -114,6 +132,9 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
         applyContactMobileProtection(organization, normalizedContactMobile);
     }
 
+    /**
+     * 规范化联系手机号。
+     */
     private static String normalizeContactMobile(String contactMobile) {
         if (StrUtil.isBlank(contactMobile)) {
             return null;
@@ -125,6 +146,9 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
         return normalizedContactMobile;
     }
 
+    /**
+     * 应用联系手机号Protection。
+     */
     private void applyContactMobileProtection(OrganizationPO organization, String contactMobile) {
         ProtectedMobile protectedMobile = mobileCryptoService.protect(contactMobile);
         organization.setContactMobileCipher(protectedMobile.cipher());
@@ -133,10 +157,16 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
         organization.setContactMobileKeyVersion(protectedMobile.keyVersion());
     }
 
+    /**
+     * 获取必需的业务对象。
+     */
     private OrganizationPO getRequired(Long id) {
         return ApplicationAssert.requireFound(getById(id), ErrorCode.ORGANIZATION_NOT_FOUND);
     }
 
+    /**
+     * 转换为响应对象。
+     */
     private OrganizationResponseVO toResponse(OrganizationPO source) {
         OrganizationResponseVO response = BeanUtil.copyProperties(source, OrganizationResponseVO.class);
         response.setContactMobile(source.getContactMobileMask());

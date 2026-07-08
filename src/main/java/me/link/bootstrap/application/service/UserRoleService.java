@@ -14,10 +14,28 @@ import me.link.bootstrap.shared.kernel.valueobject.PageResult;
 
 public interface UserRoleService extends IService<UserRolePO> {
 
+    /**
+     * 创建用户角色。
+     */
     UserRoleResponseVO create(UserRoleCreateRequest request);
+    /**
+     * 查询用户角色详情。
+     */
     UserRoleResponseVO get(Long id);
+    /**
+     * 分页查询用户角色列表。
+     */
     PageResult<UserRoleResponseVO> page(UserRolePageRequest request);
+    /**
+     * 更新用户角色。
+     */
     UserRoleResponseVO update(Long id, UserRoleUpdateRequest request);
+    /**
+     * 分配。
+     */
     void assign(UserRoleAssignRequest request);
+    /**
+     * 删除用户角色。
+     */
     void delete(Long id);
 }

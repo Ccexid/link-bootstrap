@@ -9,6 +9,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class LinkMainApplication {
 
+    /**
+     * 启动 Link Bootstrap 应用。
+     */
     public static void main(String[] args) {
         SpringApplication.run(LinkMainApplication.class, args);
     }

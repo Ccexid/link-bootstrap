@@ -39,6 +39,9 @@ public class CommunityCommentController {
 
     private final CommunityCommentService communityCommentService;
 
+    /**
+     * 创建社区评论或回复。
+     */
     @Idempotent
     @PostMapping
     @PreAuthorize("hasAuthority('community:comment:create')")
@@ -47,12 +50,18 @@ public class CommunityCommentController {
         return ResultResponse.success(communityCommentService.create(request));
     }
 
+    /**
+     * 获取社区评论详情。
+     */
     @GetMapping("/{id}")
     @Operation(summary = "获取社区评论详情")
     public ResultResponse<CommunityCommentResponseVO> get(@PathVariable @NotNull(message = "ID不能为空") Long id) {
         return ResultResponse.success(communityCommentService.get(id));
     }
 
+    /**
+     * 分页查询社区评论。
+     */
     @GetMapping
     @Operation(summary = "分页查询社区评论")
     public ResultTableResponse<CommunityCommentResponseVO> page(@Validated @SortWhitelist(CommunityCommentResponseVO.class) CommunityCommentPageRequest request) {
@@ -60,6 +69,9 @@ public class CommunityCommentController {
         return ResultTableResponse.success(pageResult.records(), pageResult.total());
     }
 
+    /**
+     * 更新本人社区评论。
+     */
     @Idempotent
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('community:comment:update')")
@@ -68,6 +80,9 @@ public class CommunityCommentController {
         return ResultResponse.success(communityCommentService.update(id, request));
     }
 
+    /**
+     * 删除本人社区评论。
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('community:comment:delete')")
     @Operation(summary = "删除本人社区评论")

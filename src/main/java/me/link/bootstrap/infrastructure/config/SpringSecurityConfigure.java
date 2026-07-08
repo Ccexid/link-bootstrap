@@ -48,6 +48,9 @@ public class SpringSecurityConfigure {
 
     private final ObjectMapper objectMapper;
 
+    /**
+     * 创建 用户详情Service Bean。
+     */
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> {
@@ -55,6 +58,9 @@ public class SpringSecurityConfigure {
         };
     }
 
+    /**
+     * 创建 SecurityFilter链 Bean。
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
@@ -78,16 +84,25 @@ public class SpringSecurityConfigure {
         return http.build();
     }
 
+    /**
+     * 创建认证入口Point。
+     */
     private AuthenticationEntryPoint authenticationEntryPoint() {
         return (request, response, authException) ->
                 writeFailure(response, HttpServletResponse.SC_UNAUTHORIZED, ErrorCode.UNAUTHORIZED, "未登录或登录已失效");
     }
 
+    /**
+     * 创建访问DeniedHandler。
+     */
     private AccessDeniedHandler accessDeniedHandler() {
         return (request, response, accessDeniedException) ->
                 writeFailure(response, HttpServletResponse.SC_FORBIDDEN, ErrorCode.FORBIDDEN, "无权访问该资源");
     }
 
+    /**
+     * 写入失败。
+     */
     private void writeFailure(
             HttpServletResponse response,
             int status,

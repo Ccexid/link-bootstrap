@@ -11,9 +11,24 @@ import me.link.bootstrap.shared.kernel.valueobject.PageResult;
 
 public interface CommunityCommentService extends IService<CommunityCommentPO> {
 
+    /**
+     * 创建社区评论。
+     */
     CommunityCommentResponseVO create(CommunityCommentCreateRequest request);
+    /**
+     * 查询社区评论详情。
+     */
     CommunityCommentResponseVO get(Long id);
+    /**
+     * 分页查询社区评论列表。
+     */
     PageResult<CommunityCommentResponseVO> page(CommunityCommentPageRequest request);
+    /**
+     * 更新社区评论。
+     */
     CommunityCommentResponseVO update(Long id, CommunityCommentUpdateRequest request);
+    /**
+     * 删除社区评论。
+     */
     void delete(Long id);
 }

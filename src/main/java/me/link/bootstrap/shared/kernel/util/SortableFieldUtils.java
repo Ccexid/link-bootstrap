@@ -15,9 +15,15 @@ import java.util.Set;
  */
 public final class SortableFieldUtils {
 
+    /**
+     * 创建排序字段实例。
+     */
     private SortableFieldUtils() {
     }
 
+    /**
+     * 解析Sortable字段。
+     */
     public static List<String> parseSortableFields(Class<?> clazz) {
         Set<String> fieldsSet = new LinkedHashSet<>();
         Class<?> currentClass = clazz;

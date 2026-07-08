@@ -10,6 +10,9 @@ import java.util.Optional;
  */
 public final class ApplicationAssert {
 
+    /**
+     * 禁止实例化 ApplicationAssert 工具类。
+     */
     private ApplicationAssert() {
     }
 
@@ -20,6 +23,9 @@ public final class ApplicationAssert {
         return optional.orElseThrow(() -> new BusinessException(errorCode));
     }
 
+    /**
+     * 获取业务对象,不存在时抛出指定业务错误码。
+     */
     public static <T> T requireFound(T value, ErrorCode errorCode) {
         if (value == null) {
             throw new BusinessException(errorCode);

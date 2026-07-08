@@ -51,6 +51,9 @@ public class CommunityCommentServiceImpl extends ServiceImpl<CommunityCommentMap
     );
     private final CommunityPostService communityPostService;
 
+    /**
+     * 创建社区评论。
+     */
     @Transactional
     public CommunityCommentResponseVO create(CommunityCommentCreateRequest request) {
         Long tenantId = SecurityHelper.getRequiredTenantId();
@@ -77,12 +80,18 @@ public class CommunityCommentServiceImpl extends ServiceImpl<CommunityCommentMap
         return toResponse(comment);
     }
 
+    /**
+     * 查询社区评论详情。
+     */
     public CommunityCommentResponseVO get(Long id) {
         CommunityCommentPO comment = ApplicationAssert.requireFound(getById(id), ErrorCode.COMMUNITY_COMMENT_NOT_FOUND);
         ensureCurrentTenant(comment, SecurityHelper.getRequiredTenantId());
         return toResponse(comment);
     }
 
+    /**
+     * 分页查询社区评论列表。
+     */
     public PageResult<CommunityCommentResponseVO> page(CommunityCommentPageRequest request) {
         Long tenantId = SecurityHelper.getRequiredTenantId();
         if (request.getPostId() != null) {
@@ -102,6 +111,9 @@ public class CommunityCommentServiceImpl extends ServiceImpl<CommunityCommentMap
         return new PageResult<>(result.getRecords().stream().map(this::toResponse).toList(), result.getTotal());
     }
 
+    /**
+     * 更新社区评论。
+     */
     @Transactional
     public CommunityCommentResponseVO update(Long id, CommunityCommentUpdateRequest request) {
         CommunityCommentPO comment = getRequired(id);
@@ -111,6 +123,9 @@ public class CommunityCommentServiceImpl extends ServiceImpl<CommunityCommentMap
         return get(id);
     }
 
+    /**
+     * 删除社区评论。
+     */
     @Transactional
     public void delete(Long id) {
         CommunityCommentPO comment = getRequired(id);
@@ -122,6 +137,9 @@ public class CommunityCommentServiceImpl extends ServiceImpl<CommunityCommentMap
         }
     }
 
+    /**
+     * 校验并获取帖子。
+     */
     private CommunityPostPO requirePost(Long postId, Long tenantId) {
         CommunityPostPO post = communityPostService.getById(postId);
         if (post == null || !Objects.equals(post.getTenantId(), tenantId) || post.getStatus() == StatusEnum.DISABLE) {
@@ -130,6 +148,9 @@ public class CommunityCommentServiceImpl extends ServiceImpl<CommunityCommentMap
         return post;
     }
 
+    /**
+     * 校验并获取父级。
+     */
     private CommunityCommentPO requireParent(Long parentId, CommunityPostPO post, Long tenantId) {
         if (parentId == null || parentId == 0) {
             return null;
@@ -147,6 +168,9 @@ public class CommunityCommentServiceImpl extends ServiceImpl<CommunityCommentMap
         return parent;
     }
 
+    /**
+     * 解析RootID。
+     */
     private static Long resolveRootId(CommunityCommentPO parent) {
         if (parent.getRootId() == null || parent.getRootId() == 0) {
             return parent.getId();
@@ -154,12 +178,18 @@ public class CommunityCommentServiceImpl extends ServiceImpl<CommunityCommentMap
         return parent.getRootId();
     }
 
+    /**
+     * 递增帖子评论数量。
+     */
     private void incrementPostCommentCount(Long postId) {
         communityPostService.update(new UpdateWrapper<CommunityPostPO>()
                 .eq("id", postId)
                 .setSql("comment_count = comment_count + 1"));
     }
 
+    /**
+     * 递减帖子评论数量。
+     */
     private void decrementPostCommentCount(Long postId) {
         communityPostService.update(new UpdateWrapper<CommunityPostPO>()
                 .eq("id", postId)
@@ -167,12 +197,18 @@ public class CommunityCommentServiceImpl extends ServiceImpl<CommunityCommentMap
                 .setSql("comment_count = comment_count - 1"));
     }
 
+    /**
+     * 递增父级回复数量。
+     */
     private void incrementParentReplyCount(Long parentId) {
         update(new UpdateWrapper<CommunityCommentPO>()
                 .eq("id", parentId)
                 .setSql("reply_count = reply_count + 1"));
     }
 
+    /**
+     * 递减父级回复数量。
+     */
     private void decrementParentReplyCount(Long parentId) {
         update(new UpdateWrapper<CommunityCommentPO>()
                 .eq("id", parentId)
@@ -180,18 +216,27 @@ public class CommunityCommentServiceImpl extends ServiceImpl<CommunityCommentMap
                 .setSql("reply_count = reply_count - 1"));
     }
 
+    /**
+     * 确保当前租户。
+     */
     private static void ensureCurrentTenant(CommunityCommentPO comment, Long tenantId) {
         if (!Objects.equals(comment.getTenantId(), tenantId)) {
             throw new BusinessException(ErrorCode.COMMUNITY_COMMENT_NOT_FOUND);
         }
     }
 
+    /**
+     * 确保Author。
+     */
     private static void ensureAuthor(CommunityCommentPO comment, Long userId) {
         if (!Objects.equals(comment.getAuthorId(), userId)) {
             throw new BusinessException(ErrorCode.FORBIDDEN, "只能操作本人评论");
         }
     }
 
+    /**
+     * 规范化内容。
+     */
     private static String normalizeContent(String content) {
         if (StrUtil.isBlank(content)) {
             ApplicationAssert.invalidParam("评论内容不能为空");
@@ -199,10 +244,16 @@ public class CommunityCommentServiceImpl extends ServiceImpl<CommunityCommentMap
         return content.trim();
     }
 
+    /**
+     * 获取必需的业务对象。
+     */
     private CommunityCommentPO getRequired(Long id) {
         return ApplicationAssert.requireFound(getById(id), ErrorCode.COMMUNITY_COMMENT_NOT_FOUND);
     }
 
+    /**
+     * 转换为响应对象。
+     */
     private CommunityCommentResponseVO toResponse(CommunityCommentPO source) {
         CommunityCommentResponseVO response = BeanUtil.copyProperties(source, CommunityCommentResponseVO.class);
         response.setCreatedAt(source.getCreateTime());

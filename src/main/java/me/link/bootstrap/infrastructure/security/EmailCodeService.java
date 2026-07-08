@@ -104,6 +104,9 @@ public class EmailCodeService {
         redissonClient.getAtomicLong(attemptKey(emailKey)).delete();
     }
 
+    /**
+     * 记录Verify失败。
+     */
     private long recordVerifyFailure(String emailKey, int maxVerifyAttempts, Duration ttl) {
         RAtomicLong counter = redissonClient.getAtomicLong(attemptKey(emailKey));
         long failures = counter.incrementAndGet();
@@ -116,6 +119,9 @@ public class EmailCodeService {
         return failures;
     }
 
+    /**
+     * 发送Mail。
+     */
     private void sendMail(String email, String code, LinkSecurityProperties.EmailCode properties) {
         JavaMailSender mailSender = mailSenderProvider.getIfAvailable();
         if (mailSender == null) {
@@ -143,6 +149,9 @@ public class EmailCodeService {
         }
     }
 
+    /**
+     * 构建MailText。
+     */
     private String buildMailText(String code, LinkSecurityProperties.EmailCode properties) {
         long ttlMinutes = Math.max(1L, properties.getTtl().toMinutes());
         return """
@@ -153,6 +162,9 @@ public class EmailCodeService {
                 """.formatted(code, ttlMinutes);
     }
 
+    /**
+     * 构建MailHTML。
+     */
     private String buildMailHtml(String code, LinkSecurityProperties.EmailCode properties) {
         long ttlMinutes = Math.max(1L, properties.getTtl().toMinutes());
         String rawSystemName = StringUtils.defaultIfBlank(properties.getSystemName(), "Link Platform");
@@ -209,6 +221,9 @@ public class EmailCodeService {
                 """.formatted(systemName, escapedCode, ttlMinutes, year, companyName);
     }
 
+    /**
+     * 设置From。
+     */
     private void setFrom(MimeMessageHelper helper, String from, String senderName)
             throws MessagingException, UnsupportedEncodingException {
         String normalizedSenderName = StringUtils.trimToNull(senderName);
@@ -219,6 +234,9 @@ public class EmailCodeService {
         helper.setFrom(from, normalizedSenderName);
     }
 
+    /**
+     * 转义HTML。
+     */
     private String escapeHtml(String value) {
         if (value == null) {
             return "";
@@ -231,27 +249,45 @@ public class EmailCodeService {
                 .replace("'", "&#39;");
     }
 
+    /**
+     * 生成编码。
+     */
     private String generateCode(int length) {
         int bound = (int) Math.pow(10, length);
         return String.format("%0" + length + "d", SECURE_RANDOM.nextInt(bound));
     }
 
+    /**
+     * 规范化邮箱。
+     */
     private String normalizeEmail(String email) {
         return StringUtils.trimToEmpty(email);
     }
 
+    /**
+     * 构建邮箱键。
+     */
     private String emailKey(String email) {
         return sha256Hex(email);
     }
 
+    /**
+     * 构建验证码键。
+     */
     private String codeKey(String emailKey) {
         return CODE_KEY_PREFIX + emailKey;
     }
 
+    /**
+     * 构建尝试键。
+     */
     private String attemptKey(String emailKey) {
         return ATTEMPT_KEY_PREFIX + emailKey;
     }
 
+    /**
+     * 签名。
+     */
     private String sign(String email, String code, String secret) {
         try {
             Mac mac = Mac.getInstance(HMAC_ALGORITHM);
@@ -262,6 +298,9 @@ public class EmailCodeService {
         }
     }
 
+    /**
+     * 计算256Hex。
+     */
     private String sha256Hex(String value) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -271,6 +310,9 @@ public class EmailCodeService {
         }
     }
 
+    /**
+     * 校验Properties。
+     */
     private void validateProperties(LinkSecurityProperties.EmailCode properties) {
         if (properties.getLength() < 4 || properties.getLength() > 8) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "邮箱验证码长度必须在 4 到 8 位之间");

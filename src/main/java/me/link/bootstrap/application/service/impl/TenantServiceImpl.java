@@ -50,6 +50,9 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, TenantPO> imple
     );
     private final MobileCryptoService mobileCryptoService;
 
+    /**
+     * 创建租户。
+     */
     @Transactional
     public TenantResponseVO create(TenantCreateRequest request) {
         TenantPO tenant = new TenantPO();
@@ -66,10 +69,16 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, TenantPO> imple
         return toResponse(tenant);
     }
 
+    /**
+     * 查询租户详情。
+     */
     public TenantResponseVO get(Long id) {
         return toResponse(getRequired(id));
     }
 
+    /**
+     * 分页查询租户列表。
+     */
     public PageResult<TenantResponseVO> page(TenantPageRequest request) {
         Page<TenantPO> page = Page.of(request.getPageNo(), request.getPageSize());
         PageOrderHelper.applyOrders(page, request.getSortingFields(), SORT_FIELD_MAPPING);
@@ -80,6 +89,9 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, TenantPO> imple
         return new PageResult<>(result.getRecords().stream().map(this::toResponse).toList(), result.getTotal());
     }
 
+    /**
+     * 更新租户。
+     */
     @Transactional
     public TenantResponseVO update(Long id, TenantUpdateRequest request) {
         TenantPO tenant = getRequired(id);
@@ -100,11 +112,17 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, TenantPO> imple
         return get(id);
     }
 
+    /**
+     * 删除租户。
+     */
     @Transactional
     public void delete(Long id) {
         ApplicationAssert.requireSuccess(removeById(id), ErrorCode.TENANT_NOT_FOUND);
     }
 
+    /**
+     * 应用联系手机号Protection。
+     */
     private void applyContactMobileProtection(TenantPO tenantPO, String contactMobile) {
         ProtectedMobile protectedMobile = mobileCryptoService.protect(normalizeContactMobile(contactMobile));
         tenantPO.setContactMobileCipher(protectedMobile.cipher());
@@ -113,6 +131,9 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, TenantPO> imple
         tenantPO.setContactMobileKeyVersion(protectedMobile.keyVersion());
     }
 
+    /**
+     * 规范化联系手机号。
+     */
     private static String normalizeContactMobile(String contactMobile) {
         if (StrUtil.isBlank(contactMobile)) {
             return null;
@@ -127,6 +148,9 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, TenantPO> imple
         return normalizedContactMobile;
     }
 
+    /**
+     * 规范化网址。
+     */
     private static Set<String> normalizeWebsites(Set<String> websites) {
         if (websites == null || websites.isEmpty()) {
             return null;
@@ -151,10 +175,16 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, TenantPO> imple
         return normalizedWebsites;
     }
 
+    /**
+     * 获取必需的业务对象。
+     */
     private TenantPO getRequired(Long id) {
         return ApplicationAssert.requireFound(getById(id), ErrorCode.TENANT_NOT_FOUND);
     }
 
+    /**
+     * 转换为响应对象。
+     */
     private TenantResponseVO toResponse(TenantPO source) {
         TenantResponseVO response = BeanUtil.copyProperties(source, TenantResponseVO.class);
         response.setContactMobile(source.getContactMobileMask());

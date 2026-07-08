@@ -15,6 +15,9 @@ import static me.link.bootstrap.shared.kernel.constant.GlobalConstants.*;
 @Slf4j
 public class LinkDefaultDBFieldHandler implements MetaObjectHandler {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void insertFill(MetaObject metaObject) {
         LocalDateTime now = LocalDateTime.now();
@@ -34,6 +37,9 @@ public class LinkDefaultDBFieldHandler implements MetaObjectHandler {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateFill(MetaObject metaObject) {
         LocalDateTime now = LocalDateTime.now();
@@ -50,6 +56,9 @@ public class LinkDefaultDBFieldHandler implements MetaObjectHandler {
         }
     }
 
+    /**
+     * 获取当前用户ID。
+     */
     private Long getCurrentUserId() {
         try {
             Long loginId = SecurityHelper.getUserId();

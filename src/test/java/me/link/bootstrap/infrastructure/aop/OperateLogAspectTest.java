@@ -20,6 +20,9 @@ class OperateLogAspectTest {
             new ClientIpProperties()
     );
 
+    /**
+     * 验证 shouldMaskVerificationCodeFieldsRecursively 场景。
+     */
     @Test
     @SuppressWarnings("unchecked")
     void shouldMaskVerificationCodeFieldsRecursively() {

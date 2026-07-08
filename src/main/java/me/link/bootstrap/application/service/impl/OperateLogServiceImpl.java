@@ -58,6 +58,9 @@ public class OperateLogServiceImpl extends ServiceImpl<OperateLogMapper, Operate
         return createWithTenantId(record, tenantId == null ? PLATFORM_TENANT_ID : tenantId);
     }
 
+    /**
+     * 创建使用租户ID。
+     */
     private OperateLogPO createWithTenantId(OperateLogRecord record, Long tenantId) {
         OperateLogPO operateLog = new OperateLogPO();
         applyMutableFields(operateLog, record.getTraceId(), record.getUserId(), record.getUserType(), record.getUserIp(), record.getUserAgent(), record.getModule(), record.getOperation(), record.getBizId(), record.getAction(), record.getExtra(), record.getSuccess(), record.getRequestMethod(), record.getRequestUrl(), record.getDuration());
@@ -66,10 +69,16 @@ public class OperateLogServiceImpl extends ServiceImpl<OperateLogMapper, Operate
         return operateLog;
     }
 
+    /**
+     * 查询操作日志详情。
+     */
     public OperateLogResponseVO get(Long id) {
         return toResponse(getRequired(id));
     }
 
+    /**
+     * 分页查询操作日志列表。
+     */
     public PageResult<OperateLogResponseVO> page(OperateLogPageRequest request) {
         Page<OperateLogPO> page = Page.of(request.getPageNo(), request.getPageSize());
         PageOrderHelper.applyOrders(page, request.getSortingFields(), SORT_FIELD_MAPPING);
@@ -85,6 +94,9 @@ public class OperateLogServiceImpl extends ServiceImpl<OperateLogMapper, Operate
         return new PageResult<>(result.getRecords().stream().map(this::toResponse).toList(), result.getTotal());
     }
 
+    /**
+     * 应用可变字段。
+     */
     private static void applyMutableFields(OperateLogPO operateLog,
                                            String traceId,
                                            Long userId,
@@ -128,10 +140,16 @@ public class OperateLogServiceImpl extends ServiceImpl<OperateLogMapper, Operate
         operateLog.setDuration(duration);
     }
 
+    /**
+     * 获取必需的业务对象。
+     */
     private OperateLogPO getRequired(Long id) {
         return ApplicationAssert.requireFound(getById(id), ErrorCode.OPERATE_LOG_NOT_FOUND);
     }
 
+    /**
+     * 转换为响应对象。
+     */
     private OperateLogResponseVO toResponse(OperateLogPO source) {
         OperateLogResponseVO response = BeanUtil.copyProperties(source, OperateLogResponseVO.class);
         response.setCreatedAt(source.getCreateTime());

@@ -11,9 +11,24 @@ import me.link.bootstrap.shared.kernel.valueobject.PageResult;
 
 public interface CommunityTopicService extends IService<CommunityTopicPO> {
 
+    /**
+     * 创建社区话题。
+     */
     CommunityTopicResponseVO create(CommunityTopicCreateRequest request);
+    /**
+     * 查询社区话题详情。
+     */
     CommunityTopicResponseVO get(Long id);
+    /**
+     * 分页查询社区话题列表。
+     */
     PageResult<CommunityTopicResponseVO> page(CommunityTopicPageRequest request);
+    /**
+     * 更新社区话题。
+     */
     CommunityTopicResponseVO update(Long id, CommunityTopicUpdateRequest request);
+    /**
+     * 删除社区话题。
+     */
     void delete(Long id);
 }

@@ -11,9 +11,24 @@ import me.link.bootstrap.shared.kernel.valueobject.PageResult;
 
 public interface TenantPackageService extends IService<TenantPackagePO> {
 
+    /**
+     * 创建租户套餐。
+     */
     TenantPackageResponseVO create(TenantPackageCreateRequest request);
+    /**
+     * 查询租户套餐详情。
+     */
     TenantPackageResponseVO get(Long id);
+    /**
+     * 分页查询租户套餐列表。
+     */
     PageResult<TenantPackageResponseVO> page(TenantPackagePageRequest request);
+    /**
+     * 更新租户套餐。
+     */
     TenantPackageResponseVO update(Long id, TenantPackageUpdateRequest request);
+    /**
+     * 删除租户套餐。
+     */
     void delete(Long id);
 }

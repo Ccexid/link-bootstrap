@@ -41,6 +41,9 @@ public class LinkCorsAutoConfiguration {
 
     private final LinkSecurityProperties linkSecurityProperties;
 
+    /**
+     * 创建 LinkCorsFilter Bean。
+     */
     @SuppressWarnings("null")
     @Bean
     @ConditionalOnMissingBean(name = "linkCorsFilter")
@@ -58,6 +61,9 @@ public class LinkCorsAutoConfiguration {
         return bean;
     }
 
+    /**
+     * 获取Cors配置。
+     */
     private @NonNull CorsConfiguration getCorsConfiguration() {
         LinkSecurityProperties.Cors cors = linkSecurityProperties.getCors();
         List<String> allowedOriginPatterns = normalize(cors.getAllowedOriginPatterns());
@@ -90,6 +96,9 @@ public class LinkCorsAutoConfiguration {
         return config;
     }
 
+    /**
+     * 规范化。
+     */
     private static List<String> normalize(List<String> values) {
         if (values == null) {
             return List.of();
@@ -103,6 +112,9 @@ public class LinkCorsAutoConfiguration {
                 .toList();
     }
 
+    /**
+     * 判断是否包含Global通配符。
+     */
     private static boolean containsGlobalWildcard(List<String> allowedOriginPatterns) {
         return allowedOriginPatterns.stream().anyMatch("*"::equals);
     }

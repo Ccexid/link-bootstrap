@@ -55,6 +55,9 @@ public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenuPO>
     private final MenuService menuService;
     private final PermissionCacheService permissionCacheService;
 
+    /**
+     * 创建角色菜单。
+     */
     @Transactional
     public RoleMenuResponseVO create(RoleMenuCreateRequest request) {
         Long tenantId = SecurityHelper.getRequiredTenantId();
@@ -66,10 +69,16 @@ public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenuPO>
         return toResponse(roleMenu);
     }
 
+    /**
+     * 查询角色菜单详情。
+     */
     public RoleMenuResponseVO get(Long id) {
         return toResponse(getRequired(id));
     }
 
+    /**
+     * 分页查询角色菜单列表。
+     */
     public PageResult<RoleMenuResponseVO> page(RoleMenuPageRequest request) {
         Page<RoleMenuPO> page = Page.of(request.getPageNo(), request.getPageSize());
         PageOrderHelper.applyOrders(page, request.getSortingFields(), SORT_FIELD_MAPPING);
@@ -81,6 +90,9 @@ public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenuPO>
         return new PageResult<>(result.getRecords().stream().map(this::toResponse).toList(), result.getTotal());
     }
 
+    /**
+     * 更新角色菜单。
+     */
     @Transactional
     public RoleMenuResponseVO update(Long id, RoleMenuUpdateRequest request) {
         RoleMenuPO roleMenu = getRequired(id);
@@ -127,6 +139,9 @@ public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenuPO>
         permissionCacheService.evictByRoleId(request.getRoleId());
     }
 
+    /**
+     * 删除角色菜单。
+     */
     @Transactional
     public void delete(Long id) {
         // 先 get 拿 roleId 用于 evict,再删除
@@ -135,12 +150,18 @@ public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenuPO>
         permissionCacheService.evictByRoleId(roleMenu.getRoleId());
     }
 
+    /**
+     * 创建PO。
+     */
     private static RoleMenuPO createPO(Long roleId, Long menuId, Long tenantId) {
         RoleMenuPO roleMenu = new RoleMenuPO();
         applyMutableFields(roleMenu, roleId, menuId, tenantId);
         return roleMenu;
     }
 
+    /**
+     * 校验References。
+     */
     private void validateReferences(Long roleId, Long menuId, Long tenantId) {
         if (roleId == null || roleId <= 0) {
             ApplicationAssert.invalidParam("角色菜单关联roleId必须大于0");
@@ -152,6 +173,9 @@ public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenuPO>
         validateMenuExists(menuId);
     }
 
+    /**
+     * 校验角色In当前租户。
+     */
     private void validateRoleInCurrentTenant(Long roleId, Long tenantId) {
         RolePO role = roleService.getById(roleId);
         if (role == null || !Objects.equals(role.getTenantId(), tenantId)) {
@@ -159,12 +183,18 @@ public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenuPO>
         }
     }
 
+    /**
+     * 校验菜单Exists。
+     */
     private void validateMenuExists(Long menuId) {
         if (menuService.getById(menuId) == null) {
             throw new BusinessException(ErrorCode.MENU_NOT_FOUND);
         }
     }
 
+    /**
+     * 校验菜单ID集合。
+     */
     private void validateMenuIds(List<Long> menuIds) {
         for (Long menuId : menuIds) {
             if (menuId == null || menuId <= 0) {
@@ -174,6 +204,9 @@ public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenuPO>
         }
     }
 
+    /**
+     * 校验UniqueBinding。
+     */
     private void validateUniqueBinding(Long roleId, Long menuId, Long tenantId, Long excludeId) {
         boolean exists = exists(new LambdaQueryWrapper<RoleMenuPO>()
                 .eq(RoleMenuPO::getRoleId, roleId)
@@ -185,6 +218,9 @@ public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenuPO>
         }
     }
 
+    /**
+     * 应用可变字段。
+     */
     private static void applyMutableFields(RoleMenuPO roleMenu, Long roleId, Long menuId, Long tenantId) {
         if (roleId == null || roleId <= 0) {
             ApplicationAssert.invalidParam("角色菜单关联roleId必须大于0");
@@ -200,10 +236,16 @@ public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenuPO>
         roleMenu.setTenantId(tenantId);
     }
 
+    /**
+     * 获取必需的业务对象。
+     */
     private RoleMenuPO getRequired(Long id) {
         return ApplicationAssert.requireFound(getById(id), ErrorCode.ROLE_MENU_NOT_FOUND);
     }
 
+    /**
+     * 转换为响应对象。
+     */
     private RoleMenuResponseVO toResponse(RoleMenuPO source) {
         RoleMenuResponseVO response = BeanUtil.copyProperties(source, RoleMenuResponseVO.class);
         response.setCreatedAt(source.getCreateTime());

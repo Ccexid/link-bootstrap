@@ -39,6 +39,9 @@ public class OrganizationController {
 
     private final OrganizationService organizationService;
 
+    /**
+     * 创建组织。
+     */
     @PostMapping
     @PreAuthorize("hasAuthority('system:organization:create')")
     @Idempotent
@@ -47,6 +50,9 @@ public class OrganizationController {
         return ResultResponse.success(organizationService.create(request));
     }
 
+    /**
+     * 查询组织详情。
+     */
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('system:organization:query')")
     @Operation(summary = "查询组织详情", description = "根据ID查询组织详情")
@@ -54,6 +60,9 @@ public class OrganizationController {
         return ResultResponse.success(organizationService.get(id));
     }
 
+    /**
+     * 分页查询组织。
+     */
     @GetMapping
     @PreAuthorize("hasAuthority('system:organization:list')")
     @Operation(summary = "分页查询组织", description = "分页查询组织列表")
@@ -62,6 +71,9 @@ public class OrganizationController {
         return ResultTableResponse.success(pageResult.records(), pageResult.total());
     }
 
+    /**
+     * 更新组织。
+     */
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('system:organization:update')")
     @Idempotent
@@ -71,6 +83,9 @@ public class OrganizationController {
         return ResultResponse.success(organizationService.update(id, request));
     }
 
+    /**
+     * 删除组织。
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('system:organization:delete')")
     @Operation(summary = "删除组织", description = "根据ID删除组织")

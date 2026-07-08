@@ -13,11 +13,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 class SecurityHelperTest {
 
+    /**
+     * 清理上下文。
+     */
     @AfterEach
     void clearContext() {
         SecurityContextHolder.clearContext();
     }
 
+    /**
+     * 验证 shouldReadCurrentPrincipalFromSpringSecurityContext 场景。
+     */
     @Test
     void shouldReadCurrentPrincipalFromSpringSecurityContext() {
         LoginUserPrincipal principal = new LoginUserPrincipal(
@@ -42,6 +48,9 @@ class SecurityHelperTest {
         assertThat(SecurityHelper.getTokenValue()).isEqualTo("opaque-token-value");
     }
 
+    /**
+     * 验证 shouldReturnAnonymousDefaultsWhenContextIsEmpty 场景。
+     */
     @Test
     void shouldReturnAnonymousDefaultsWhenContextIsEmpty() {
         assertThat(SecurityHelper.isLoggedIn()).isFalse();

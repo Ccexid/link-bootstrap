@@ -12,6 +12,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LinkCorsAutoConfigurationTest {
 
+    /**
+     * 验证 shouldRejectWildcardOriginPatternWhenCredentialsAllowed 场景。
+     */
     @Test
     void shouldRejectWildcardOriginPatternWhenCredentialsAllowed() {
         LinkSecurityProperties properties = new LinkSecurityProperties();
@@ -25,6 +28,9 @@ class LinkCorsAutoConfigurationTest {
                 .hasMessageContaining("link.security.cors.allowed-origin-patterns");
     }
 
+    /**
+     * 验证 shouldAllowConfiguredOriginPatternWhenCredentialsAllowed 场景。
+     */
     @Test
     void shouldAllowConfiguredOriginPatternWhenCredentialsAllowed() {
         LinkSecurityProperties properties = new LinkSecurityProperties();

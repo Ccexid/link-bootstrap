@@ -56,6 +56,9 @@ public class CommunityPostServiceImpl extends ServiceImpl<CommunityPostMapper, C
     private final CommunitySectionService communitySectionService;
     private final CommunityTopicService communityTopicService;
 
+    /**
+     * 创建社区帖子。
+     */
     @Transactional
     public CommunityPostResponseVO create(CommunityPostCreateRequest request) {
         Long tenantId = SecurityHelper.getRequiredTenantId();
@@ -78,12 +81,18 @@ public class CommunityPostServiceImpl extends ServiceImpl<CommunityPostMapper, C
         return toResponse(post);
     }
 
+    /**
+     * 查询社区帖子详情。
+     */
     public CommunityPostResponseVO get(Long id) {
         CommunityPostPO post = ApplicationAssert.requireFound(getById(id), ErrorCode.COMMUNITY_POST_NOT_FOUND);
         ensureCurrentTenant(post, SecurityHelper.getRequiredTenantId());
         return toResponse(post);
     }
 
+    /**
+     * 分页查询社区帖子列表。
+     */
     public PageResult<CommunityPostResponseVO> page(CommunityPostPageRequest request) {
         Long tenantId = SecurityHelper.getRequiredTenantId();
         if (request.getSectionId() != null) {
@@ -108,6 +117,9 @@ public class CommunityPostServiceImpl extends ServiceImpl<CommunityPostMapper, C
         return new PageResult<>(result.getRecords().stream().map(this::toResponse).toList(), result.getTotal());
     }
 
+    /**
+     * 更新社区帖子。
+     */
     @Transactional
     public CommunityPostResponseVO update(Long id, CommunityPostUpdateRequest request) {
         CommunityPostPO post = getRequired(id);
@@ -121,6 +133,9 @@ public class CommunityPostServiceImpl extends ServiceImpl<CommunityPostMapper, C
         return get(id);
     }
 
+    /**
+     * 删除社区帖子。
+     */
     @Transactional
     public void delete(Long id) {
         CommunityPostPO post = getRequired(id);
@@ -128,6 +143,9 @@ public class CommunityPostServiceImpl extends ServiceImpl<CommunityPostMapper, C
         ApplicationAssert.requireSuccess(removeById(id), ErrorCode.COMMUNITY_POST_NOT_FOUND);
     }
 
+    /**
+     * 应用可变字段。
+     */
     private void applyMutableFields(CommunityPostPO post,
                                     Long sectionId,
                                     Long topicId,
@@ -149,6 +167,9 @@ public class CommunityPostServiceImpl extends ServiceImpl<CommunityPostMapper, C
         post.setCoverUrl(trimToNull(coverUrl));
     }
 
+    /**
+     * 校验板块。
+     */
     private void validateSection(Long sectionId, Long tenantId) {
         if (sectionId == null || sectionId <= 0) {
             ApplicationAssert.invalidParam("帖子sectionId必须大于0");
@@ -159,6 +180,9 @@ public class CommunityPostServiceImpl extends ServiceImpl<CommunityPostMapper, C
         }
     }
 
+    /**
+     * 校验话题。
+     */
     private void validateTopic(Long topicId, Long sectionId, Long tenantId) {
         if (topicId == null) {
             return;
@@ -172,18 +196,27 @@ public class CommunityPostServiceImpl extends ServiceImpl<CommunityPostMapper, C
         }
     }
 
+    /**
+     * 确保当前租户。
+     */
     private static void ensureCurrentTenant(CommunityPostPO post, Long tenantId) {
         if (!Objects.equals(post.getTenantId(), tenantId)) {
             throw new BusinessException(ErrorCode.COMMUNITY_POST_NOT_FOUND);
         }
     }
 
+    /**
+     * 确保Author。
+     */
     private static void ensureAuthor(CommunityPostPO post, Long userId) {
         if (!Objects.equals(post.getAuthorId(), userId)) {
             throw new BusinessException(ErrorCode.FORBIDDEN, "只能操作本人帖子");
         }
     }
 
+    /**
+     * 去除空白To空值。
+     */
     private static String trimToNull(String value) {
         if (StrUtil.isBlank(value)) {
             return null;
@@ -191,10 +224,16 @@ public class CommunityPostServiceImpl extends ServiceImpl<CommunityPostMapper, C
         return value.trim();
     }
 
+    /**
+     * 获取必需的业务对象。
+     */
     private CommunityPostPO getRequired(Long id) {
         return ApplicationAssert.requireFound(getById(id), ErrorCode.COMMUNITY_POST_NOT_FOUND);
     }
 
+    /**
+     * 转换为响应对象。
+     */
     private CommunityPostResponseVO toResponse(CommunityPostPO source) {
         CommunityPostResponseVO response = BeanUtil.copyProperties(source, CommunityPostResponseVO.class);
         response.setCreatedAt(source.getCreateTime());

@@ -9,7 +9,16 @@ import me.link.bootstrap.shared.kernel.valueobject.PageResult;
 
 public interface OperateLogService extends IService<OperateLogPO> {
 
+    /**
+     * 基于当前上下文创建操作日志。
+     */
     OperateLogPO createForCurrentContext(OperateLogRecord record);
+    /**
+     * 查询操作日志详情。
+     */
     OperateLogResponseVO get(Long id);
+    /**
+     * 分页查询操作日志列表。
+     */
     PageResult<OperateLogResponseVO> page(OperateLogPageRequest request);
 }

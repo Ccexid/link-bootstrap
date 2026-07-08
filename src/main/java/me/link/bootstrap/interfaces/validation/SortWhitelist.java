@@ -18,11 +18,23 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = SortWhitelistValidator.class)
 public @interface SortWhitelist {
 
+    /**
+     * 返回注解配置的字段集合。
+     */
     Class<?> value();
 
+    /**
+     * 返回校验失败时的提示消息。
+     */
     String message() default "排序字段不在允许范围内";
 
+    /**
+     * 返回 Bean Validation 分组。
+     */
     Class<?>[] groups() default {};
 
+    /**
+     * 返回 Bean Validation 负载类型。
+     */
     Class<? extends Payload>[] payload() default {};
 }

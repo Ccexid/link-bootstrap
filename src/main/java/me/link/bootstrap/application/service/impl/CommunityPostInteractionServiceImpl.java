@@ -36,6 +36,9 @@ public class CommunityPostInteractionServiceImpl extends ServiceImpl<CommunityPo
     private final CommunityPostLikeService communityPostLikeService;
     private final CommunityPostCollectService communityPostCollectService;
 
+    /**
+     * 点赞社区内容。
+     */
     @Transactional
     public CommunityPostInteractionResponseVO like(Long postId) {
         Long tenantId = SecurityHelper.getRequiredTenantId();
@@ -56,6 +59,9 @@ public class CommunityPostInteractionServiceImpl extends ServiceImpl<CommunityPo
         return interaction(post.getId());
     }
 
+    /**
+     * 取消社区内容点赞。
+     */
     @Transactional
     public CommunityPostInteractionResponseVO unlike(Long postId) {
         Long tenantId = SecurityHelper.getRequiredTenantId();
@@ -71,6 +77,9 @@ public class CommunityPostInteractionServiceImpl extends ServiceImpl<CommunityPo
         return interaction(post.getId());
     }
 
+    /**
+     * 收藏社区内容。
+     */
     @Transactional
     public CommunityPostInteractionResponseVO collect(Long postId) {
         Long tenantId = SecurityHelper.getRequiredTenantId();
@@ -91,6 +100,9 @@ public class CommunityPostInteractionServiceImpl extends ServiceImpl<CommunityPo
         return interaction(post.getId());
     }
 
+    /**
+     * 取消社区内容收藏。
+     */
     @Transactional
     public CommunityPostInteractionResponseVO uncollect(Long postId) {
         Long tenantId = SecurityHelper.getRequiredTenantId();
@@ -106,6 +118,9 @@ public class CommunityPostInteractionServiceImpl extends ServiceImpl<CommunityPo
         return interaction(post.getId());
     }
 
+    /**
+     * 查询社区内容互动状态。
+     */
     public CommunityPostInteractionResponseVO interaction(Long postId) {
         Long tenantId = SecurityHelper.getRequiredTenantId();
         Long userId = SecurityHelper.getRequiredUserId();
@@ -118,6 +133,9 @@ public class CommunityPostInteractionServiceImpl extends ServiceImpl<CommunityPo
         );
     }
 
+    /**
+     * 校验并获取帖子。
+     */
     private CommunityPostPO requirePost(Long postId, Long tenantId) {
         CommunityPostPO post = communityPostService.getById(postId);
         if (post == null || !Objects.equals(post.getTenantId(), tenantId) || post.getStatus() == StatusEnum.DISABLE) {
@@ -126,6 +144,9 @@ public class CommunityPostInteractionServiceImpl extends ServiceImpl<CommunityPo
         return post;
     }
 
+    /**
+     * 判断是否存在Liked。
+     */
     private boolean hasLiked(Long postId, Long tenantId, Long userId) {
         return communityPostLikeService.count(new LambdaQueryWrapper<CommunityPostLikePO>()
                 .eq(CommunityPostLikePO::getTenantId, tenantId)
@@ -133,6 +154,9 @@ public class CommunityPostInteractionServiceImpl extends ServiceImpl<CommunityPo
                 .eq(CommunityPostLikePO::getUserId, userId)) > 0;
     }
 
+    /**
+     * 判断是否存在Collected。
+     */
     private boolean hasCollected(Long postId, Long tenantId, Long userId) {
         return communityPostCollectService.count(new LambdaQueryWrapper<CommunityPostCollectPO>()
                 .eq(CommunityPostCollectPO::getTenantId, tenantId)
@@ -140,12 +164,18 @@ public class CommunityPostInteractionServiceImpl extends ServiceImpl<CommunityPo
                 .eq(CommunityPostCollectPO::getUserId, userId)) > 0;
     }
 
+    /**
+     * 递增帖子计数器。
+     */
     private void incrementPostCounter(Long postId, String column) {
         communityPostService.update(new UpdateWrapper<CommunityPostPO>()
                 .eq("id", postId)
                 .setSql(column + " = " + column + " + 1"));
     }
 
+    /**
+     * 递减帖子计数器。
+     */
     private void decrementPostCounter(Long postId, String column) {
         communityPostService.update(new UpdateWrapper<CommunityPostPO>()
                 .eq("id", postId)

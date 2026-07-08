@@ -141,6 +141,9 @@ public class AuthServiceImpl implements AuthService {
         emailCodeService.send(email);
     }
 
+    /**
+     * 解析单一用户。
+     */
     private UserPO resolveSingleUser(List<UserPO> users, ErrorCode notFoundErrorCode) {
         if (users == null || users.isEmpty()) {
             throw new BusinessException(notFoundErrorCode);
@@ -151,10 +154,16 @@ public class AuthServiceImpl implements AuthService {
         return users.get(0);
     }
 
+    /**
+     * 规范化邮箱。
+     */
     private String normalizeEmail(String email) {
         return email == null ? "" : email.trim();
     }
 
+    /**
+     * 脱敏邮箱。
+     */
     private String maskEmail(String email) {
         String normalizedEmail = normalizeEmail(email);
         int atIndex = normalizedEmail.indexOf('@');
@@ -169,10 +178,16 @@ public class AuthServiceImpl implements AuthService {
         return localPart.charAt(0) + "***" + domain;
     }
 
+    /**
+     * 校验邮箱验证码。
+     */
     private void verifyEmailCode(String email, String code) {
         emailCodeService.verify(email, code);
     }
 
+    /**
+     * 确保用户启用。
+     */
     private void ensureUserEnabled(UserPO user) {
         if (user.getStatus() == StatusEnum.DISABLE) {
             log.warn("登录失败 - 账号已禁用: userId={}, tenantId={}", user.getId(), user.getTenantId());
@@ -180,6 +195,9 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
+    /**
+     * 登录已解析用户。
+     */
     private TokenResponseVO loginResolvedUser(UserPO user) {
         ensureUserEnabled(user);
         SecurityTokenSession session = securityTokenSessionService.create(user);
@@ -188,11 +206,17 @@ public class AuthServiceImpl implements AuthService {
         return securityTokenSessionService.toTokenResponse(session);
     }
 
+    /**
+     * 刷新访问令牌。
+     */
     public TokenResponseVO refreshToken() {
         SecurityTokenSession session = securityTokenSessionService.refresh(SecurityHelper.getRequiredTokenValue());
         return securityTokenSessionService.toTokenResponse(session);
     }
 
+    /**
+     * 查询当前登录令牌。
+     */
     public TokenResponseVO currentToken() {
         SecurityTokenSession session = securityTokenSessionService.load(SecurityHelper.getRequiredTokenValue())
                 .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));

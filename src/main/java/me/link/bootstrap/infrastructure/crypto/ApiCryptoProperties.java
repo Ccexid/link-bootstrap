@@ -45,6 +45,9 @@ public class ApiCryptoProperties {
             "/swagger-ui.html"
     ));
 
+    /**
+     * 判断是否匹配。
+     */
     public boolean matches(String path) {
         if (!enabled) {
             return false;

@@ -77,6 +77,9 @@ public class LinkMybatisAutoConfiguration {
         return interceptor;
     }
 
+    /**
+     * 创建 默认DBFieldHandler Bean。
+     */
     @Bean
     public LinkDefaultDBFieldHandler defaultDBFieldHandler() {
         return new LinkDefaultDBFieldHandler();

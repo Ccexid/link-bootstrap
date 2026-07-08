@@ -13,6 +13,9 @@ import java.util.List;
  */
 public record PageResult<T>(List<T> records, Long total) {
 
+    /**
+     * 创建分页结果实例。
+     */
     public PageResult {
         records = records == null ? Collections.emptyList() : List.copyOf(records);
         total = total == null ? 0L : total;

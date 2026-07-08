@@ -46,6 +46,9 @@ public class CommunitySectionServiceImpl extends ServiceImpl<CommunitySectionMap
             "parent_id", "parent_id"
     );
 
+    /**
+     * 创建社区板块。
+     */
     @Transactional
     public CommunitySectionResponseVO create(CommunitySectionCreateRequest request) {
         Long tenantId = SecurityHelper.getRequiredTenantId();
@@ -59,12 +62,18 @@ public class CommunitySectionServiceImpl extends ServiceImpl<CommunitySectionMap
         return toResponse(section);
     }
 
+    /**
+     * 查询社区板块详情。
+     */
     public CommunitySectionResponseVO get(Long id) {
         CommunitySectionPO section = ApplicationAssert.requireFound(getById(id), ErrorCode.COMMUNITY_SECTION_NOT_FOUND);
         ensureCurrentTenant(section, SecurityHelper.getRequiredTenantId());
         return toResponse(section);
     }
 
+    /**
+     * 分页查询社区板块列表。
+     */
     public PageResult<CommunitySectionResponseVO> page(CommunitySectionPageRequest request) {
         Page<CommunitySectionPO> page = Page.of(request.getPageNo(), request.getPageSize());
         PageOrderHelper.applyOrders(page, request.getSortingFields(), SORT_FIELD_MAPPING);
@@ -80,6 +89,9 @@ public class CommunitySectionServiceImpl extends ServiceImpl<CommunitySectionMap
         return new PageResult<>(result.getRecords().stream().map(this::toResponse).toList(), result.getTotal());
     }
 
+    /**
+     * 更新社区板块。
+     */
     @Transactional
     public CommunitySectionResponseVO update(Long id, CommunitySectionUpdateRequest request) {
         CommunitySectionPO section = getRequired(id);
@@ -92,6 +104,9 @@ public class CommunitySectionServiceImpl extends ServiceImpl<CommunitySectionMap
         return get(id);
     }
 
+    /**
+     * 删除社区板块。
+     */
     @Transactional
     public void delete(Long id) {
         CommunitySectionPO section = getRequired(id);
@@ -103,6 +118,9 @@ public class CommunitySectionServiceImpl extends ServiceImpl<CommunitySectionMap
         ApplicationAssert.requireSuccess(removeById(id), ErrorCode.COMMUNITY_SECTION_NOT_FOUND);
     }
 
+    /**
+     * 应用可变字段。
+     */
     private void applyMutableFields(CommunitySectionPO section,
                                     String name,
                                     String code,
@@ -123,6 +141,9 @@ public class CommunitySectionServiceImpl extends ServiceImpl<CommunitySectionMap
         section.setStatus(status == null ? StatusEnum.NORMAL : status);
     }
 
+    /**
+     * 确保验证码Unique。
+     */
     private void ensureCodeUnique(String code, Long ignoredId) {
         long count = count(new LambdaQueryWrapper<CommunitySectionPO>()
                 .eq(CommunitySectionPO::getCode, code)
@@ -132,6 +153,9 @@ public class CommunitySectionServiceImpl extends ServiceImpl<CommunitySectionMap
         }
     }
 
+    /**
+     * 校验父级。
+     */
     private void validateParent(Long parentId, Long selfId, Long tenantId) {
         if (parentId == null || parentId == 0L) {
             return;
@@ -148,12 +172,18 @@ public class CommunitySectionServiceImpl extends ServiceImpl<CommunitySectionMap
         }
     }
 
+    /**
+     * 确保当前租户。
+     */
     private static void ensureCurrentTenant(CommunitySectionPO section, Long tenantId) {
         if (!Objects.equals(section.getTenantId(), tenantId)) {
             throw new BusinessException(ErrorCode.COMMUNITY_SECTION_NOT_FOUND);
         }
     }
 
+    /**
+     * 规范化编码。
+     */
     private static String normalizeCode(String code) {
         if (StrUtil.isBlank(code)) {
             ApplicationAssert.invalidParam("社区板块code不能为空");
@@ -161,6 +191,9 @@ public class CommunitySectionServiceImpl extends ServiceImpl<CommunitySectionMap
         return code.trim().toLowerCase(Locale.ROOT);
     }
 
+    /**
+     * 去除空白To空值。
+     */
     private static String trimToNull(String value) {
         if (StrUtil.isBlank(value)) {
             return null;
@@ -168,10 +201,16 @@ public class CommunitySectionServiceImpl extends ServiceImpl<CommunitySectionMap
         return value.trim();
     }
 
+    /**
+     * 获取必需的业务对象。
+     */
     private CommunitySectionPO getRequired(Long id) {
         return ApplicationAssert.requireFound(getById(id), ErrorCode.COMMUNITY_SECTION_NOT_FOUND);
     }
 
+    /**
+     * 转换为响应对象。
+     */
     private CommunitySectionResponseVO toResponse(CommunitySectionPO source) {
         CommunitySectionResponseVO response = BeanUtil.copyProperties(source, CommunitySectionResponseVO.class);
         response.setCreatedAt(source.getCreateTime());

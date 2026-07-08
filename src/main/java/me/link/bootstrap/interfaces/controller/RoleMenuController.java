@@ -40,6 +40,9 @@ public class RoleMenuController {
 
     private final RoleMenuService roleMenuService;
 
+    /**
+     * 创建角色菜单关联。
+     */
     @PostMapping
     @PreAuthorize("hasAuthority('system:role-menu:create')")
     @Idempotent
@@ -48,6 +51,9 @@ public class RoleMenuController {
         return ResultResponse.success(roleMenuService.create(request));
     }
 
+    /**
+     * 批量授权角色菜单。
+     */
     @PostMapping("/authorize")
     @PreAuthorize("hasAuthority('system:role-menu:authorize')")
     @Idempotent
@@ -57,6 +63,9 @@ public class RoleMenuController {
         return ResultResponse.success();
     }
 
+    /**
+     * 查询角色菜单关联详情。
+     */
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('system:role-menu:query')")
     @Operation(summary = "查询角色菜单关联详情", description = "根据ID查询角色菜单关联详情")
@@ -64,6 +73,9 @@ public class RoleMenuController {
         return ResultResponse.success(roleMenuService.get(id));
     }
 
+    /**
+     * 分页查询角色菜单关联。
+     */
     @GetMapping
     @PreAuthorize("hasAuthority('system:role-menu:list')")
     @Operation(summary = "分页查询角色菜单关联", description = "分页查询角色菜单关联列表")
@@ -72,6 +84,9 @@ public class RoleMenuController {
         return ResultTableResponse.success(pageResult.records(), pageResult.total());
     }
 
+    /**
+     * 更新角色菜单关联。
+     */
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('system:role-menu:update')")
     @Idempotent
@@ -81,6 +96,9 @@ public class RoleMenuController {
         return ResultResponse.success(roleMenuService.update(id, request));
     }
 
+    /**
+     * 删除角色菜单关联。
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('system:role-menu:delete')")
     @Operation(summary = "删除角色菜单关联", description = "根据ID删除角色菜单关联")

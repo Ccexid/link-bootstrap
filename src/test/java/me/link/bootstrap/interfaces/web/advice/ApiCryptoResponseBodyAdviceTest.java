@@ -28,6 +28,9 @@ class ApiCryptoResponseBodyAdviceTest {
     private ApiCryptoResponseBodyAdvice advice;
     private MethodParameter returnType;
 
+    /**
+     * 准备测试上下文。
+     */
     @BeforeEach
     void setUp() throws Exception {
         KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
@@ -47,6 +50,9 @@ class ApiCryptoResponseBodyAdviceTest {
         );
     }
 
+    /**
+     * 验证 shouldEncryptMatchedApiResponse 场景。
+     */
     @Test
     void shouldEncryptMatchedApiResponse() {
         ResultResponse<String> body = ResultResponse.success("ok");
@@ -66,6 +72,9 @@ class ApiCryptoResponseBodyAdviceTest {
         assertThat(apiCryptoService.decryptRequest((String) encryptedText)).contains("\"data\":\"ok\"");
     }
 
+    /**
+     * 验证 shouldNotEncryptExcludedPublicKeyResponse 场景。
+     */
     @Test
     void shouldNotEncryptExcludedPublicKeyResponse() {
         ResultResponse<String> body = ResultResponse.success("public-key");
@@ -82,6 +91,9 @@ class ApiCryptoResponseBodyAdviceTest {
         assertThat(result).isSameAs(body);
     }
 
+    /**
+     * 验证 serverRequest 场景。
+     */
     private ServletServerHttpRequest serverRequest(String path) {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", path);
         request.setRequestURI(path);
@@ -90,6 +102,9 @@ class ApiCryptoResponseBodyAdviceTest {
 
     private static final class TestController {
 
+        /**
+         * 返回测试样例数据。
+         */
         @GetMapping
         ResultResponse<String> sample() {
             return ResultResponse.success("ok");

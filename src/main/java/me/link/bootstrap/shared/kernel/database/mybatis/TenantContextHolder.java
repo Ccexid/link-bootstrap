@@ -21,6 +21,9 @@ public final class TenantContextHolder {
 
     private static final ThreadLocal<Boolean> IGNORE = ThreadLocal.withInitial(() -> Boolean.FALSE);
 
+    /**
+     * 创建租户ContextHolder实例。
+     */
     private TenantContextHolder() {
         throw new UnsupportedOperationException("工具类不允许实例化");
     }

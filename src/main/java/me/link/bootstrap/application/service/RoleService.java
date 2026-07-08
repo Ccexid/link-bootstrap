@@ -11,9 +11,24 @@ import me.link.bootstrap.shared.kernel.valueobject.PageResult;
 
 public interface RoleService extends IService<RolePO> {
 
+    /**
+     * 创建角色。
+     */
     RoleResponseVO create(RoleCreateRequest request);
+    /**
+     * 查询角色详情。
+     */
     RoleResponseVO get(Long id);
+    /**
+     * 分页查询角色列表。
+     */
     PageResult<RoleResponseVO> page(RolePageRequest request);
+    /**
+     * 更新角色。
+     */
     RoleResponseVO update(Long id, RoleUpdateRequest request);
+    /**
+     * 删除角色。
+     */
     void delete(Long id);
 }

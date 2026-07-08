@@ -39,6 +39,9 @@ public class CommunitySectionController {
 
     private final CommunitySectionService communitySectionService;
 
+    /**
+     * 创建社区板块。
+     */
     @Idempotent
     @PostMapping
     @PreAuthorize("hasAuthority('system:community:section:create')")
@@ -47,6 +50,9 @@ public class CommunitySectionController {
         return ResultResponse.success(communitySectionService.create(request));
     }
 
+    /**
+     * 获取社区板块详情。
+     */
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('system:community:section:query')")
     @Operation(summary = "获取社区板块详情")
@@ -54,6 +60,9 @@ public class CommunitySectionController {
         return ResultResponse.success(communitySectionService.get(id));
     }
 
+    /**
+     * 分页查询社区板块。
+     */
     @GetMapping
     @PreAuthorize("hasAuthority('system:community:section:list')")
     @Operation(summary = "分页查询社区板块")
@@ -62,6 +71,9 @@ public class CommunitySectionController {
         return ResultTableResponse.success(pageResult.records(), pageResult.total());
     }
 
+    /**
+     * 更新社区板块。
+     */
     @Idempotent
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('system:community:section:update')")
@@ -70,6 +82,9 @@ public class CommunitySectionController {
         return ResultResponse.success(communitySectionService.update(id, request));
     }
 
+    /**
+     * 删除社区板块。
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('system:community:section:delete')")
     @Operation(summary = "删除社区板块")

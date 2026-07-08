@@ -58,6 +58,9 @@ public class HumanVerificationService {
         }
     }
 
+    /**
+     * 远程Verify。
+     */
     private boolean remoteVerify(String captchaToken, LinkSecurityProperties.HumanVerification properties) {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.add(properties.getSecretParam(), properties.getSecret());
@@ -93,6 +96,9 @@ public class HumanVerificationService {
         }
     }
 
+    /**
+     * 解析Http请求工厂。
+     */
     private org.springframework.http.client.SimpleClientHttpRequestFactory clientHttpRequestFactory(Duration timeout) {
         org.springframework.http.client.SimpleClientHttpRequestFactory factory =
                 new org.springframework.http.client.SimpleClientHttpRequestFactory();
@@ -101,6 +107,9 @@ public class HumanVerificationService {
         return factory;
     }
 
+    /**
+     * 校验Properties。
+     */
     private void validateProperties(LinkSecurityProperties.HumanVerification properties) {
         if (StringUtils.isBlank(properties.getVerifyUrl())) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "人机校验地址未配置");
@@ -119,6 +128,9 @@ public class HumanVerificationService {
         }
     }
 
+    /**
+     * 解析IP。
+     */
     private String clientIp() {
         if (!(RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes attributes)) {
             return "";
@@ -137,6 +149,9 @@ public class HumanVerificationService {
         return StringUtils.defaultIfBlank(ip, request.getRemoteAddr());
     }
 
+    /**
+     * 选择最右侧IP。
+     */
     private String pickRightmostIp(String headerValue) {
         int lastComma = headerValue.lastIndexOf(',');
         String candidate = lastComma >= 0 ? headerValue.substring(lastComma + 1) : headerValue;

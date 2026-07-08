@@ -39,6 +39,9 @@ public class CommunityTopicController {
 
     private final CommunityTopicService communityTopicService;
 
+    /**
+     * 创建社区话题。
+     */
     @Idempotent
     @PostMapping
     @PreAuthorize("hasAuthority('system:community:topic:create')")
@@ -47,6 +50,9 @@ public class CommunityTopicController {
         return ResultResponse.success(communityTopicService.create(request));
     }
 
+    /**
+     * 获取社区话题详情。
+     */
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('system:community:topic:query')")
     @Operation(summary = "获取社区话题详情")
@@ -54,6 +60,9 @@ public class CommunityTopicController {
         return ResultResponse.success(communityTopicService.get(id));
     }
 
+    /**
+     * 分页查询社区话题。
+     */
     @GetMapping
     @PreAuthorize("hasAuthority('system:community:topic:list')")
     @Operation(summary = "分页查询社区话题")
@@ -62,6 +71,9 @@ public class CommunityTopicController {
         return ResultTableResponse.success(pageResult.records(), pageResult.total());
     }
 
+    /**
+     * 更新社区话题。
+     */
     @Idempotent
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('system:community:topic:update')")
@@ -70,6 +82,9 @@ public class CommunityTopicController {
         return ResultResponse.success(communityTopicService.update(id, request));
     }
 
+    /**
+     * 删除社区话题。
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('system:community:topic:delete')")
     @Operation(summary = "删除社区话题")

@@ -48,6 +48,9 @@ public class IdempotentAspect {
     private final RedissonClient redissonClient;
     private final ObjectMapper objectMapper;
 
+    /**
+     * 环绕处理。
+     */
     @Around("@annotation(idempotent)")
     public Object around(ProceedingJoinPoint joinPoint, Idempotent idempotent) throws Throwable {
         HttpServletRequest request = currentRequest();
@@ -77,6 +80,9 @@ public class IdempotentAspect {
         }
     }
 
+    /**
+     * 获取当前请求。
+     */
     private HttpServletRequest currentRequest() {
         if (!(RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes attributes)) {
             return null;
@@ -84,6 +90,9 @@ public class IdempotentAspect {
         return attributes.getRequest();
     }
 
+    /**
+     * 生成。
+     */
     private String fingerprint(ProceedingJoinPoint joinPoint,
                                Method method,
                                HttpServletRequest request,
@@ -93,6 +102,9 @@ public class IdempotentAspect {
         return sha256(raw);
     }
 
+    /**
+     * 自动生成指纹。
+     */
     private String autoFingerprint(ProceedingJoinPoint joinPoint, Method method, HttpServletRequest request) {
         String httpMethod = request == null ? "" : request.getMethod().toUpperCase(Locale.ROOT);
         String uri = request == null ? "" : request.getRequestURI();
@@ -104,6 +116,9 @@ public class IdempotentAspect {
                 + ":args=" + serializeArgs(joinPoint.getArgs());
     }
 
+    /**
+     * 序列化参数。
+     */
     private String serializeArgs(Object[] args) {
         List<Object> serializableArgs = Arrays.stream(args)
                 .filter(arg -> !(arg instanceof ServletRequest))
@@ -117,6 +132,9 @@ public class IdempotentAspect {
         }
     }
 
+    /**
+     * 计算256。
+     */
     private String sha256(String value) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -127,6 +145,9 @@ public class IdempotentAspect {
         }
     }
 
+    /**
+     * 去除空白To空值。
+     */
     private String trimToNull(String value) {
         if (value == null || value.trim().isEmpty()) {
             return null;
@@ -134,6 +155,9 @@ public class IdempotentAspect {
         return value.trim();
     }
 
+    /**
+     * 转换ToEmpty。
+     */
     private String nullToEmpty(Object value) {
         return value == null ? "" : value.toString();
     }

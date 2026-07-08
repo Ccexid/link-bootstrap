@@ -13,9 +13,15 @@ import java.util.Objects;
  */
 public final class PageOrderHelper {
 
+    /**
+     * 创建分页排序实例。
+     */
     private PageOrderHelper() {
     }
 
+    /**
+     * 应用Orders。
+     */
     public static void applyOrders(Page<?> page, List<SortingField> sortingFields, Map<String, String> sortFieldMapping) {
         if (page == null || sortingFields == null || sortingFields.isEmpty()) {
             return;
@@ -26,6 +32,9 @@ public final class PageOrderHelper {
                 .forEach(page::addOrder);
     }
 
+    /**
+     * 转换为OrderItem。
+     */
     private static OrderItem toOrderItem(SortingField sortingField, Map<String, String> sortFieldMapping) {
         if (sortingField == null || sortFieldMapping == null || sortFieldMapping.isEmpty()) {
             return null;

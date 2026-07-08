@@ -17,6 +17,9 @@ public class ApiCryptoService {
     private final RSA decryptRsa;
     private final RSA encryptRsa;
 
+    /**
+     * 创建API加密实例。
+     */
     public ApiCryptoService(ApiCryptoProperties properties) {
         Assert.notNull(properties, "api crypto properties must not be null");
         Assert.hasText(properties.getPrivateKey(), "link.api-crypto.private-key must not be blank");
@@ -26,6 +29,9 @@ public class ApiCryptoService {
         this.encryptRsa = new RSA(null, properties.getPublicKey());
     }
 
+    /**
+     * 解密请求。
+     */
     public String decryptRequest(String encryptedText) {
         if (!StringUtils.hasText(encryptedText)) {
             ApplicationAssert.invalidParam("请求密文不能为空");
@@ -33,6 +39,9 @@ public class ApiCryptoService {
         return decryptRsa.decryptStr(encryptedText, KeyType.PrivateKey, StandardCharsets.UTF_8);
     }
 
+    /**
+     * 加密响应。
+     */
     public String encryptResponse(String plainText) {
         if (plainText == null) {
             return null;
@@ -40,6 +49,9 @@ public class ApiCryptoService {
         return encryptRsa.encryptBase64(plainText, StandardCharsets.UTF_8, KeyType.PublicKey);
     }
 
+    /**
+     * 返回。
+     */
     public ApiCryptoProperties properties() {
         return properties;
     }

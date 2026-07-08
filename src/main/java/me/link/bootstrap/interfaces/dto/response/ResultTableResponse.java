@@ -40,9 +40,15 @@ public class ResultTableResponse<E> implements Serializable {
     private List<String> sortableFields;
 
 
+    /**
+     * 创建ResultTable响应实例。
+     */
     private ResultTableResponse() {
     }
 
+    /**
+     * 创建ResultTable响应实例。
+     */
     private ResultTableResponse(final List<E> records, final Long total, final Long code, final long timestamp, final String traceId) {
         this.records = records;
         this.total = total;
@@ -52,10 +58,16 @@ public class ResultTableResponse<E> implements Serializable {
     }
 
 
+    /**
+     * 构建成功。
+     */
     public static <E> ResultTableResponse<E> success(final List<E> records, final Long total) {
         return new ResultTableResponse<>(records, total, ErrorCode.SUCCESS.getCode(), Instant.now().toEpochMilli(), null);
     }
 
+    /**
+     * 构建成功。
+     */
     public static <T, E> ResultTableResponse<E> success(final PageResult<T> pageResult, final Function<T, E> mapper) {
         List<E> records = pageResult.records().stream()
                 .map(mapper)
@@ -63,6 +75,9 @@ public class ResultTableResponse<E> implements Serializable {
         return success(records, pageResult.total());
     }
 
+    /**
+     * 构建失败。
+     */
     public static <E> ResultTableResponse<E> failure(ErrorCode errorCode) {
         return new ResultTableResponse<>(null, 0L, errorCode.getCode(), Instant.now().toEpochMilli(), null);
     }

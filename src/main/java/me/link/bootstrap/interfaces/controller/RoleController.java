@@ -39,6 +39,9 @@ public class RoleController {
 
     private final RoleService roleService;
 
+    /**
+     * 创建角色。
+     */
     @PostMapping
     @PreAuthorize("hasAuthority('system:role:create')")
     @Idempotent
@@ -47,6 +50,9 @@ public class RoleController {
         return ResultResponse.success(roleService.create(request));
     }
 
+    /**
+     * 查询角色详情。
+     */
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('system:role:query')")
     @Operation(summary = "查询角色详情", description = "根据ID查询角色详情")
@@ -54,6 +60,9 @@ public class RoleController {
         return ResultResponse.success(roleService.get(id));
     }
 
+    /**
+     * 分页查询角色。
+     */
     @GetMapping
     @PreAuthorize("hasAuthority('system:role:list')")
     @Operation(summary = "分页查询角色", description = "分页查询角色列表")
@@ -62,6 +71,9 @@ public class RoleController {
         return ResultTableResponse.success(pageResult.records(), pageResult.total());
     }
 
+    /**
+     * 更新角色。
+     */
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('system:role:update')")
     @Idempotent
@@ -71,6 +83,9 @@ public class RoleController {
         return ResultResponse.success(roleService.update(id, request));
     }
 
+    /**
+     * 删除角色。
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('system:role:delete')")
     @Operation(summary = "删除角色", description = "根据ID删除角色")

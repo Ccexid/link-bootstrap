@@ -37,6 +37,9 @@ public class MobileCryptoService {
     private final SecretKeySpec hashKey;
     private final Integer keyVersion;
 
+    /**
+     * 创建移动端加密实例。
+     */
     public MobileCryptoService(MobileCryptoProperties properties) {
         Assert.notNull(properties, "mobile crypto properties must not be null");
         Assert.hasText(properties.getEncryptionKey(), "link.mobile-crypto.encryption-key must not be blank");
@@ -48,6 +51,9 @@ public class MobileCryptoService {
         this.keyVersion = properties.getKeyVersion();
     }
 
+    /**
+     * 保护。
+     */
     public ProtectedMobile protect(String mobile) {
         String normalized = normalize(mobile);
         if (!StringUtils.hasText(normalized)) {
@@ -56,6 +62,9 @@ public class MobileCryptoService {
         return new ProtectedMobile(encrypt(normalized), hash(normalized), mask(normalized), keyVersion);
     }
 
+    /**
+     * 解密。
+     */
     public String decrypt(String cipherText) {
         if (!StringUtils.hasText(cipherText)) {
             return null;
@@ -76,11 +85,17 @@ public class MobileCryptoService {
         }
     }
 
+    /**
+     * 判断是否存在HForLookup。
+     */
     public String hashForLookup(String mobile) {
         String normalized = normalize(mobile);
         return StringUtils.hasText(normalized) ? hash(normalized) : null;
     }
 
+    /**
+     * 脱敏。
+     */
     public String mask(String mobile) {
         String normalized = normalize(mobile);
         if (!StringUtils.hasText(normalized)) {
@@ -92,6 +107,9 @@ public class MobileCryptoService {
         return normalized.substring(0, 3) + "****" + normalized.substring(normalized.length() - 4);
     }
 
+    /**
+     * 加密。
+     */
     private String encrypt(String plainText) {
         try {
             byte[] iv = new byte[GCM_IV_BYTES];
@@ -109,6 +127,9 @@ public class MobileCryptoService {
         }
     }
 
+    /**
+     * 判断是否存在H。
+     */
     private String hash(String mobile) {
         try {
             Mac mac = Mac.getInstance(HMAC_ALGORITHM);
@@ -119,10 +140,16 @@ public class MobileCryptoService {
         }
     }
 
+    /**
+     * 规范化。
+     */
     private static String normalize(String mobile) {
         return StringUtils.hasText(mobile) ? mobile.trim() : null;
     }
 
+    /**
+     * 计算256。
+     */
     private static byte[] sha256(String text) {
         try {
             return MessageDigest.getInstance("SHA-256")

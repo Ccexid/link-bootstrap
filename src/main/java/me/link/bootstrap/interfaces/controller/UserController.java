@@ -39,6 +39,9 @@ public class UserController {
 
     private final UserService userService;
 
+    /**
+     * 创建用户。
+     */
     @PostMapping
     @PreAuthorize("hasAuthority('system:user:create')")
     @Idempotent
@@ -47,6 +50,9 @@ public class UserController {
         return ResultResponse.success(userService.create(request));
     }
 
+    /**
+     * 查询用户详情。
+     */
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('system:user:query')")
     @Operation(summary = "查询用户详情", description = "根据ID查询用户详情")
@@ -54,6 +60,9 @@ public class UserController {
         return ResultResponse.success(userService.get(id));
     }
 
+    /**
+     * 分页查询用户。
+     */
     @GetMapping
     @PreAuthorize("hasAuthority('system:user:list')")
     @Operation(summary = "分页查询用户", description = "分页查询用户列表")
@@ -62,6 +71,9 @@ public class UserController {
         return ResultTableResponse.success(pageResult.records(), pageResult.total());
     }
 
+    /**
+     * 更新用户。
+     */
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('system:user:update')")
     @Idempotent
@@ -71,6 +83,9 @@ public class UserController {
         return ResultResponse.success(userService.update(id, request));
     }
 
+    /**
+     * 删除用户。
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('system:user:delete')")
     @Operation(summary = "删除用户", description = "根据ID删除用户")

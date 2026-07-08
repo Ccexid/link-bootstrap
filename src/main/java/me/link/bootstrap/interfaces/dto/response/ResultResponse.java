@@ -33,9 +33,15 @@ public class ResultResponse<T> implements Serializable {
     private String traceId;
 
 
+    /**
+     * 创建Result响应实例。
+     */
     private ResultResponse() {
     }
 
+    /**
+     * 创建Result响应实例。
+     */
     private ResultResponse(final T data, final String message, final Long code, final long timestamp, final String traceId) {
         this.data = data;
         this.message = message;
@@ -44,6 +50,9 @@ public class ResultResponse<T> implements Serializable {
         this.traceId = traceId;
     }
 
+    /**
+     * 创建标准结果响应。
+     */
     private static <T> ResultResponse<T> of(final T data, final String message, final Long code) {
         return new ResultResponse<>(data, message, code, Instant.now().toEpochMilli(), null);
     }

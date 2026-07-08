@@ -49,6 +49,9 @@ public class CommunityTopicServiceImpl extends ServiceImpl<CommunityTopicMapper,
     );
     private final CommunitySectionService communitySectionService;
 
+    /**
+     * 创建社区话题。
+     */
     @Transactional
     public CommunityTopicResponseVO create(CommunityTopicCreateRequest request) {
         Long tenantId = SecurityHelper.getRequiredTenantId();
@@ -63,12 +66,18 @@ public class CommunityTopicServiceImpl extends ServiceImpl<CommunityTopicMapper,
         return toResponse(topic);
     }
 
+    /**
+     * 查询社区话题详情。
+     */
     public CommunityTopicResponseVO get(Long id) {
         CommunityTopicPO topic = ApplicationAssert.requireFound(getById(id), ErrorCode.COMMUNITY_TOPIC_NOT_FOUND);
         ensureCurrentTenant(topic, SecurityHelper.getRequiredTenantId());
         return toResponse(topic);
     }
 
+    /**
+     * 分页查询社区话题列表。
+     */
     public PageResult<CommunityTopicResponseVO> page(CommunityTopicPageRequest request) {
         Long tenantId = SecurityHelper.getRequiredTenantId();
         if (request.getSectionId() != null) {
@@ -88,6 +97,9 @@ public class CommunityTopicServiceImpl extends ServiceImpl<CommunityTopicMapper,
         return new PageResult<>(result.getRecords().stream().map(this::toResponse).toList(), result.getTotal());
     }
 
+    /**
+     * 更新社区话题。
+     */
     @Transactional
     public CommunityTopicResponseVO update(Long id, CommunityTopicUpdateRequest request) {
         CommunityTopicPO topic = getRequired(id);
@@ -101,12 +113,18 @@ public class CommunityTopicServiceImpl extends ServiceImpl<CommunityTopicMapper,
         return get(id);
     }
 
+    /**
+     * 删除社区话题。
+     */
     @Transactional
     public void delete(Long id) {
         CommunityTopicPO topic = getRequired(id);
         ApplicationAssert.requireSuccess(removeById(id), ErrorCode.COMMUNITY_TOPIC_NOT_FOUND);
     }
 
+    /**
+     * 应用可变字段。
+     */
     private void applyMutableFields(CommunityTopicPO topic,
                                     Long sectionId,
                                     String name,
@@ -127,6 +145,9 @@ public class CommunityTopicServiceImpl extends ServiceImpl<CommunityTopicMapper,
         topic.setStatus(status == null ? StatusEnum.NORMAL : status);
     }
 
+    /**
+     * 校验板块。
+     */
     private void validateSection(Long sectionId, Long tenantId) {
         if (sectionId == null || sectionId <= 0) {
             ApplicationAssert.invalidParam("社区话题sectionId必须大于0");
@@ -137,6 +158,9 @@ public class CommunityTopicServiceImpl extends ServiceImpl<CommunityTopicMapper,
         }
     }
 
+    /**
+     * 确保验证码Unique。
+     */
     private void ensureCodeUnique(String code, Long ignoredId) {
         long count = count(new LambdaQueryWrapper<CommunityTopicPO>()
                 .eq(CommunityTopicPO::getCode, code)
@@ -146,12 +170,18 @@ public class CommunityTopicServiceImpl extends ServiceImpl<CommunityTopicMapper,
         }
     }
 
+    /**
+     * 确保当前租户。
+     */
     private static void ensureCurrentTenant(CommunityTopicPO topic, Long tenantId) {
         if (!Objects.equals(topic.getTenantId(), tenantId)) {
             throw new BusinessException(ErrorCode.COMMUNITY_TOPIC_NOT_FOUND);
         }
     }
 
+    /**
+     * 规范化编码。
+     */
     private static String normalizeCode(String code) {
         if (StrUtil.isBlank(code)) {
             ApplicationAssert.invalidParam("社区话题code不能为空");
@@ -159,6 +189,9 @@ public class CommunityTopicServiceImpl extends ServiceImpl<CommunityTopicMapper,
         return code.trim().toLowerCase(Locale.ROOT);
     }
 
+    /**
+     * 去除空白To空值。
+     */
     private static String trimToNull(String value) {
         if (StrUtil.isBlank(value)) {
             return null;
@@ -166,10 +199,16 @@ public class CommunityTopicServiceImpl extends ServiceImpl<CommunityTopicMapper,
         return value.trim();
     }
 
+    /**
+     * 获取必需的业务对象。
+     */
     private CommunityTopicPO getRequired(Long id) {
         return ApplicationAssert.requireFound(getById(id), ErrorCode.COMMUNITY_TOPIC_NOT_FOUND);
     }
 
+    /**
+     * 转换为响应对象。
+     */
     private CommunityTopicResponseVO toResponse(CommunityTopicPO source) {
         CommunityTopicResponseVO response = BeanUtil.copyProperties(source, CommunityTopicResponseVO.class);
         response.setCreatedAt(source.getCreateTime());

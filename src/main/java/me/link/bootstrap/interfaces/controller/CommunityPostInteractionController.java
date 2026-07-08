@@ -30,6 +30,9 @@ public class CommunityPostInteractionController {
 
     private final CommunityPostInteractionService communityPostInteractionService;
 
+    /**
+     * 点赞帖子。
+     */
     @Idempotent
     @PostMapping("/{id}/likes")
     @PreAuthorize("hasAuthority('community:post:like')")
@@ -38,6 +41,9 @@ public class CommunityPostInteractionController {
         return ResultResponse.success(communityPostInteractionService.like(id));
     }
 
+    /**
+     * 取消点赞帖子。
+     */
     @DeleteMapping("/{id}/likes")
     @PreAuthorize("hasAuthority('community:post:unlike')")
     @Operation(summary = "取消点赞帖子")
@@ -45,6 +51,9 @@ public class CommunityPostInteractionController {
         return ResultResponse.success(communityPostInteractionService.unlike(id));
     }
 
+    /**
+     * 收藏帖子。
+     */
     @Idempotent
     @PostMapping("/{id}/collections")
     @PreAuthorize("hasAuthority('community:post:collect')")
@@ -53,6 +62,9 @@ public class CommunityPostInteractionController {
         return ResultResponse.success(communityPostInteractionService.collect(id));
     }
 
+    /**
+     * 取消收藏帖子。
+     */
     @DeleteMapping("/{id}/collections")
     @PreAuthorize("hasAuthority('community:post:uncollect')")
     @Operation(summary = "取消收藏帖子")
@@ -60,6 +72,9 @@ public class CommunityPostInteractionController {
         return ResultResponse.success(communityPostInteractionService.uncollect(id));
     }
 
+    /**
+     * 查询当前用户帖子互动状态。
+     */
     @GetMapping("/{id}/interactions/current")
     @Operation(summary = "查询当前用户帖子互动状态")
     public ResultResponse<CommunityPostInteractionResponseVO> interaction(@PathVariable @NotNull(message = "ID不能为空") Long id) {

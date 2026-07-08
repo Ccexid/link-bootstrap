@@ -29,11 +29,17 @@ class EmailCodeSendRateLimitServiceTest {
     private final EmailCodeSendRateLimitService rateLimitService =
             new EmailCodeSendRateLimitService(redissonClient, securityProperties, clientIpProperties);
 
+    /**
+     * 清理测试上下文。
+     */
     @AfterEach
     void tearDown() {
         RequestContextHolder.resetRequestAttributes();
     }
 
+    /**
+     * 验证 shouldLimitByClientIpAndEmailWithoutPlainEmailInRedisKey 场景。
+     */
     @Test
     void shouldLimitByClientIpAndEmailWithoutPlainEmailInRedisKey() {
         MockHttpServletRequest request = new MockHttpServletRequest();
@@ -53,6 +59,9 @@ class EmailCodeSendRateLimitServiceTest {
         verify(counter).expire(securityProperties.getEmailCode().getSendIpEmailWindow());
     }
 
+    /**
+     * 验证 shouldRejectWhenIpEmailCombinationExceedsLimit 场景。
+     */
     @Test
     void shouldRejectWhenIpEmailCombinationExceedsLimit() {
         when(redissonClient.getAtomicLong(startsWith("link:email-code:send:"))).thenReturn(counter);

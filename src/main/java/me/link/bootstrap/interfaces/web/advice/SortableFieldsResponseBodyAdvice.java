@@ -60,6 +60,9 @@ public class SortableFieldsResponseBodyAdvice implements ResponseBodyAdvice<Obje
         return resultResponse;
     }
 
+    /**
+     * 提取TargetClass。
+     */
     private Class<?> extractTargetClass(Object records, MethodParameter returnType) {
         if (records instanceof Collection<?> collection && !collection.isEmpty()) {
             Object firstElement = collection.iterator().next();

@@ -18,6 +18,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @Slf4j
 public final class SecurityHelper {
 
+    /**
+     * 创建安全实例。
+     */
     private SecurityHelper() {
         throw new UnsupportedOperationException("工具类不允许实例化");
     }
@@ -108,6 +111,9 @@ public final class SecurityHelper {
         return token;
     }
 
+    /**
+     * 获取必需的令牌值。
+     */
     public static String getRequiredTokenValue() {
         String token = getTokenValue();
         if (token == null || token.isBlank()) {
@@ -116,6 +122,9 @@ public final class SecurityHelper {
         return token;
     }
 
+    /**
+     * 获取当前主体。
+     */
     private static LoginUserPrincipal currentPrincipal() {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
